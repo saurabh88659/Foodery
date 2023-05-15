@@ -1,4 +1,10 @@
-import {Text, SafeAreaView, StyleSheet, StatusBar} from 'react-native';
+import {
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  StatusBar,
+  ImageBackground,
+} from 'react-native';
 import React, {useEffect} from 'react';
 import {COLORS} from '../utils/Colors';
 import {fontPixel} from '../Components/Dimensions';
@@ -6,7 +12,7 @@ import {fontPixel} from '../Components/Dimensions';
 export default function SpalshScreen({navigation}) {
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('OnboardingScreen');
+      navigation.navigate('CreateAccount');
     }, 5000);
   }, []);
 
@@ -15,10 +21,18 @@ export default function SpalshScreen({navigation}) {
       <StatusBar
         barStyle="dark-content"
         hidden={false}
-        backgroundColor={COLORS.ORANGE}
+        backgroundColor={COLORS.WHITE}
         translucent={true}
       />
-      <Text style={Styles.Text}>FOODERY</Text>
+
+      <ImageBackground
+        source={require('../Assets/Logo/splashbackgoundimage.png')}
+        style={Styles.CONAINERBACKGROUND}>
+        <Text style={Styles.TEXTSTYL}>
+          Welcome to {`\n`} <Text style={{fontWeight: '800'}}>Grocery</Text>{' '}
+          shopping
+        </Text>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
@@ -26,14 +40,12 @@ export default function SpalshScreen({navigation}) {
 const Styles = StyleSheet.create({
   Container: {
     flex: 1,
-    backgroundColor: COLORS.ORANGE,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  Text: {
-    fontSize: fontPixel(30),
-    letterSpacing: 4,
-    fontWeight: '900',
+  TEXTSTYL: {
+    fontSize: fontPixel(33),
+    letterSpacing: 1,
     color: COLORS.WHITE,
+    textAlign: 'center',
   },
+  CONAINERBACKGROUND: {flex: 1, alignItems: 'center', justifyContent: 'center'},
 });

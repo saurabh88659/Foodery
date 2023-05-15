@@ -12,22 +12,23 @@ import {COLORS} from '../utils/Colors';
 import {heightPixel, widthPixel, fontPixel} from '../Components/Dimensions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import {userIconHome} from '../utils/Const';
+import {EvilIconsIcon, FontAwesome5Icon, userIconHome} from '../utils/Const';
 
 const Header = props => {
   const {headerHeight} = props;
   return (
-    <SafeAreaView style={{backgroundColor: COLORS.WHITE}}>
+    <SafeAreaView style={{backgroundColor: COLORS.GREEN}}>
       <View style={Styles.HeadersSty}>
         <TouchableOpacity style={{paddingTop: 15}}>
           <Text
+            numberOfLines={1}
             style={{
-              color: COLORS.BLACK,
-              fontSize: fontPixel(21),
-              fontWeight: '900',
+              color: COLORS.WHITE,
+              fontSize: fontPixel(15),
+              fontWeight: '500',
               letterSpacing: 0.5,
             }}>
-            Delivery in 3 minutes
+            Delivery to
           </Text>
           <View
             style={{
@@ -38,33 +39,33 @@ const Header = props => {
             }}>
             <Text
               style={{
-                color: COLORS.BLACK,
+                color: COLORS.WHITE,
                 fontSize: fontPixel(17),
-                fontWeight: '600',
+                fontWeight: '500',
                 letterSpacing: 0.5,
               }}>
               Home-Kickr Tech Home-Kickr Tech
             </Text>
-            <Icon name="arrow-drop-down" color={COLORS.BLACK} size={25} />
+            <Icon name="arrow-drop-down" color={COLORS.WHITE} size={25} />
           </View>
         </TouchableOpacity>
         <TouchableOpacity
+          onPress={props.onPress}
           style={{
-            height: heightPixel(50),
-            width: widthPixel(50),
-            borderRadius: 30,
             alignItems: 'center',
             justifyContent: 'center',
-            top: 10,
+            top: '4%',
           }}>
-          <Image
-            source={userIconHome}
-            style={{height: heightPixel(45), width: widthPixel(40)}}
+          <FontAwesome5Icon
+            title={'user-circle'}
+            size={30}
+            IconColor={COLORS.WHITE}
           />
         </TouchableOpacity>
       </View>
+
       <View style={Styles.sectionStyle}>
-        <EvilIcons name="search" color={COLORS.BLACK} size={25} />
+        <EvilIcons name="search" color={COLORS.GRAYDARK} size={25} />
         <TextInput
           placeholderTextColor={COLORS.GRAY}
           placeholder="Serch for you fovourites"
@@ -107,11 +108,11 @@ const Styles = StyleSheet.create({
   },
   HeadersSty: {
     height: heightPixel(120),
-    backgroundColor: COLORS.WHITE,
+    backgroundColor: COLORS.GREEN,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     marginVertical: 10,
   },
   sectionStyle: {
@@ -126,6 +127,7 @@ const Styles = StyleSheet.create({
     paddingHorizontal: 10,
     backgroundColor: COLORS.WHITE,
     top: -15,
+    // marginTop: 10,
   },
   inputStyles: {
     flex: 1,

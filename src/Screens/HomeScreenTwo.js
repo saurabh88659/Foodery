@@ -18,24 +18,91 @@ import {userIconHome} from '../utils/Const';
 function HomeScreenTwo({navigation}) {
   const data = [
     {
-      name: 'dablu',
+      title: 'Brown eggs Sweet fresh stawberry Sweet fresh stawberry',
+      type: 'dairy',
+      price: 28.1,
+      Weight: 2,
     },
     {
-      name: 'dablu',
+      title: 'Sweet fresh stawberry',
+      type: 'fruit',
+      price: 29.45,
+      Weight: 4,
     },
     {
-      name: 'dablu',
+      title: 'Asparagus',
+      type: 'vegetable',
+      price: 18.95,
+      Weight: 7,
     },
     {
-      name: 'dablu',
+      title: 'Green smoothie',
+      type: 'dairy',
+      price: 17.68,
+      Weight: 2,
     },
     {
-      name: 'dablu',
+      title: 'Raw legums',
+      type: 'vegetable',
+      price: 17.11,
+      Weight: 2,
     },
     {
-      name: 'dablu',
+      title: 'Baking cake',
+      type: 'dairy',
+      price: 11.14,
+      Weight: 2,
+    },
+    {
+      title: 'Pesto with basil',
+      type: 'vegetable',
+      price: 18.19,
+      Weight: 2,
+    },
+    {
+      title: 'Hazelnut in black ceramic bowl',
+      type: 'vegetable',
+      price: 27.35,
+      Weight: 2,
+    },
+    {
+      title: 'Fresh stawberry',
+      type: 'fruit',
+      price: 28.59,
+      Weight: 2,
+    },
+    {
+      title: 'Lemon and salt',
+      type: 'fruit',
+      price: 15.79,
+      Weight: 2,
+    },
+    {
+      title: 'Homemade bread',
+      type: 'bakery',
+      price: 17.48,
+      Weight: 2,
+    },
+    {
+      title: 'Legums',
+      type: 'vegetable',
+      price: 14.77,
+      Weight: 2,
+    },
+    {
+      title: 'Fresh tomato',
+      type: 'vegetable',
+      price: 16.3,
+      Weight: 2,
+    },
+    {
+      title: 'Healthy breakfast',
+      type: 'fruit',
+      price: 13.02,
+      Weight: 2,
     },
   ];
+
   const dataSRT = [
     {
       name: 'dablu',
@@ -68,7 +135,7 @@ function HomeScreenTwo({navigation}) {
         <TouchableOpacity style={{paddingTop: 15}}>
           <Text style={Styles.ADDRESSTEXTSTYLES}>Delivery in 3 minutes</Text>
           <View style={Styles.SUBADDRESSTEXTSTYL}>
-            <Text style={Styles.ADDRESSTITLESTYL}>
+            <Text numberOfLines={2} style={Styles.ADDRESSTITLESTYL}>
               Home-Kickr Tech Home-Kickr Tech
             </Text>
             <Icon name="arrow-drop-down" color={COLORS.BLACK} size={25} />
@@ -108,15 +175,18 @@ function HomeScreenTwo({navigation}) {
                     style={{height: 80, width: 80}}
                   />
                 </View>
-                <Text style={Styles.BESTTITLESTYL}>
-                  Lay's Logo Potato chip Frito-Lay Brand
-                </Text>
-                <Text style={{color: COLORS.BLACK}}>2Kg</Text>
-                <View style={Styles.BESTSELLPRICE}>
-                  <Text style={{color: COLORS.BLACK}}>₹ 46</Text>
-                  <TouchableOpacity style={Styles.BESTSELLSTYL_ADD_BOTTON}>
-                    <Text style={{color: COLORS.GREEN}}>Add</Text>
-                  </TouchableOpacity>
+
+                <View style={{paddingHorizontal: 10}}>
+                  <Text numberOfLines={2} style={Styles.BESTTITLESTYL}>
+                    {value.title}
+                  </Text>
+                  <Text style={{color: COLORS.BLACK}}>{value.Weight}kg</Text>
+                  <View style={Styles.BESTSELLPRICE}>
+                    <Text style={{color: COLORS.BLACK}}>₹ {value.price}</Text>
+                    <TouchableOpacity style={Styles.BESTSELLSTYL_ADD_BOTTON}>
+                      <Text style={{color: COLORS.GREEN}}>Add</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>
@@ -209,8 +279,7 @@ const Styles = StyleSheet.create({
     fontWeight: '500',
   },
   headercontainerstyles: {
-    // justifyContent: 'space-between',
-    marginHorizontal: 15,
+    marginHorizontal: 10,
     marginTop: 20,
     width: widthPixel(150),
   },
@@ -228,9 +297,10 @@ const Styles = StyleSheet.create({
   },
   ADDRESSTITLESTYL: {
     color: COLORS.BLACK,
-    fontSize: fontPixel(17),
-    fontWeight: '600',
+    fontSize: fontPixel(16),
+    fontWeight: '500',
     letterSpacing: 0.5,
+    // width: widthPixel(300),
   },
   USERICONSTYLCON: {
     height: heightPixel(50),
@@ -267,7 +337,12 @@ const Styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: 'center',
   },
-  BESTTITLESTYL: {color: COLORS.BLACK, marginTop: 5},
+
+  BESTTITLESTYL: {
+    color: COLORS.BLACK,
+    marginTop: 5,
+    height: heightPixel(50),
+  },
   BESTSELLPRICE: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -2,146 +2,163 @@ import {
   View,
   Text,
   SafeAreaView,
-  Image,
   StyleSheet,
-  TouchableWithoutFeedback,
-  Keyboard,
   TextInput,
   TouchableOpacity,
+  Image,
+  TouchableWithoutFeedback,
+  Keyboard,
+  ScrollView,
 } from 'react-native';
 import React, {useState} from 'react';
-import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import {COLORS} from '../utils/Colors';
+import {
+  fontPixel,
+  heightPixel,
+  screenHeight,
+  widthPixel,
+} from '../Components/Dimensions';
 import Button from '../Components/Button';
+import {facebooklogo, googlelog} from '../utils/Const';
+import {IonIcon} from '../utils/Const';
 
 export default function Login({navigation}) {
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [phoneNumberError, setPhoneNumberError] = useState('');
-  const [phoneNumberBorderColor, setPhoneNumberBorderColor] = useState('#fff');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [hidePassword, setHidePassword] = useState(true);
 
-  const validatePhoneNumber = () => {
-    const phoneRegex = /^[0-9]{10}$/; // regex to match 10 digit phone number
-    if (!phoneRegex.test(phoneNumber)) {
-      setPhoneNumberError('Please enter a valid 10 digit phone number.');
-      setPhoneNumberBorderColor('red');
+  const validateEmail = email => {
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(email)) {
+      setEmailError('Please enter a valid email address');
+      return false;
     } else {
-      setPhoneNumberError('');
-      setPhoneNumberBorderColor('#FFF');
+      setEmailError('');
+      return true;
     }
   };
 
-  const onSubmit = () => {
-    validatePhoneNumber();
-    navigation.navigate('OtpScreen');
+  const validatePassword = password => {
+    if (password.length < 6) {
+      setPasswordError('Password must be at least 6 characters long');
+      return false;
+    } else {
+      setPasswordError('');
+      return true;
+    }
   };
+
+  const handleSubmit = () => {
+    const isValidEmail = validateEmail(email);
+    const isValidPassword = validatePassword(password);
+    if (isValidEmail && isValidPassword) {
+      // Submit login credentials
+      navigation.navigate('BottomTabBar');
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <SafeAreaView style={Styles.Container}>
-        <View style={{flex: 1}}>
-          <Image
-            source={require('../Assets/Logo/illustrationlogin.png')}
-            style={Styles.logoStyles}
-          />
+      <SafeAreaView style={Styles.CONTAINERMAIN}>
+        <View style={{alignItems: 'center'}}>
+          <Text style={Styles.TITLESTYL}>Login</Text>
+          <Text style={Styles.SUBTITLE}>Add your details to login</Text>
         </View>
-        <View style={Styles.titlecon}>
-          <Text style={Styles.titleStyle}>India's last minute app</Text>
-          <Text style={Styles.titleStyle2}>Log in or sign up</Text>
-        </View>
-        <View
-          style={[Styles.sectionStyle, {borderColor: phoneNumberBorderColor}]}>
-          <Text
-            style={{
-              color: COLORS.BLACK,
-              fontWeight: '700',
-              fontSize: fontPixel(18),
-            }}>
-            +91
-          </Text>
-          <TextInput
-            placeholderTextColor={COLORS.GRAY}
-            placeholder="Enter mobile number"
-            style={Styles.inputStyles}
-            keyboardType="number-pad"
-            maxLength={10}
-            value={phoneNumber}
-            onChangeText={text => {
-              setPhoneNumber(text), validatePhoneNumber;
-            }}
-            // onBlur={validatePhoneNumber}
-          />
-        </View>
-        {phoneNumberError ? (
-          <Text style={Styles.error}>{phoneNumberError}</Text>
-        ) : null}
-        <View>
-          <View style={{top: -50}}>
-            <Button title={'Continue'} onPress={onSubmit} />
+        <View style={Styles.CONTAINERMAINTEXTINPU}>
+          <View style={Styles.sectionStyle}>
+            <TextInput
+              style={[Styles.TEXTINPUT]}
+              placeholder="Your Email"
+              placeholderTextColor={COLORS.GRAYDARK}
+              value={email}
+              onChangeText={text => setEmail(text)}
+            />
           </View>
-          <Text
-            style={{
-              alignSelf: 'center',
-              color: COLORS.BLACK,
-              top: -60,
-              fontWeight: '500',
-              fontSize: 13,
-            }}>
-            OR
-          </Text>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-around',
-              top: -55,
-            }}>
-            <TouchableOpacity activeOpacity={0.6} style={Styles.footerStyles}>
-              <Image
-                source={require('../Assets/Logo/google.png')}
-                style={Styles.footerlogosty}
+          {emailError ? (
+            <Text style={Styles.ERRORTEXT}>{emailError}</Text>
+          ) : null}
+          <View style={Styles.sectionStyle}>
+            <TextInput
+              style={Styles.TEXTINPUT}
+              placeholder="Confirm Password"
+              secureTextEntry={hidePassword}
+              placeholderTextColor={COLORS.GRAYDARK}
+              value={password}
+              onChangeText={text => setPassword(text)}
+            />
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setHidePassword(!hidePassword)}
+              style={{right: 20}}>
+              <IonIcon
+                title={hidePassword ? 'eye-off' : 'eye'}
+                size={22}
+                IconColor={COLORS.GRAYDARK}
               />
-              <Text
-                style={{color: COLORS.BLACK, fontWeight: '500', fontSize: 13}}>
-                Log in with
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity activeOpacity={0.6} style={Styles.footerStyles}>
-              <Image
-                source={require('../Assets/Logo/facebook.png')}
-                style={Styles.footerlogosty}
-              />
-              <Text
-                style={{color: COLORS.BLACK, fontWeight: '500', fontSize: 13}}>
-                Log in with
-              </Text>
             </TouchableOpacity>
           </View>
+
+          {passwordError ? (
+            <Text style={Styles.ERRORTEXT}>{passwordError}</Text>
+          ) : null}
+        </View>
+        <View style={{marginTop: 30}}>
+          <Button title={'Login'} onPress={handleSubmit} />
+        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('Resetpassword')}>
+          <Text style={Styles.FORGETTITLE}>Forgot your password?</Text>
+        </TouchableOpacity>
+        <Text style={[Styles.FORGETTITLE, {top: 40}]}>or Login with</Text>
+        <View style={{marginTop: '20%'}}>
+          <TouchableOpacity style={Styles.CONTAINERFBGOOGle}>
+            <Image
+              source={facebooklogo}
+              style={{height: heightPixel(20), width: widthPixel(8)}}
+            />
+            <Text style={Styles.TEXTFBGOOGLE}>Login with Facebook</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[
+              Styles.CONTAINERFBGOOGle,
+              {marginTop: 30, backgroundColor: COLORS.BROWN},
+            ]}>
+            <Image
+              source={googlelog}
+              style={{height: heightPixel(20), width: widthPixel(30)}}
+            />
+            <Text style={Styles.TEXTFBGOOGLE}>Login with Google</Text>
+          </TouchableOpacity>
         </View>
         <View
           style={{
-            alignItems: 'center',
+            flexDirection: 'row',
+            flex: 1,
             justifyContent: 'center',
-            backgroundColor: COLORS.GRAY,
-            // paddingVertical: 2,
-            opacity: 0.4,
+            alignItems: 'center',
+            marginTop: heightPixel(60),
           }}>
-          <Text style={{color: COLORS.BLACK, fontSize: fontPixel(12)}}>
-            By continue you agree to our{' '}
+          <Text
+            style={{
+              color: COLORS.GRAYDARK,
+              fontWeight: '500',
+              fontSize: fontPixel(18),
+            }}>
+            Don't have Account?
+          </Text>
+          <TouchableOpacity onPress={() => navigation.navigate('SignUpscreen')}>
             <Text
               style={{
-                textDecorationLine: 'underline',
-                fontWeight: '900',
-                color: COLORS.BLACK,
+                color: COLORS.GREEN,
+                fontWeight: '500',
+                paddingLeft: 3,
+                letterSpacing: 0.5,
               }}>
-              Term of service & {''}
-              <Text
-                style={{
-                  textDecorationLine: 'underline',
-                  fontWeight: '900',
-                  color: COLORS.BLACK,
-                }}>
-                Privacy policy
-              </Text>
+              Sign Up
             </Text>
-          </Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     </TouchableWithoutFeedback>
@@ -149,78 +166,64 @@ export default function Login({navigation}) {
 }
 
 const Styles = StyleSheet.create({
-  Container: {
+  CONTAINERMAIN: {
     flex: 1,
     backgroundColor: COLORS.WHITE,
   },
-  logoStyles: {
-    height: heightPixel(600),
-    width: widthPixel(500),
-    // resizeMode: 'center',
-    alignSelf: 'center',
-    marginTop: -120,
-    // top: -10,
-    paddingVertical: -30,
-    flex: 1,
-  },
-  titlecon: {
-    alignItems: 'center',
-    top: -55,
-  },
-  titleStyle: {
+  TITLESTYL: {
     color: COLORS.BLACK,
-    fontSize: fontPixel(22),
-    letterSpacing: 0.5,
+    fontSize: fontPixel(25),
+    marginTop: heightPixel(90),
     fontWeight: '900',
-    marginTop: 55,
   },
-  titleStyle2: {
-    color: COLORS.BLACK,
-    fontWeight: '500',
+  SUBTITLE: {
+    color: COLORS.GRAY,
+    marginTop: 10,
     fontSize: fontPixel(20),
-    marginTop: 7,
+    fontWeight: '500',
   },
+  TEXTINPUT: {
+    backgroundColor: COLORS.GRAYLIGHT,
+    marginHorizontal: 25,
+    // paddingHorizontal: 10,
+    color: COLORS.BLACK,
+    paddingVertical: 8,
+    width: widthPixel(300),
+  },
+
   sectionStyle: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    borderColor: COLORS.GRAY,
-    height: 50,
+    height: heightPixel(60),
     marginHorizontal: 20,
-    borderRadius: 5,
-    // marginVertical: 5,
-    top: -45,
-    elevation: 5,
-    paddingHorizontal: 10,
-    backgroundColor: COLORS.WHITE,
-    borderWidth: 1,
-  },
-  inputStyles: {
-    flex: 1,
-    height: 50,
-    color: COLORS.BLACK,
-    fontSize: 15,
-    paddingHorizontal: 15,
-    letterSpacing: 0.3,
-  },
-  error: {
-    color: 'red',
-    top: -40,
-    marginHorizontal: 20,
+    backgroundColor: COLORS.GRAYLIGHT,
+    marginTop: 25,
+    borderRadius: 50,
   },
 
-  footerStyles: {
-    paddingVertical: 5,
-    width: widthPixel(150),
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 7,
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
+  ERRORTEXT: {color: 'red', paddingHorizontal: 40, marginTop: 5},
+  FORGETTITLE: {
+    color: COLORS.GRAYDARK,
+    fontSize: fontPixel(18),
+    textAlign: 'center',
+    // marginTop: 20,
+    marginVertical: 10,
+    fontWeight: '500',
+    top: heightPixel(10),
   },
-  footerlogosty: {
-    height: 30,
-    width: 30,
+  CONTAINERFBGOOGle: {
+    paddingVertical: 15,
+    backgroundColor: COLORS.BLUE,
+    flexDirection: 'row',
+    alignItemsL: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 25,
+    borderRadius: 25,
+  },
+  TEXTFBGOOGLE: {
+    color: COLORS.WHITE,
+    marginLeft: 10,
+    fontWeight: '500',
   },
 });

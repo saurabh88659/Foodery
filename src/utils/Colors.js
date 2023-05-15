@@ -4,10 +4,20 @@ export const COLORS = {
   ORANGE: '#FD8700',
   BLUE: '#0274BC',
   GRAY: '#AAA',
-  GREEN: '#45A247',
+  GRAYLIGHT: '#F2F2F2',
+  GRAYDARK: '#B6B7B7',
+  GREEN: '#29C17E',
   DARK_BLUE: '#1E1456',
+  BLUE: '#367FC0',
   LIGHT_BLUE: '#6E6792',
   YELLOW: '#FEBA1F',
+  BROWN: '#DD4B39',
+  PURPLE: '#67039B',
+  LIGHTGREEN: '#BEF1C9',
+  LightGreen2: '#38EF7D',
+  DarkGreen2: '#11998E',
+  LightPurple: '#AD5389',
+  DarkPurple: '#3C1053',
 };
 
 export const fontFamily = {
@@ -25,3 +35,8 @@ export const fontFamily = {
   RubikBold: 'Rubik-Bold',
   InterItalic: 'Inter-BoldItalic',
 };
+
+// #F2F2F2-Light Grey
+// #B6B7B7-Dark Grey
+// #367FC0-Facebook Box
+// #DD4B39-Google
