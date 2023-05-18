@@ -320,7 +320,10 @@ export default function CartScreen({navigation}) {
           </View>
         </View>
         <View style={{marginVertical: 15}}>
-          <Button title={'Choose address at next step    ▶'} />
+          <Button
+            title={'Choose address at next step    ▶'}
+            onPress={() => navigation.navigate('AddressScreen')}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>

@@ -35,9 +35,6 @@ export default function SpalshScreen({navigation}) {
     getCurrentPosition();
   }, []);
 
-  const latitudelongitude = useSelector(state => state.locationReducer);
-  console.log('latitudelongitude', latitudelongitude);
-
   return (
     <SafeAreaView style={Styles.Container}>
       <StatusBar
