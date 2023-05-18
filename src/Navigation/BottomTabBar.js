@@ -24,7 +24,11 @@ const getTabBarVisibility = route => {
   if (
     routeName === 'FruitsVegetables' ||
     routeName === 'SubCategories' ||
-    routeName === 'ProfileScreen'
+    routeName === 'ProfileScreen' ||
+    routeName === 'OrderHistory' ||
+    routeName === 'Notification' ||
+    routeName === 'AddressScreen' ||
+    routeName === 'AddressScreenWithMap'
   ) {
     return 'none';
   }
@@ -135,6 +139,22 @@ function BottomTabBar() {
       <Tab.Screen
         name="More"
         component={MoreStack}
+        options={({route}) => ({
+          tabBarStyle: {display: getTabBarVisibility(route)},
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <FoundationIcon
+              title="indent-more"
+              size={28}
+              IconColor={focused ? COLORS.GREEN : COLORS.GRAYDARK}
+            />
+          ),
+        })}
+      />
+
+      {/* <Tab.Screen
+        name="More"
+        component={MoreStack}
         options={{
           headerShown: false,
           tabBarColor: COLORS.BLUE,
@@ -146,7 +166,7 @@ function BottomTabBar() {
             />
           ),
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 }

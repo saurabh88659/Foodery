@@ -5,16 +5,38 @@ import {
   StatusBar,
   ImageBackground,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import {fontPixel} from '../Components/Dimensions';
+import Geolocation from '@react-native-community/geolocation';
+import {updateGeolocation} from '../Redux/Action/locationAction';
+import {useDispatch, useSelector} from 'react-redux';
 
 export default function SpalshScreen({navigation}) {
+  const dispatch = useDispatch();
+
   useEffect(() => {
     setTimeout(() => {
       navigation.navigate('CreateAccount');
     }, 5000);
   }, []);
+
+  const getCurrentPosition = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        dispatch(updateGeolocation(latitude, longitude));
+      },
+      error => console.log('error locations', error), // handle error if needed
+    );
+  };
+
+  useEffect(() => {
+    getCurrentPosition();
+  }, []);
+
+  const latitudelongitude = useSelector(state => state.locationReducer);
+  console.log('latitudelongitude', latitudelongitude);
 
   return (
     <SafeAreaView style={Styles.Container}>

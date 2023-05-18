@@ -4,7 +4,7 @@ import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel} from './Dimensions';
 import {IonIcon} from '../utils/Const';
 
-const MyHeader = props => {
+const MyHeaderNo2 = props => {
   return (
     <View
       style={{
@@ -15,7 +15,6 @@ const MyHeader = props => {
         flexDirection: 'row',
         height: heightPixel(105),
         paddingTop: heightPixel(35),
-        flexDirection: 'row',
         elevation: 10,
       }}>
       <View
@@ -42,10 +41,7 @@ const MyHeader = props => {
           {props.title}
         </Text>
       </View>
-      <TouchableOpacity activeOpacity={0.6}>
-        <IonIcon title="ios-search-sharp" size={28} IconColor={COLORS.WHITE} />
-      </TouchableOpacity>
     </View>
   );
 };
-export default MyHeader;
+export default MyHeaderNo2;

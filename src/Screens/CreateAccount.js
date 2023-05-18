@@ -26,7 +26,10 @@ export default function CreateAccount({navigation}) {
           />
           <View style={{marginVertical: '5%'}}>
             <TouchableOpacity
-              onPress={() => navigation.navigate('SignUpscreen')}
+              onPress={() => {
+                // navigation.navigate('SignUpscreen');
+                navigation.navigate('BottomTabBar');
+              }}
               activeOpacity={0.6}
               style={Styles.CONTAINERBUTTON}>
               <Text style={Styles.BUTTONTEXT}>Create Account</Text>

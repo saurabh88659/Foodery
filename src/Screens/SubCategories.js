@@ -12,35 +12,55 @@ import {
 import React, {useState, useEffect} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {COLORS} from '../utils/Colors';
-import {bannerIcon} from '../utils/Const';
+import {SimpleToast, bannerIcon} from '../utils/Const';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import AddTocart from '../Components/AddTocart';
 import {addToCart} from '../Redux/action';
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from '../Redux/Action/actionwishlist';
 import {useDispatch, useSelector} from 'react-redux';
 import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPlaceHolder';
 
 export default function SubCategories({navigation, route}) {
   const SubName = route.params;
   const [heart, setHeart] = useState(true);
-  const IsuseDispatch = useDispatch();
+  const dispatch = useDispatch();
   const [isloading, setIsloading] = useState(false);
-
   const [cartitem, setCartitem] = useState(0);
-  const cartData = useSelector(state => state.reducer);
 
-  // console.log('hey', cartData);
-  // console.log('cartitem+++++++++++++DG', cartData[0]);
+  const cartData = useSelector(state => state.reducer);
+  const wishlistData = useSelector(
+    state => state.wishlistReducer.wishlistItems,
+  );
+
+  console.log('wishlistData===========SUB==>', wishlistData);
+  console.log('Cartdata=============SUB', cartData);
 
   useEffect(() => {
     setCartitem(cartData.length);
     if (cartData && cartData.length) {
       cartData.forEach(element => {
-        console.log('hey', element);
-        // if(element.itemname===)
+        // if(element.itemname===item)
       });
     }
   }, [cartData]);
+
+  // const [addwishlist, setAddwishlist] = useState(false);
+
+  // useEffect(() => {
+  //   if (wishlistData && wishlistData.length) {
+  //     wishlistData.forEach(element => {
+  //       // console.log('element', element);
+  //       if (element.itemname === wishlistData.itemname) {
+  //         // console.log('hey');
+  //         setAddwishlist(true);
+  //       }
+  //     });
+  //   }
+  // }, [wishlistData]);
 
   const SRTDATA = [
     {
@@ -107,27 +127,29 @@ export default function SubCategories({navigation, route}) {
   ];
 
   const _Handle_AddToCart = item => {
-    IsuseDispatch(addToCart(item));
+    dispatch(addToCart(item));
   };
 
   const handleAddToWishlist = item => {
-    IsuseDispatch(addWishlistItem(item));
+    dispatch(addToWishlist(item));
+    SimpleToast({title: 'Item Save To Wishlist', isLong: true});
   };
 
   const handleRemoveFromWishlist = itemId => {
-    IsuseDispatch(removeItem(itemId));
+    dispatch(removeFromWishlist(itemId));
+    SimpleToast({title: 'Item Remove To Wishlist', isLong: true});
   };
 
   useEffect(() => {
     setTimeout(() => {
       setIsloading(true);
-    }, 3000);
+    }, 1000);
   }, []);
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <StatusBar
-        barStyle={COLORS.BLACK}
+        // barStyle="dark-content"
         hidden={false}
         backgroundColor={COLORS.GREEN}
         translucent={true}
@@ -173,7 +195,8 @@ export default function SubCategories({navigation, route}) {
                 <Productinfo
                   // addtocartonPress={}
                   key={index}
-                  heartonPress={() => handleAddToWishlist(value.id)}
+                  heartonPress={() => handleAddToWishlist(value)}
+                  // heartonPress={() => handleWishlistToggle(value)}
                   IconColor={
                     heart !== value.id ? COLORS.GRAYDARK : COLORS.BROWN
                   }
@@ -188,8 +211,8 @@ export default function SubCategories({navigation, route}) {
                   ProductPrice={'Rs.190'}
                   UIBotton={
                     <View>
-                      {cartData?.length !== 0 ? (
-                        <View style={Styles.INCREAMENTBOTTONMAIN}>
+                      {/* {cartData?.length !== 0 ? ( */}
+                      {/* <View style={Styles.INCREAMENTBOTTONMAIN}>
                           <TouchableOpacity>
                             <Text style={Styles.DCREAMENTTITLE}>-</Text>
                           </TouchableOpacity>
@@ -197,15 +220,15 @@ export default function SubCategories({navigation, route}) {
                           <TouchableOpacity>
                             <Text style={Styles.INCREAMENTTITLE}>+</Text>
                           </TouchableOpacity>
-                        </View>
-                      ) : (
-                        <TouchableOpacity
-                          onPress={() => _Handle_AddToCart(value)}
-                          activeOpacity={0.5}
-                          style={Styles.ADDBOTTONSTYL}>
-                          <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
-                        </TouchableOpacity>
-                      )}
+                        </View> */}
+                      {/* ) : ( */}
+                      <TouchableOpacity
+                        onPress={() => _Handle_AddToCart(value)}
+                        activeOpacity={0.5}
+                        style={Styles.ADDBOTTONSTYL}>
+                        <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                      </TouchableOpacity>
+                      {/* )} */}
                     </View>
                   }
                 />
@@ -215,7 +238,7 @@ export default function SubCategories({navigation, route}) {
 
           {cartData?.length !== 0 && (
             <AddTocart
-              onPress={() => navigation.navigate('CartStack')}
+              onPress={() => navigation.navigate('Cart')}
               Image={bannerIcon}
               ItemTotalofnum={`item ${cartitem}`}
               PriceTotalofnum={'Rs.10'}

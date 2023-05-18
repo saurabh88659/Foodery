@@ -1,10 +1,18 @@
-import {View, Text} from 'react-native';
-import React from 'react';
+import * as React from 'react';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import WishlistScreen from '../Screens/WishlistScreen';
 
-export default function WishlistStack() {
+const Stack = createNativeStackNavigator();
+function WishlistStack() {
   return (
-    <View>
-      <Text>WishlistStack</Text>
-    </View>
+    <Stack.Navigator>
+      <Stack.Screen
+        name="WishlistScreen"
+        component={WishlistScreen}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
   );
 }
+
+export default WishlistStack;

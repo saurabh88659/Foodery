@@ -6,6 +6,10 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Octicons from 'react-native-vector-icons/Octicons';
+
+// import Toast from 'react-native-toast-message';
 
 import Toast from 'react-native-simple-toast';
 
@@ -22,6 +26,15 @@ const shoppingcartIcon = require('../Assets/Logo/shoppingcartIcon.png');
 const Floatingicon = require('../Assets/Logo/Floatingicon.png');
 const Footerbanner1 = require('../Assets/Logo/Footerbanner1.jpg');
 const generousvegetablicon = require('../Assets/Logo/generousvegetablicon.png');
+const OrderHistoryicon = require('../Assets/Logo/OrderHistoryicon.jpg');
+const Wishlisticon = require('../Assets/Logo/Wishlisticon.jpg');
+const carticon = require('../Assets/Logo/carticon.jpg');
+const notificationIcon = require('../Assets/Logo/notificationIcon.jpg');
+const UpcomminIcon = require('../Assets/Logo/UpcomminIcon.jpg');
+const RateIconreview = require('../Assets/Logo/RateIconreview.jpg');
+const LogoutIcon = require('../Assets/Logo/LogoutIcon.jpg');
+const TermsCondition = require('../Assets/Logo/TermsCondition.jpg');
+const PrivacyPolicyIcon = require('../Assets/Logo/PrivacyPolicy.jpg');
 
 // DESCRIBING REACT NATIVE VECTOR ICONS FOR FUTURE USE
 
@@ -79,8 +92,25 @@ const MaterialIconsIcon = ({title, size, IconColor, IconStyle}) => (
   />
 );
 
+const MaterialCommunityIconsTwo = ({title, size, IconColor, IconStyle}) => (
+  <MaterialCommunityIcons
+    name={title}
+    size={size}
+    color={IconColor}
+    style={IconStyle || {}}
+  />
+);
+
 const SimpleLineIconsIcon = ({title, size, IconColor, IconStyle}) => (
   <SimpleLineIcons
+    name={title}
+    size={size}
+    color={IconColor}
+    style={IconStyle || {}}
+  />
+);
+const OcticonsIcon = ({title, size, IconColor, IconStyle}) => (
+  <Octicons
     name={title}
     size={size}
     color={IconColor}
@@ -93,6 +123,10 @@ const SimpleLineIconsIcon = ({title, size, IconColor, IconStyle}) => (
 const SimpleToast = ({title, isLong}) => {
   isLong ? Toast.show(title, Toast.LONG) : Toast.show(title, Toast.SHORT);
 };
+
+// const ShowToastMeassge =({title, isLong})=>{
+
+// }
 
 export {
   userIconHome,
@@ -114,4 +148,16 @@ export {
   EntypoIcon,
   Footerbanner1,
   generousvegetablicon,
+  SimpleToast,
+  OrderHistoryicon,
+  Wishlisticon,
+  carticon,
+  notificationIcon,
+  UpcomminIcon,
+  RateIconreview,
+  LogoutIcon,
+  TermsCondition,
+  PrivacyPolicyIcon,
+  MaterialCommunityIconsTwo,
+  OcticonsIcon,
 };

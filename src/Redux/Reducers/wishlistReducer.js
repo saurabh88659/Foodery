@@ -1,5 +1,4 @@
-// reducer.js
-import {ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST} from './actionTypes';
+import {ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST} from '../constants';
 
 const initialState = {
   wishlistItems: [],
@@ -16,7 +15,7 @@ const wishlistReducer = (state = initialState, action) => {
       return {
         ...state,
         wishlistItems: state.wishlistItems.filter(
-          itemId => itemId !== action.payload,
+          item => item.id !== action.payload,
         ),
       };
     default:

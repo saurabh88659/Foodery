@@ -11,15 +11,27 @@ export default function Productinfo(props) {
 
   return (
     <View key={props.index} style={Styles.CONTAINERBOX}>
-      <TouchableOpacity
-        onPress={props.heartonPress}
-        style={Styles.CONTAINERHEART}>
-        <FontAwesomeIcon
-          title={props.FontAwesomeIcontitle}
-          size={20}
-          IconColor={props.IconColor}
-        />
-      </TouchableOpacity>
+      <View>
+        <TouchableOpacity
+          onPress={props.heartonPress}
+          style={[Styles.CONTAINERHEART]}>
+          <FontAwesomeIcon
+            title={props.FontAwesomeIcontitle}
+            size={20}
+            IconColor={props.IconColor}
+          />
+        </TouchableOpacity>
+        {/* <TouchableOpacity
+          onPress={props.heartonPress}
+          style={[Styles.CONTAINERHEART, {backgroundColor: 'red'}]}>
+          <FontAwesomeIcon
+            title={props.FontAwesomeIcontitle}
+            size={20}
+            IconColor={props.IconColor}
+          />
+        </TouchableOpacity> */}
+      </View>
+
       <TouchableOpacity onPress={props.onPress}>
         <View style={{alignItems: 'center'}}>
           <Image source={props.Productimage} style={Styles.imagestyle} />

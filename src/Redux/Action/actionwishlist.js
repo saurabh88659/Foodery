@@ -1,14 +1,10 @@
-// actionTypes.js
-export const ADD_TO_WISHLIST = 'ADD_TO_WISHLIST';
-export const REMOVE_FROM_WISHLIST = 'REMOVE_FROM_WISHLIST';
+import {ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST} from '../constants';
 
-// actions.js
-import {ADD_TO_WISHLIST, REMOVE_FROM_WISHLIST} from './actionTypes';
-
-export const addToWishlist = itemId => {
+export const addToWishlist = item => {
+  //   console.log('hey action', item);
   return {
     type: ADD_TO_WISHLIST,
-    payload: itemId,
+    payload: item,
   };
 };
 

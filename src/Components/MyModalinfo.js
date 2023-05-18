@@ -7,15 +7,14 @@ import {EntypoIcon, IonIcon} from '../utils/Const';
 import Lottie from 'lottie-react-native';
 
 export default function MyModalinfo({
-  STYLES,
   isModal,
   backPress,
   _GoBack,
   type,
   _Visible,
   _SubonPress,
-  navigation,
-  props,
+  _YES,
+  _NO,
 }) {
   const UI = data => {
     switch (data) {
@@ -227,6 +226,75 @@ export default function MyModalinfo({
               }}>
               <EntypoIcon title="cross" size={25} IconColor={COLORS.WHITE} />
             </TouchableOpacity>
+          </View>
+        );
+
+      case 'log-out':
+        return (
+          <View
+            style={{
+              backgroundColor: COLORS.WHITE,
+              paddingVertical: 30,
+              borderRadius: 10,
+            }}>
+            <Text
+              style={{
+                color: COLORS.BLACK,
+                alignSelf: 'center',
+                fontSize: fontPixel(18),
+                fontWeight: '500',
+              }}>
+              Are You sure you want to logout?
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-evenly',
+                paddingVertical: '5%',
+                top: '5%',
+              }}>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={_YES}
+                style={{
+                  paddingVertical: 9,
+                  backgroundColor: COLORS.GREEN,
+                  width: widthPixel(100),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                }}>
+                <Text
+                  style={{
+                    color: COLORS.WHITE,
+                    fontSize: fontPixel(18),
+                    fontWeight: '500',
+                  }}>
+                  Yes
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={_NO}
+                activeOpacity={0.6}
+                style={{
+                  paddingVertical: 9,
+                  borderWidth: 1,
+                  borderColor: COLORS.GREEN,
+                  width: widthPixel(100),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                }}>
+                <Text
+                  style={{
+                    color: COLORS.GREEN,
+                    fontSize: fontPixel(18),
+                    fontWeight: '500',
+                  }}>
+                  NO
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         );
 

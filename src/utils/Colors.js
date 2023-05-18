@@ -18,6 +18,7 @@ export const COLORS = {
   DarkGreen2: '#11998E',
   LightPurple: '#AD5389',
   DarkPurple: '#3C1053',
+  LIGHT_WHITE: '#f4f7fa',
 };
 
 export const fontFamily = {

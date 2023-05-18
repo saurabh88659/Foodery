@@ -9,11 +9,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import React, {useState} from 'react';
-import MyHeader from '../Components/MyHeader';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import {FontAwesome5Icon} from '../utils/Const';
 import Button from '../Components/Button';
+import MyHeaderNo2 from '../Components/MyHeaderNo2';
 
 export default function ProfileScreen({navigation}) {
   // const [text, setText] = useState('');
@@ -24,7 +24,7 @@ export default function ProfileScreen({navigation}) {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <SafeAreaView style={Styles.CONTAINERMAIN}>
-        <MyHeader title={'Profile'} onPress={() => navigation.goBack()} />
+        <MyHeaderNo2 title={'Profile'} onPress={() => navigation.goBack()} />
         <ScrollView
           showsVerticalScrollIndicator={false}
           // scrollEventThrottle={16}

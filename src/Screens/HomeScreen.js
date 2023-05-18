@@ -215,6 +215,7 @@ export default function HomeScreen({navigation}) {
         {/* {isLoading?null: <HomeShimmerPlaceHolder />} */}
         <Animated.View style={[Styles.header, {transform: [{translateY}]}]}>
           <Header
+            titleonPress={() => navigation.navigate('AddressScreen')}
             onPress={() => navigation.navigate('ProfileScreen')}
             {...{headerHeight}}
           />

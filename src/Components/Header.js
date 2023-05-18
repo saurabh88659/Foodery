@@ -19,7 +19,7 @@ const Header = props => {
   return (
     <SafeAreaView style={{backgroundColor: COLORS.GREEN}}>
       <View style={Styles.HeadersSty}>
-        <TouchableOpacity style={{paddingTop: 15}}>
+        <TouchableOpacity onPress={props.titleonPress} style={{paddingTop: 15}}>
           <Text
             numberOfLines={1}
             style={{
