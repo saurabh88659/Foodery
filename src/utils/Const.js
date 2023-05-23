@@ -8,10 +8,12 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
-
-// import Toast from 'react-native-toast-message';
-
 import Toast from 'react-native-simple-toast';
+// import Toast from 'react-native-toast-message';
+import {MMKV} from 'react-native-mmkv';
+import {Dimensions} from 'react-native';
+
+const {height, width} = Dimensions.get('window');
 
 // DESCRIBING SOME STATIC IMAGE
 
@@ -35,6 +37,18 @@ const RateIconreview = require('../Assets/Logo/RateIconreview.jpg');
 const LogoutIcon = require('../Assets/Logo/LogoutIcon.jpg');
 const TermsCondition = require('../Assets/Logo/TermsCondition.jpg');
 const PrivacyPolicyIcon = require('../Assets/Logo/PrivacyPolicy.jpg');
+
+const BASE_URL = 'http://192.168.68.111:8000/api'; //  Server URL  Localhost
+
+// AIzaSyChkQstsYAs6SgA0d4UIIBnhXfK_wf0iV4?
+const MAP_API_KEY = 'AIzaSyChkQstsYAs6SgA0d4UIIBnhXfK_wf0iV4'; // Map key here
+const storage = new MMKV();
+
+// 👇👇👇 DATA for mapView 👇👇👇
+
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0922;
+const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 // DESCRIBING REACT NATIVE VECTOR ICONS FOR FUTURE USE
 
@@ -160,4 +174,9 @@ export {
   PrivacyPolicyIcon,
   MaterialCommunityIconsTwo,
   OcticonsIcon,
+  BASE_URL,
+  storage,
+  LONGITUDE_DELTA,
+  LATITUDE_DELTA,
+  MAP_API_KEY,
 };

@@ -6,28 +6,34 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {createaccountTOPImage} from '../utils/Const';
 import {COLORS} from '../utils/Colors';
 import {heightPixel, widthPixel} from '../Components/Dimensions';
 import Button from '../Components/Button';
+import {requestUserPermission} from '../utils/Handler/FirebaseMessagingNoti';
+import Routes from '../Navigation/Routes';
 
 export default function CreateAccount({navigation}) {
+  useEffect(() => {
+    requestUserPermission();
+  }, []);
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <View style={Styles.CONTAINERIMAGEMAIN}>
         <Image source={createaccountTOPImage} style={Styles.IMAGESTYL} />
       </View>
-      <View style={{marginVertical: '35%'}}>
+      <View style={{justifyContent: 'flex-end', flex: 1}}>
         <View style={{marginVertical: '5%'}}>
           <Button
             title={'Login'}
-            onPress={() => navigation.navigate('Login')}
+            onPress={() => navigation.navigate(Routes.LOG_IN)}
           />
           <View style={{marginVertical: '5%'}}>
             <TouchableOpacity
               onPress={() => {
-                // navigation.navigate('SignUpscreen');
+                // navigation.navigate(Routes.SIGN_UP_SCREEN);
                 navigation.navigate('BottomTabBar');
               }}
               activeOpacity={0.6}

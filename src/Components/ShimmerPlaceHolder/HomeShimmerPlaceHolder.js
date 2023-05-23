@@ -3,6 +3,7 @@ import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import {createShimmerPlaceholder} from 'react-native-shimmer-placeholder';
 import {heightPixel, widthPixel} from '../Dimensions';
+import {COLORS} from '../../utils/Colors';
 
 const ShimmerPlaceHolder = createShimmerPlaceholder(LinearGradient);
 
@@ -10,6 +11,7 @@ export default function HomeShimmerPlaceHolder() {
   return (
     <View>
       <ShimmerPlaceHolder
+        shimmerColors={[COLORS.LightGreen2, COLORS.LightGreen2, COLORS.GREEN]}
         style={{height: heightPixel(150), width: widthPixel(450)}}
       />
       <View
@@ -36,11 +38,12 @@ export default function HomeShimmerPlaceHolder() {
         }}>
         {[1, 2, 3, 4].map((item, index) => (
           <ShimmerPlaceHolder
+            shimmerColors={['#f4f7fa', '#f4f7fa', '#B6B7B7']}
             key={index}
             style={{
               height: heightPixel(80),
               width: widthPixel(80),
-              borderRadius: 50,
+              borderRadius: 100,
             }}
           />
         ))}
@@ -56,6 +59,8 @@ export default function HomeShimmerPlaceHolder() {
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         {[1, 2, 3, 4].map((item, index) => (
           <ShimmerPlaceHolder
+            key={index}
+            shimmerColors={['#38EF7D', '#BEF1C9', '#F2F2F2']}
             style={{
               height: heightPixel(160),
               width: widthPixel(120),
@@ -67,6 +72,7 @@ export default function HomeShimmerPlaceHolder() {
         ))}
       </View>
       <ShimmerPlaceHolder
+        shimmerColors={['#f4f7fa', '#f4f7fa', '#B6B7B7']}
         style={{
           height: heightPixel(130),
           width: widthPixel(400),
@@ -78,6 +84,8 @@ export default function HomeShimmerPlaceHolder() {
       <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
         {[1, 2, 3, 4].map((item, index) => (
           <ShimmerPlaceHolder
+            key={index}
+            shimmerColors={['#38EF7D', '#BEF1C9', '#F2F2F2']}
             style={{
               height: heightPixel(160),
               width: widthPixel(120),

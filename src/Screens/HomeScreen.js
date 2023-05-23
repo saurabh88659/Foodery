@@ -11,9 +11,10 @@ import {
   ScrollView,
   FlatList,
   StyleSheet,
-  ImageBackground,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
+  BackHandler,
 } from 'react-native';
 import Header from '../Components/Header';
 // import {getCloser} from '../Components/utils';
@@ -30,10 +31,12 @@ import {
   bannerIcon,
   Footerbanner1,
   generousvegetablicon,
+  SimpleToast,
 } from '../utils/Const';
 import Collapsible from 'react-native-collapsible';
 import MyModalinfo from '../Components/MyModalinfo';
 import HomeShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/HomeShimmerPlaceHolder';
+import Routes from '../Navigation/Routes';
 
 const {diffClamp} = Animated;
 const headerHeight = 58 * 2;
@@ -51,7 +54,7 @@ export default function HomeScreen({navigation}) {
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(true);
-    }, 2000);
+    }, 1000);
   }, []);
 
   const toggleExpanded = () => {
@@ -202,168 +205,227 @@ export default function HomeScreen({navigation}) {
     setModalVisible(!modalVisible);
   };
 
+  const [scrollXoNe] = useState(new Animated.Value(0));
+
+  const handleScrollOne = Animated.event(
+    [{nativeEvent: {contentOffset: {x: scrollXoNe}}}],
+    {useNativeDriver: false},
+  );
+
+  const imageOpacityOne = scrollXoNe.interpolate({
+    inputRange: [0, 100], // Adjust the input range as needed
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
+  const [scrollX] = useState(new Animated.Value(0));
+  const handleScrollTow = Animated.event(
+    [{nativeEvent: {contentOffset: {x: scrollX}}}],
+    {useNativeDriver: false},
+  );
+
+  const imageOpacity = scrollX.interpolate({
+    inputRange: [0, 100], // Adjust the input range as needed
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+
+  //  < ===================BackHandler Function =======================>
+
+  let backButtonPressedOnce = false;
+
+  // useEffect(() => {
+  //   const handleBackButton = () => {
+  //     SimpleToast({title: 'Press back again to exit'});
+  //     // Exit the app only if the back button is pressed twice in quick succession
+  //     if (backButtonPressedOnce) {
+  //       BackHandler.exitApp();
+  //     } else {
+  //       backButtonPressedOnce = true;
+  //       setTimeout(() => {
+  //         backButtonPressedOnce = false;
+  //       }, 2000); // Timeout duration to allow pressing back twice within 2 seconds
+  //     }
+  //     return true;
+  //   };
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     handleBackButton,
+  //   );
+
+  //   return () => {
+  //     backHandler.remove();
+  //   };
+  // }, []);
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <SafeAreaView style={Styles.container}>
-        <StatusBar
-          barStyle={COLORS.WHITE}
-          hidden={false}
-          backgroundColor={COLORS.GREEN}
-          translucent={true}
-        />
-
-        {/* {isLoading?null: <HomeShimmerPlaceHolder />} */}
-        <Animated.View style={[Styles.header, {transform: [{translateY}]}]}>
-          <Header
-            titleonPress={() => navigation.navigate('AddressScreen')}
-            onPress={() => navigation.navigate('ProfileScreen')}
-            {...{headerHeight}}
+      {isLoading ? (
+        <SafeAreaView style={Styles.container}>
+          <StatusBar
+            barStyle={COLORS.WHITE}
+            hidden={false}
+            backgroundColor={COLORS.GREEN}
+            translucent={true}
           />
-        </Animated.View>
-        <Animated.ScrollView
-          showsVerticalScrollIndicator={false}
-          scrollEventThrottle={16}
-          // onMomentumScrollEnd={handleSnap}
-          ref={ref}
-          contentContainerStyle={Styles.AnimatedContainer}
-          onScroll={handleScroll}>
-          <View style={Styles.CONTAINERBOX2}>
-            <View style={Styles.SubTitleheader}>
-              <Text style={Styles.titlemain}>All Categories</Text>
-              <TouchableOpacity
-                onPress={toggleExpanded}
-                activeOpacity={0.6}
-                style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={Styles.titleview}>View all</Text>
-                <MaterialIconsIcon
-                  title={
-                    collapsed ? 'keyboard-arrow-right' : 'keyboard-arrow-down'
-                  }
-                  size={22}
-                  IconColor={COLORS.GRAYDARK}
-                />
-              </TouchableOpacity>
-            </View>
 
-            <View>
-              <FlatList
-                keyExtractor={(item, index) => index.toString()}
-                showsHorizontalScrollIndicator={false}
-                // contentContainerStyle={{paddingBottom: 5}}
-                horizontal
-                data={SRTDATANEW}
-                renderItem={({item, index}) => (
-                  <View style={Styles.CATALLMAINSTYLS}>
-                    <View style={Styles.CATBOXMAINSTYLS}>
-                      <IonIcon
-                        title="ios-home-sharp"
-                        size={25}
-                        IconColor={COLORS.GREEN}
-                      />
+          <Animated.View style={[Styles.header, {transform: [{translateY}]}]}>
+            <Header
+              titleonPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+              onPress={() => navigation.navigate('ProfileScreen')}
+              {...{headerHeight}}
+            />
+          </Animated.View>
+          <Animated.ScrollView
+            showsVerticalScrollIndicator={false}
+            scrollEventThrottle={16}
+            // onMomentumScrollEnd={handleSnap}
+            ref={ref}
+            contentContainerStyle={Styles.AnimatedContainer}
+            onScroll={handleScroll}>
+            <View style={Styles.CONTAINERBOX2}>
+              <View style={Styles.SubTitleheader}>
+                <Text style={Styles.titlemain}>All Categories</Text>
+                <TouchableOpacity
+                  onPress={toggleExpanded}
+                  activeOpacity={0.6}
+                  style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={Styles.titleview}>View all</Text>
+                  <MaterialIconsIcon
+                    title={
+                      collapsed ? 'keyboard-arrow-right' : 'keyboard-arrow-down'
+                    }
+                    size={22}
+                    IconColor={COLORS.GRAYDARK}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              <View>
+                <FlatList
+                  keyExtractor={(item, index) => index.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  // contentContainerStyle={{paddingBottom: 5}}
+                  horizontal
+                  data={SRTDATANEW}
+                  renderItem={({item, index}) => (
+                    <View style={Styles.CATALLMAINSTYLS}>
+                      <View style={Styles.CATBOXMAINSTYLS}>
+                        <IonIcon
+                          title="ios-home-sharp"
+                          size={25}
+                          IconColor={COLORS.GREEN}
+                        />
+                      </View>
+                      <Text numberOfLines={2} style={Styles.CATTITLESTYLS}>
+                        {item.Name}
+                      </Text>
                     </View>
-                    <Text numberOfLines={2} style={Styles.CATTITLESTYLS}>
-                      {item.Name}
-                    </Text>
-                  </View>
-                )}
+                  )}
+                />
+              </View>
+              <View style={Styles.EXPLOREMAINCONTAINER}>
+                {SRTDATANEWOKAY.map((value, index) => (
+                  <Collapsible collapsed={collapsed} key={index}>
+                    <View style={Styles.EXPLOREBOX}>
+                      <View style={Styles.EXPLOREICON}>
+                        <IonIcon
+                          title="ios-home-sharp"
+                          size={25}
+                          IconColor={COLORS.GREEN}
+                        />
+                      </View>
+                      <Text numberOfLines={2} style={Styles.EXPLORETITLESUB}>
+                        {value.Name}
+                      </Text>
+                    </View>
+                  </Collapsible>
+                ))}
+              </View>
+            </View>
+            <TouchableOpacity
+              onPress={toggleExpanded}
+              activeOpacity={0.6}
+              style={Styles.TOGGLEEXPOSTYLS}>
+              <SimpleLineIconsIcon
+                title={collapsed ? 'arrow-down' : 'arrow-up'}
+                size={22}
+                IconColor={COLORS.GRAYDARK}
+              />
+            </TouchableOpacity>
+            <View style={{marginHorizontal: 15}}>
+              <Text style={Styles.EXPLORENEWTITLE}>Explore New Categories</Text>
+            </View>
+            <FlatList
+              keyExtractor={(item, index) => index.toString()}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{paddingBottom: 5}}
+              horizontal
+              data={SRTDATANEWOKAYEXPOl}
+              renderItem={({item, index}) => (
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('SubCategories', item.Name)
+                  }
+                  activeOpacity={0.7}
+                  key={index}
+                  style={[Styles.CONTAINERBOX, {backgroundColor: item.color}]}>
+                  <Image
+                    source={require('../Assets/Logo/expoloricon.png')}
+                    style={Styles.EXPLOREIMAGESTYL}
+                  />
+                  <Text style={Styles.EXPLORESUBTITLE}>{item.Name}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <View style={{alignItems: 'center', marginTop: 20}}>
+              <Image
+                source={require('../Assets/Logo/baneer22.png')}
+                style={Styles.BANNERSTYLES}
               />
             </View>
-            <View style={Styles.EXPLOREMAINCONTAINER}>
-              {SRTDATANEWOKAY.map((value, index) => (
-                <Collapsible collapsed={collapsed} key={index}>
-                  <View style={Styles.EXPLOREBOX}>
-                    <View style={Styles.EXPLOREICON}>
-                      <IonIcon
-                        title="ios-home-sharp"
-                        size={25}
-                        IconColor={COLORS.GREEN}
-                      />
-                    </View>
-                    <Text numberOfLines={2} style={Styles.EXPLORETITLESUB}>
-                      {value.Name}
-                    </Text>
-                  </View>
-                </Collapsible>
-              ))}
+            <View style={{marginHorizontal: 10}}>
+              <View style={Styles.SubTitleheader}>
+                <Text style={Styles.titlemain}>Order Again</Text>
+                <TouchableOpacity
+                  // onPress={toggleExpanded}
+                  activeOpacity={0.6}
+                  style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={Styles.titleview}>View all</Text>
+                  <MaterialIconsIcon
+                    title={'keyboard-arrow-right'}
+                    size={22}
+                    IconColor={COLORS.GRAYDARK}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          <TouchableOpacity
-            onPress={toggleExpanded}
-            activeOpacity={0.6}
-            style={Styles.TOGGLEEXPOSTYLS}>
-            <SimpleLineIconsIcon
-              title={collapsed ? 'arrow-down' : 'arrow-up'}
-              size={22}
-              IconColor={COLORS.GRAYDARK}
-            />
-          </TouchableOpacity>
-          <View style={{marginHorizontal: 15}}>
-            <Text style={Styles.EXPLORENEWTITLE}>Explore New Categories</Text>
-          </View>
-          <FlatList
-            keyExtractor={(item, index) => index.toString()}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 5}}
-            horizontal
-            data={SRTDATANEWOKAYEXPOl}
-            renderItem={({item, index}) => (
-              <TouchableOpacity
-                onPress={() => navigation.navigate('SubCategories', item.Name)}
-                activeOpacity={0.7}
-                key={index}
-                style={[Styles.CONTAINERBOX, {backgroundColor: item.color}]}>
-                <Image
-                  source={require('../Assets/Logo/expoloricon.png')}
-                  style={Styles.EXPLOREIMAGESTYL}
-                />
-                <Text style={Styles.EXPLORESUBTITLE}>{item.Name}</Text>
-              </TouchableOpacity>
-            )}
-          />
-          <View style={{alignItems: 'center', marginTop: 20}}>
-            <Image
-              source={require('../Assets/Logo/baneer22.png')}
-              style={Styles.BANNERSTYLES}
-            />
-          </View>
-          <View style={{marginHorizontal: 10}}>
-            <View style={Styles.SubTitleheader}>
-              <Text style={Styles.titlemain}>Order Again</Text>
-              <TouchableOpacity
-                // onPress={toggleExpanded}
-                activeOpacity={0.6}
-                style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={Styles.titleview}>View all</Text>
-                <MaterialIconsIcon
-                  title={'keyboard-arrow-right'}
-                  size={22}
-                  IconColor={COLORS.GRAYDARK}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <FlatList
-            keyExtractor={(item, index) => index.toString()}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 5}}
-            horizontal
-            data={Orderagain}
-            renderItem={({item, index}) => (
-              <View key={index}>
-                <Productinfo
-                  key={index}
-                  heartonPress={() => setHeart(item.id)}
-                  IconColor={heart !== item.id ? COLORS.GRAYDARK : COLORS.BROWN}
-                  FontAwesomeIcontitle={heart !== item.id ? 'heart-o' : 'heart'}
-                  Productimage={require('../Assets/Logo/mangoicon.png')}
-                  ProductName={'Mango Alphonso'}
-                  ProductSubName={'6 Pcs (Approx 1.2Kg - 1.4Kg)'}
-                  discountPrice={'Rs.80'}
-                  ProductPrice={'Rs.70'}
-                  UIBotton={
-                    <View>
-                      {/* {cartData?.length !== 0 ? ( */}
-                      {/* <View style={Styles.INCREAMENTBOTTONMAIN}>
+            <FlatList
+              keyExtractor={(item, index) => index.toString()}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{paddingBottom: 5}}
+              horizontal
+              data={Orderagain}
+              renderItem={({item, index}) => (
+                <View key={index}>
+                  <Productinfo
+                    key={index}
+                    heartonPress={() => setHeart(item.id)}
+                    IconColor={
+                      heart !== item.id ? COLORS.GRAYDARK : COLORS.BROWN
+                    }
+                    FontAwesomeIcontitle={
+                      heart !== item.id ? 'heart-o' : 'heart'
+                    }
+                    Productimage={require('../Assets/Logo/mangoicon.png')}
+                    ProductName={'Mango Alphonso'}
+                    ProductSubName={'6 Pcs (Approx 1.2Kg - 1.4Kg)'}
+                    discountPrice={'Rs.80'}
+                    ProductPrice={'Rs.70'}
+                    UIBotton={
+                      <View>
+                        {/* {cartData?.length !== 0 ? ( */}
+                        {/* <View style={Styles.INCREAMENTBOTTONMAIN}>
                         <TouchableOpacity>
                           <Text style={Styles.DCREAMENTTITLE}>-</Text>
                         </TouchableOpacity>
@@ -372,134 +434,165 @@ export default function HomeScreen({navigation}) {
                           <Text style={Styles.INCREAMENTTITLE}>+</Text>
                         </TouchableOpacity>
                       </View> */}
-                      {/* ) : ( */}
-                      <TouchableOpacity
-                        // onPress={() => _Handle_AddToCart(value)}
-                        activeOpacity={0.5}
-                        style={Styles.ADDBOTTONSTYL}>
-                        <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
-                      </TouchableOpacity>
-                      {/* )} */}
-                    </View>
-                  }
-                />
-              </View>
-            )}
-          />
-          <View style={{alignItems: 'center', marginTop: 20}}>
-            <Image
-              source={require('../Assets/Logo/baneer22.png')}
-              style={Styles.BANNERSTYLES}
+                        {/* ) : ( */}
+                        <TouchableOpacity
+                          // onPress={() => _Handle_AddToCart(value)}
+                          activeOpacity={0.5}
+                          style={Styles.ADDBOTTONSTYL}>
+                          <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                        </TouchableOpacity>
+                        {/* )} */}
+                      </View>
+                    }
+                  />
+                </View>
+              )}
             />
-          </View>
-
-          <View style={{marginHorizontal: 10}}>
-            <View style={Styles.SubTitleheader}>
-              <Text style={Styles.titlemain}>Buy 'Em Now</Text>
-              <TouchableOpacity
-                // onPress={toggleExpanded}
-                activeOpacity={0.6}
-                style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={Styles.titleview}>View all</Text>
-                <MaterialIconsIcon
-                  title={'keyboard-arrow-right'}
-                  size={22}
-                  IconColor={COLORS.GRAYDARK}
-                />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={{marginTop: 10}}>
-            <LinearGradient
-              start={{x: 0, y: 3}}
-              end={{x: 1, y: 0}}
-              colors={['#38EF7D', '#38EF7D', '#11998E']}
-              style={Styles.linearGradient}>
-              <View style={{position: 'absolute'}}>
-                <Text style={Styles.buttonText}>Freshness{`\n`}Guranteed</Text>
-                <Image
-                  source={generousvegetablicon}
-                  style={Styles.IMAGESTYLESBANNER}
-                />
-              </View>
-              <FlatList
-                keyExtractor={(item, index) => index.toString()}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{paddingLeft: '35%'}}
-                horizontal
-                data={Orderagain}
-                renderItem={({item, index}) => (
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('FruitsVegetables')}
-                    activeOpacity={0.8}
-                    key={index}
-                    style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
-                )}
+            <View style={{alignItems: 'center', marginTop: 20}}>
+              <Image
+                source={require('../Assets/Logo/baneer22.png')}
+                style={Styles.BANNERSTYLES}
               />
-            </LinearGradient>
-          </View>
-          <View style={{marginHorizontal: 10}}>
-            <View style={Styles.SubTitleheader}>
-              <Text style={Styles.titlemain}>Nuts & Dry Fruits For You</Text>
-              <TouchableOpacity
-                // onPress={toggleExpanded}
-                activeOpacity={0.6}
-                style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text style={Styles.titleview}>View all</Text>
-                <MaterialIconsIcon
-                  title={'keyboard-arrow-right'}
-                  size={22}
-                  IconColor={COLORS.GRAYDARK}
-                />
-              </TouchableOpacity>
             </View>
-          </View>
-          <View style={{marginTop: 10}}>
-            <LinearGradient
-              start={{x: 0, y: 3}}
-              end={{x: 1, y: 0}}
-              colors={['#AD5389', '#AD5389', '#3C1053']}
-              style={Styles.linearGradient}>
-              <View style={{position: 'absolute'}}>
-                <Text style={Styles.buttonText}>
-                  Nuts & Dry Fruits{`\n`}For You
-                </Text>
-                <Image
-                  source={generousvegetablicon}
-                  style={Styles.IMAGESTYLESBANNER}
-                />
-              </View>
-              <FlatList
-                keyExtractor={(item, index) => index.toString()}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{paddingLeft: '35%'}}
-                horizontal
-                data={Orderagain}
-                renderItem={({item, index}) => (
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('FruitsVegetables')}
-                    activeOpacity={0.8}
-                    key={index}
-                    style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
-                )}
-              />
-            </LinearGradient>
-          </View>
-        </Animated.ScrollView>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={clickHandler}
-          style={Styles.touchableOpacityStyle}>
-          <Image source={Floatingicon} style={Styles.floatingButtonStyle} />
-        </TouchableOpacity>
 
-        <MyModalinfo
-          type={'floating-Button'}
-          _SubonPress={() => navigation.navigate('SubCategriesModal')}
-          isModal={modalVisible}
-          _Visible={() => setModalVisible(!modalVisible)}
-        />
-      </SafeAreaView>
+            <View style={{marginHorizontal: 10}}>
+              <View style={Styles.SubTitleheader}>
+                <Text style={Styles.titlemain}>Buy 'Em Now</Text>
+                <TouchableOpacity
+                  // onPress={toggleExpanded}
+                  onPress={() => navigation.navigate('FruitsVegetables')}
+                  activeOpacity={0.6}
+                  style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={Styles.titleview}>View all</Text>
+                  <MaterialIconsIcon
+                    title={'keyboard-arrow-right'}
+                    size={22}
+                    IconColor={COLORS.GRAYDARK}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={{marginTop: 10}}>
+              <LinearGradient
+                start={{x: 0, y: 3}}
+                end={{x: 1, y: 0}}
+                colors={['#38EF7D', '#38EF7D', '#11998E']}
+                style={Styles.linearGradient}>
+                <View style={{position: 'absolute'}}>
+                  <Animated.Text
+                    style={[
+                      Styles.buttonText,
+                      {
+                        // top: 0,
+                        // left: 0,
+                        opacity: imageOpacity,
+                      },
+                    ]}>
+                    Freshness{`\n`}Guranteed
+                  </Animated.Text>
+                  <Animated.Image
+                    source={generousvegetablicon}
+                    style={[
+                      Styles.IMAGESTYLESBANNER,
+                      {
+                        // top: 0,
+                        // left: 0,
+                        opacity: imageOpacity,
+                      },
+                    ]}
+                    resizeMode="cover"
+                  />
+                </View>
+                <FlatList
+                  onScroll={handleScrollTow}
+                  scrollEventThrottle={16}
+                  keyExtractor={(item, index) => index.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{paddingLeft: '35%'}}
+                  horizontal
+                  data={Orderagain}
+                  renderItem={({item, index}) => (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('FruitsVegetables')}
+                      activeOpacity={0.8}
+                      key={index}
+                      style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
+                  )}
+                />
+              </LinearGradient>
+            </View>
+            <View style={{marginHorizontal: 10}}>
+              <View style={Styles.SubTitleheader}>
+                <Text style={Styles.titlemain}>Nuts & Dry Fruits For You</Text>
+                <TouchableOpacity
+                  // onPress={toggleExpanded}
+                  onPress={() => navigation.navigate('FruitsVegetables')}
+                  activeOpacity={0.6}
+                  style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={Styles.titleview}>View all</Text>
+                  <MaterialIconsIcon
+                    title={'keyboard-arrow-right'}
+                    size={22}
+                    IconColor={COLORS.GRAYDARK}
+                  />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={{marginTop: 10}}>
+              <LinearGradient
+                start={{x: 0, y: 3}}
+                end={{x: 1, y: 0}}
+                colors={['#AD5389', '#AD5389', '#3C1053']}
+                style={Styles.linearGradient}>
+                <View style={{position: 'absolute'}}>
+                  <Animated.Text
+                    style={[Styles.buttonText, {opacity: imageOpacityOne}]}>
+                    Nuts & Dry Fruits{`\n`}For You
+                  </Animated.Text>
+                  <Animated.Image
+                    source={generousvegetablicon}
+                    style={[
+                      Styles.IMAGESTYLESBANNER,
+                      {opacity: imageOpacityOne},
+                    ]}
+                  />
+                </View>
+                <FlatList
+                  onScroll={handleScrollOne}
+                  scrollEventThrottle={16}
+                  keyExtractor={(item, index) => index.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={{paddingLeft: '35%'}}
+                  horizontal
+                  data={Orderagain}
+                  renderItem={({item, index}) => (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate('FruitsVegetables')}
+                      activeOpacity={0.8}
+                      key={index}
+                      style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
+                  )}
+                />
+              </LinearGradient>
+            </View>
+          </Animated.ScrollView>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={clickHandler}
+            style={Styles.touchableOpacityStyle}>
+            <Image source={Floatingicon} style={Styles.floatingButtonStyle} />
+          </TouchableOpacity>
+
+          <MyModalinfo
+            type={'floating-Button'}
+            _SubonPress={() => navigation.navigate(Routes.SUB_CATEGRIES_MODAL)}
+            isModal={modalVisible}
+            _Visible={() => setModalVisible(!modalVisible)}
+          />
+        </SafeAreaView>
+      ) : (
+        <HomeShimmerPlaceHolder />
+      )}
     </TouchableWithoutFeedback>
   );
 }

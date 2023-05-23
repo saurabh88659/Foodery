@@ -21,6 +21,7 @@ import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import GlobelStyles from '../utils/GlobelStyles';
 import Button from '../Components/Button';
+import Routes from '../Navigation/Routes';
 
 export default function CartScreen({navigation}) {
   const [heart, setHeart] = useState(true);
@@ -79,7 +80,7 @@ export default function CartScreen({navigation}) {
             </Text>
           </View>
           <TouchableOpacity
-            onPress={() => navigation.navigate('AddressScreen')}
+            onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
             activeOpacity={0.6}
             style={{flexDirection: 'row', alignItems: 'center'}}>
             <MaterialIconsIcon
@@ -200,7 +201,7 @@ export default function CartScreen({navigation}) {
           <View style={[Styles.SUBBOX, {marginTop: 5}]}>
             <Text style={Styles.HANDLINGTITLE}>
               Handling Charges
-              <Text style={{color: COLORS.GREEN}}>(Rs.10 Saved)</Text>
+              <Text style={{color: COLORS.GREEN}}> (Rs.10 Saved)</Text>
             </Text>
             <View style={{flexDirection: 'row'}}>
               <Text style={Styles.DELIVERYTITLE}>Rs.15</Text>
@@ -265,7 +266,7 @@ export default function CartScreen({navigation}) {
                 <MaterialCommunityIconsTwo
                   title="bell-ring"
                   size={30}
-                  IconColor={COLORS.GRAYDARK}
+                  IconColor={COLORS.BLACK}
                   IconStyle={{}}
                 />
                 <View>
@@ -287,13 +288,14 @@ export default function CartScreen({navigation}) {
               borderColor: COLORS.GRAYDARK,
               elevation: 4,
               marginHorizontal: 15,
+              borderWidth: 0,
             },
           ]}>
           <View>
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Text style={Styles.DELTITLE}>Order For Someone else</Text>
-              <Text style={Styles.DELTITLE}>ADD</Text>
+              <Text style={[Styles.DELTITLE, {color: COLORS.GREEN}]}>ADD</Text>
             </View>
             <Text numberOfLines={3} style={Styles.FOOTERTITLE2}>
               Add a message to be sent as an SMS with your Gift
@@ -309,6 +311,7 @@ export default function CartScreen({navigation}) {
               borderColor: COLORS.GRAYDARK,
               elevation: 4,
               marginHorizontal: 15,
+              borderWidth: 0,
             },
           ]}>
           <View>
@@ -322,7 +325,7 @@ export default function CartScreen({navigation}) {
         <View style={{marginVertical: 15}}>
           <Button
             title={'Choose address at next step    ▶'}
-            onPress={() => navigation.navigate('AddressScreen')}
+            onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
           />
         </View>
       </ScrollView>
@@ -469,17 +472,17 @@ const Styles = StyleSheet.create({
     alignItems: 'flex-start',
     justifyContent: 'center',
     paddingHorizontal: 10,
-    backgroundColor: COLORS.LIGHT_WHITE,
+    // backgroundColor: COLORS.LIGHT_WHITE,
   },
   DELTITLE: {
     paddingLeft: widthPixel(10),
     fontSize: fontPixel(16),
-    color: COLORS.GRAYDARK,
+    color: COLORS.BLACK,
     fontWeight: '900',
   },
   DELSUBTITLE: {
     paddingLeft: widthPixel(10),
-    fontSize: fontPixel(12),
+    fontSize: fontPixel(15),
     width: widthPixel(220),
     color: COLORS.GRAYDARK,
   },

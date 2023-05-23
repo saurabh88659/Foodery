@@ -6,13 +6,15 @@ import SubCategories from '../Screens/SubCategories';
 import ProfileScreen from '../Screens/ProfileScreen';
 import AddressScreen from '../Screens/AddressScreen';
 import AddressScreenWithMap from '../Screens/AddressScreenWithMap';
+import SubCategriesModal from '../Screens/SubCategriesModal';
+import Routes from './Routes';
 
 const Stack = createNativeStackNavigator();
 function HomeStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="HomeScreen"
+        name={Routes.HOME_SCREEN}
         component={HomeScreen}
         options={{headerShown: false}}
       />
@@ -32,13 +34,18 @@ function HomeStack() {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="AddressScreen"
+        name={Routes.ADDRESS_SCREEN}
         component={AddressScreen}
         options={{headerShown: false}}
       />
       <Stack.Screen
         name="AddressScreenWithMap"
         component={AddressScreenWithMap}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name={Routes.SUB_CATEGRIES_MODAL}
+        component={SubCategriesModal}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

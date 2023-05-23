@@ -23,6 +23,7 @@ import {
 } from '../utils/Const';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import MyModalinfo from '../Components/MyModalinfo';
+import Routes from '../Navigation/Routes';
 
 export default function MoreScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -73,7 +74,10 @@ export default function MoreScreen({navigation}) {
             </View>
             <Text style={Styles.boxTitle}>Notification</Text>
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.6} style={Styles.GreenBoxMain}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(Routes.TAB_OFFERS)}
+            activeOpacity={0.6}
+            style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>
               <Image source={UpcomminIcon} style={Styles.iconstyle} />
             </View>

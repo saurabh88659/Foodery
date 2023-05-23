@@ -9,18 +9,19 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState} from 'react';
 import {COLORS} from '../utils/Colors';
-import {
-  fontPixel,
-  heightPixel,
-  screenHeight,
-  widthPixel,
-} from '../Components/Dimensions';
+import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Button from '../Components/Button';
-import {facebooklogo, googlelog} from '../utils/Const';
+import {BASE_URL, SimpleToast, facebooklogo, googlelog} from '../utils/Const';
 import {IonIcon} from '../utils/Const';
+import {useDispatch, useSelector} from 'react-redux';
+// import {actionsLoginUser} from '../Redux/Action/actionsLoginUser';
+import axios from 'axios';
+import {_getOTP} from '../utils/Handler/EpicHandler';
+import Routes from '../Navigation/Routes';
 
 export default function Login({navigation}) {
   const [email, setEmail] = useState('');
@@ -28,6 +29,7 @@ export default function Login({navigation}) {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [hidePassword, setHidePassword] = useState(true);
+  const dispatch = useDispatch();
 
   const validateEmail = email => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -41,7 +43,7 @@ export default function Login({navigation}) {
   };
 
   const validatePassword = password => {
-    if (password.length < 6) {
+    if (password.length < 4) {
       setPasswordError('Password must be at least 6 characters long');
       return false;
     } else {
@@ -55,8 +57,75 @@ export default function Login({navigation}) {
     const isValidPassword = validatePassword(password);
     if (isValidEmail && isValidPassword) {
       // Submit login credentials
-      navigation.navigate('BottomTabBar');
+      navigation.navigate(Routes.BOTTOM_TAB_BAR);
+      // _onPress();
     }
+  };
+
+  // const reduxusinf = () => {
+  //   dispatch(actionsLoginUser(email, password));
+  //   console.log('hey');
+
+  //   // if()
+  // };
+
+  // const loginData = useSelector(state => state.LoginUserReducer);
+
+  // if (loginData.loading) {
+  // }
+
+  // console.log('cartdataa+++++++++++========', loginData);
+
+  // const LoginApi = async () => {
+  //   const emailObj = {
+  //     email: 'raviprarai@gmail.com',
+  //     password: '1234',
+  //   };
+  //   axios
+  //     .post(BASE_URL + `/User/userLoginApi`, emailObj)
+
+  //     .then(res => {
+  //       console.log('email response', res.data);
+  //     })
+  //     .catch(error => {
+  //       console.log('catch error', error);
+  //     });
+  // };
+
+  const [state, setState] = useState({
+    isLoading: false,
+  });
+
+  const _onPress = async () => {
+    let data = {
+      email: email,
+      password: password,
+    };
+
+    axios
+      .post(BASE_URL + `/User/userLoginApi`, data)
+      .then(response => {
+        console.log('Login screnn response data', response?.data);
+        if (response.data.message == 'User Login Successfully.....') {
+          navigation.navigate(Routes.BOTTOM_TAB_BAR);
+        }
+        SimpleToast({title: response?.data?.message, isLong: true});
+        setState({
+          ...state,
+          isLoading: false,
+        });
+      })
+      .catch(error => {
+        console.log('Login in catch error', error);
+        SimpleToast({
+          title: error?.response.data.responseMessage,
+          isLong: true,
+        });
+        setState({
+          ...state,
+          isLoading: false,
+        });
+      });
   };
 
   return (
@@ -105,7 +174,31 @@ export default function Login({navigation}) {
           ) : null}
         </View>
         <View style={{marginTop: 30}}>
-          <Button title={'Login'} onPress={handleSubmit} />
+          <Button
+            title={
+              state.isLoading ? (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}>
+                  <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                  <Text
+                    style={{
+                      color: COLORS.WHITE,
+                      fontSize: fontPixel(15),
+                      paddingLeft: 5,
+                    }}>
+                    Please wait....
+                  </Text>
+                </View>
+              ) : (
+                'Login'
+              )
+            }
+            onPress={handleSubmit}
+          />
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('Resetpassword')}>
           <Text style={Styles.FORGETTITLE}>Forgot your password?</Text>

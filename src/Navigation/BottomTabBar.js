@@ -16,6 +16,7 @@ import CartStack from './CartStack';
 import {Image, View} from 'react-native';
 import {heightPixel, widthPixel} from '../Components/Dimensions';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import Routes from './Routes';
 const Tab = createBottomTabNavigator();
 
 const getTabBarVisibility = route => {
@@ -38,8 +39,9 @@ const getTabBarVisibility = route => {
 function BottomTabBar() {
   return (
     <Tab.Navigator
-      initialRouteName="Home"
+      initialRouteName={Routes.TAB_HOME}
       tabBarHideOnKeyboard={true}
+      backBehavior="none"
       screenOptions={{
         showLabel: false,
         headerShown: true,
@@ -56,7 +58,7 @@ function BottomTabBar() {
         },
       }}>
       <Tab.Screen
-        name="Cart"
+        name={Routes.TAB_CART}
         component={CartStack}
         options={{
           headerShown: false,
@@ -74,7 +76,7 @@ function BottomTabBar() {
         }}
       />
       <Tab.Screen
-        name="Wishlist"
+        name={Routes.TAB_WISHLIST}
         component={WishlistStack}
         options={{
           headerShown: false,
@@ -90,7 +92,7 @@ function BottomTabBar() {
       />
 
       <Tab.Screen
-        name="Home"
+        name={Routes.TAB_HOME}
         component={HomeStack}
         options={({route}) => ({
           tabBarStyle: {display: getTabBarVisibility(route)},
@@ -118,7 +120,7 @@ function BottomTabBar() {
       />
 
       <Tab.Screen
-        name="Offers"
+        name={Routes.TAB_OFFERS}
         component={OffersStack}
         options={{
           headerShown: false,
@@ -137,7 +139,7 @@ function BottomTabBar() {
       />
 
       <Tab.Screen
-        name="More"
+        name={Routes.TAB_MERE}
         component={MoreStack}
         options={({route}) => ({
           tabBarStyle: {display: getTabBarVisibility(route)},

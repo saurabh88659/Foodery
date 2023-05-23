@@ -3,46 +3,47 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SpalshScreen from '../Screens/SpalshScreen';
 import Login from '../Screens/Login';
 import OtpScreen from '../Screens/OtpScreen';
-import HomeScreen from '../Screens/HomeScreen';
-import HomeScreenTwo from '../Screens/HomeScreenTwo';
 import CreateAccount from '../Screens/CreateAccount';
 import Resetpassword from '../Screens/Resetpassword';
 import SignUpscreen from '../Screens/SignUpscreen';
 import ForgotEmailOtp from '../Screens/ForgotEmailOtp';
 import ForgetNewPassword from '../Screens/ForgetNewPassword';
 import BottomTabBar from './BottomTabBar';
-import SubCategriesModal from '../Screens/SubCategriesModal';
-import CartStack from './CartStack';
+// import CartStack from './CartStack';
+import Routes from './Routes';
+import LoginScreen from '../Screens/LoginScreen';
+import Otp from '../Screens/Otp';
 
 const Stack = createNativeStackNavigator();
 function AuthStack() {
   return (
-    <Stack.Navigator initialRouteName="Splash">
+    <Stack.Navigator initialRouteName={Routes.SCREEN_SPLASH}>
       <Stack.Screen
-        name="Splash"
+        name={Routes.SCREEN_SPLASH}
         component={SpalshScreen}
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="Login"
-        component={Login}
+        name={Routes.LOG_IN_SCREEN}
+        component={LoginScreen}
         options={{headerShown: false}}
       />
+      <Stack.Screen
+        name={Routes.OTP_SCREEN}
+        component={Otp}
+        options={{headerShown: false}}
+      />
+      {/* <Stack.Screen
+        name={Routes.LOG_IN}
+        component={Login}
+        options={{headerShown: false}}
+      /> */}
       <Stack.Screen
         name="OtpScreen"
         component={OtpScreen}
         options={{headerShown: false}}
       />
-      <Stack.Screen
-        name="HomeScreen"
-        component={HomeScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="HomeScreenTwo"
-        component={HomeScreenTwo}
-        options={{headerShown: false}}
-      />
+
       <Stack.Screen
         name="CreateAccount"
         component={CreateAccount}
@@ -69,18 +70,8 @@ function AuthStack() {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="BottomTabBar"
+        name={Routes.BOTTOM_TAB_BAR}
         component={BottomTabBar}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="SubCategriesModal"
-        component={SubCategriesModal}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen
-        name="CartStack"
-        component={CartStack}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

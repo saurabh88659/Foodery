@@ -14,10 +14,13 @@ import React, {useEffect, useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel} from '../Components/Dimensions';
 import Button from '../Components/Button';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {BASE_URL} from '../utils/Const';
+import Routes from '../Navigation/Routes';
 
 function SignUpscreen({navigation}) {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
@@ -130,6 +133,34 @@ function SignUpscreen({navigation}) {
     }
   };
 
+  // useEffect(() => {
+  //   requestUserPermission();
+  // }, []);
+
+  const _SignUp = async () => {
+    const fcmToken = await AsyncStorage.getItem('fcmToken');
+
+    console.log('fcmToken', fcmToken);
+
+    let datasignup = {
+      name: fullName,
+      email: email,
+      phone: phoneNumber,
+      address: address,
+      password: newPassword,
+      confirmPassword: confirmPassword,
+      deviceToken: fcmToken,
+    };
+
+    console.log('fcmToken', datasignup);
+
+    axios
+      .post(BASE_URL + `/User/createAccount`, datasignup, {})
+      .then(response => {
+        console;
+      });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -218,7 +249,11 @@ function SignUpscreen({navigation}) {
             </View>
           </View>
           <View style={{flex: 1, justifyContent: 'flex-end', marginTop: 30}}>
-            <Button title={'Sign Up'} onPress={handleSubmit} />
+            <Button
+              title={'Sign Up'}
+              // onPress={_SignUp}
+              onPress={() => navigation.navigate(Routes.BOTTOM_TAB_BAR)}
+            />
             <View
               style={{
                 justifyContent: 'center',

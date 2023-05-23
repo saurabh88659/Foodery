@@ -32,6 +32,7 @@ export default function SubCategories({navigation, route}) {
   const [cartitem, setCartitem] = useState(0);
 
   const cartData = useSelector(state => state.reducer);
+
   const wishlistData = useSelector(
     state => state.wishlistReducer.wishlistItems,
   );

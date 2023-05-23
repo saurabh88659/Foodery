@@ -16,7 +16,7 @@ const Button = props => {
       activeOpacity={0.8}
       onPress={props.onPress}
       style={{
-        marginHorizontal: 24,
+        marginHorizontal: 20,
         borderRadius: 50,
         paddingVertical: 17,
         alignItems: 'center',
