@@ -173,6 +173,7 @@ export default function Login({navigation}) {
             <Text style={Styles.ERRORTEXT}>{passwordError}</Text>
           ) : null}
         </View>
+
         <View style={{marginTop: 30}}>
           <Button
             title={

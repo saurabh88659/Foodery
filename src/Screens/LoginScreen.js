@@ -55,7 +55,7 @@ export default function LoginScreen({navigation}) {
     axios
       .post(BASE_URL + `/User/userLoginPhone`, dataPhone, {})
       .then(response => {
-        if (response?.data?.message == 'OTP sent successfully....') {
+        if (response?.data?.message == 'OTP sent successfully') {
           SimpleToast({title: response?.data?.message, isLong: true});
           navigation.navigate(Routes.OTP_SCREEN, phoneNo);
           setState({
@@ -69,6 +69,8 @@ export default function LoginScreen({navigation}) {
       })
       .catch(error => {
         console.log('Login Catch error', error);
+        // console.log('hey Error', error.response.data.message);
+        SimpleToast({title: error.response?.data.message, isLong: true});
         setState({
           ...state,
           isLoading: false,
@@ -167,8 +169,8 @@ const Styles = StyleSheet.create({
     // flex: 1,
   },
   IMAGESTYL: {
-    width: widthPixel(480),
-    height: heightPixel(420),
+    width: widthPixel(580),
+    height: heightPixel(500),
     resizeMode: 'contain',
     // flex: 1,
   },

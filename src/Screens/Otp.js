@@ -21,6 +21,7 @@ import OTPInputView from '@twotalltotems/react-native-otp-input';
 import axios from 'axios';
 import {_setStorage} from '../utils/Storage';
 import Routes from '../Navigation/Routes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Otp({navigation, route}) {
   const [isOTP, setIsOTP] = useState('');
@@ -32,6 +33,7 @@ export default function Otp({navigation, route}) {
   });
 
   const _HandleOTP = async () => {
+    const fcmToken = await AsyncStorage.getItem('fcmToken');
     setState({
       ...state,
       isLoading: true,
@@ -39,25 +41,27 @@ export default function Otp({navigation, route}) {
     let otpdata = {
       phone: phoneNumber,
       otp: isOTP,
+      deviceToken: fcmToken,
     };
     console.log('otpdata', otpdata);
     axios
       .post(BASE_URL + `/User/userPhoneVerifyOTP`, otpdata, {})
 
       .then(async response => {
-        await _setStorage('token', response.data.token);
-
+        await AsyncStorage.setItem('token', response.data.token);
         console.log('OTP Response', response?.data);
         SimpleToast({title: response?.data?.message, isLong: true});
-        navigation.navigate(Routes.SIGN_UP_SCREEN);
+        navigation.navigate(Routes.SIGN_UP_SCREEN, phoneNumber);
         setState({
           ...state,
           isLoading: false,
         });
       })
-      .catch(error => {
-        console.log('OTP catch Error', error.response.data.message);
-        SimpleToast({title: error?.response?.data?.message, isLong: true});
+      .catch(e => {
+        console.log('OTP catch Error', e.response.data);
+        if (e.response.data) {
+          SimpleToast({title: e?.response?.data, isLong: true});
+        }
         setState({
           ...state,
           isLoading: false,
@@ -138,7 +142,6 @@ export default function Otp({navigation, route}) {
             </View>
           </View>
           <View style={{top: 20}}>
-            {/* <Button title={'Verify & Proceed'} onPress={_HandleOTP} /> */}
             <Button
               title={
                 state.isLoading ? (

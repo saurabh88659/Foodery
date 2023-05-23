@@ -5,6 +5,7 @@ import locationReducer from '../Redux/Reducers/locationReducer';
 import cartReducer from './Reducers/cartReducer';
 import LoginUserReducer from '../Redux/Reducers/LoginUserReducer';
 import geolocationReducer from '../Redux/Reducers/geolocationReducer';
+import Profilereducer from './Reducers/Profilereducer';
 
 const rootReducer = combineReducers({
   reducer,
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   cartReducer,
   LoginUserReducer,
   geolocationReducer,
+  Profilereducer,
 });
 
 export default rootReducer;

@@ -9,32 +9,32 @@ import {
   TextInput,
   ScrollView,
   Alert,
+  Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {COLORS} from '../utils/Colors';
-import {fontPixel, heightPixel} from '../Components/Dimensions';
+import {fontPixel, heightPixel, screenHeight} from '../Components/Dimensions';
 import Button from '../Components/Button';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {BASE_URL} from '../utils/Const';
+import {BASE_URL, FontAwesome5Icon} from '../utils/Const';
 import Routes from '../Navigation/Routes';
+import {_getStorage} from '../utils/Storage';
+import ImagePicker from 'react-native-image-crop-picker';
 
-function SignUpscreen({navigation}) {
+function SignUpscreen({navigation, route}) {
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [address, setAddress] = useState('');
-
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-
   const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordConfirmError, setPasswordConfirmError] = useState('');
-
   const [fullNmaeError, setFullNmaeError] = useState('');
-  const [phoneNumberError, setPhoneNumberError] = useState('');
   const [addressError, setaddressError] = useState('');
+  const [state, setState] = useState({
+    isLoading: false,
+  });
+
+  const PNumber = route.params;
+  console.log(PNumber);
 
   const validateEmail = email => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -68,17 +68,6 @@ function SignUpscreen({navigation}) {
     }
   };
 
-  const validatePhoneNumber = () => {
-    const phoneNumberPattern = /^\d{10}$/;
-    if (!phoneNumberPattern.test(phoneNumber)) {
-      setPhoneNumberError('Please enter a valid 10 digit phone number');
-      return false;
-    } else {
-      setPhoneNumberError(null);
-      return true;
-    }
-  };
-
   const validateAddress = () => {
     const namePattern = /^[a-zA-Z0-9\s,]+$/;
     if (!namePattern.test(address)) {
@@ -90,44 +79,12 @@ function SignUpscreen({navigation}) {
     }
   };
 
-  const passwordConfirmpassword = () => {
-    if (newPassword.length < 8) {
-      setPasswordError('Password must be at least 8 characters');
-    } else if (newPassword !== confirmPassword) {
-      setPasswordConfirmError('Passwords do not match');
-    } else if (!/\d/.test(newPassword)) {
-      setPasswordError('Password must contain at least one digit');
-    } else if (!/[a-z]/.test(newPassword)) {
-      setaddressError('Password must contain at least one lowercase letter');
-    } else if (!/[A-Z]/.test(newPassword)) {
-      setPasswordError('Password must contain at least one uppercase letter');
-    } else if (!/[^a-zA-Z0-9]/.test(newPassword)) {
-      setPasswordError('Password must contain at least one special character');
-    } else {
-      // Alert.alert('Success', 'Password changed successfully');
-      setPasswordError('');
-      setPasswordConfirmError('');
-      return true;
-    }
-  };
-
   const handleSubmit = () => {
     const isValidEmail = validateEmail(email);
-    // const isValidPassword = validatePassword(password);
     const isValidFullNmae = validateFullName(fullName);
-    const isValidPhone = validatePhoneNumber(phoneNumber);
     const isValidAddress = validateAddress(address);
-    const ispasswordConfirmpassword = passwordConfirmpassword(
-      newPassword && confirmPassword,
-    );
 
-    if (
-      isValidEmail &&
-      isValidFullNmae &&
-      isValidPhone &&
-      isValidAddress &&
-      ispasswordConfirmpassword
-    ) {
+    if (isValidEmail && isValidFullNmae && isValidPhone && isValidAddress) {
       // Submit login credentials
       Alert.alert('Success', 'Sign Up successfully');
     }
@@ -137,27 +94,58 @@ function SignUpscreen({navigation}) {
   //   requestUserPermission();
   // }, []);
 
-  const _SignUp = async () => {
-    const fcmToken = await AsyncStorage.getItem('fcmToken');
+  const onGallary = () => {
+    ImagePicker.openPicker({
+      cropping: true,
+      quality: 1,
+      mediaType: 'any',
+    })
+      .then(image => {
+        console.log(image);
+      })
+      .catch(err => {
+        console.log('Img picker Error--->>>', err);
+      });
+  };
 
-    console.log('fcmToken', fcmToken);
+  const _SignUp = async () => {
+    const token = await _getStorage('token');
+
+    setState({
+      ...state,
+      isLoading: true,
+    });
 
     let datasignup = {
       name: fullName,
       email: email,
-      phone: phoneNumber,
+      phone: PNumber,
       address: address,
-      password: newPassword,
-      confirmPassword: confirmPassword,
-      deviceToken: fcmToken,
     };
 
-    console.log('fcmToken', datasignup);
+    console.log(datasignup);
 
     axios
-      .post(BASE_URL + `/User/createAccount`, datasignup, {})
+      .post(BASE_URL + `/User/addUser`, datasignup, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
       .then(response => {
-        console;
+        if (response?.data?.message == 'User SignUp Successfully...') {
+          setState({
+            ...state,
+            isLoading: false,
+          });
+          navigation.navigate(Routes.BOTTOM_TAB_BAR);
+        } else {
+          console.log('else condition');
+        }
+      })
+      .catch(error => {
+        console.log('Sign Up Catch error', error);
+        setState({
+          ...state,
+          isLoading: false,
+        });
       });
   };
 
@@ -168,6 +156,15 @@ function SignUpscreen({navigation}) {
           <View style={{alignItems: 'center'}}>
             <Text style={Styles.TITLESTYL}>Sign Up</Text>
             <Text style={Styles.SUBTITLE}>Add your details to sign up</Text>
+          </View>
+          <View style={Styles.circle}>
+            <Pressable onPress={onGallary}>
+              <FontAwesome5Icon
+                title={'camera'}
+                size={50}
+                IconColor={COLORS.GRAYLIGHT}
+              />
+            </Pressable>
           </View>
           <View style={Styles.CONTAINERMAINTEXTINPU}>
             <View style={{paddingTop: 10}}>
@@ -194,7 +191,17 @@ function SignUpscreen({navigation}) {
                 <Text style={Styles.ERRORTEXT}>{emailError}</Text>
               ) : null}
             </View>
-            <View>
+            <View style={[Styles.TEXTINPUT, {height: heightPixel(55)}]}>
+              <Text
+                style={{
+                  color: COLORS.BLACK,
+                  fontWeight: '500',
+                  fontSize: fontPixel(16),
+                }}>
+                {PNumber}
+              </Text>
+            </View>
+            {/* <View>
               <TextInput
                 style={[Styles.TEXTINPUT]}
                 placeholder="Mobile No"
@@ -208,7 +215,7 @@ function SignUpscreen({navigation}) {
               {phoneNumberError ? (
                 <Text style={Styles.ERRORTEXT}>{phoneNumberError}</Text>
               ) : null}
-            </View>
+            </View> */}
             <View>
               <TextInput
                 style={[Styles.TEXTINPUT]}
@@ -221,67 +228,24 @@ function SignUpscreen({navigation}) {
                 <Text style={Styles.ERRORTEXT}>{addressError}</Text>
               ) : null}
             </View>
-            <View style={{}}>
-              <TextInput
-                style={[Styles.TEXTINPUT]}
-                placeholder="Password"
-                placeholderTextColor={COLORS.GRAYDARK}
-                secureTextEntry={true}
-                value={newPassword}
-                onChangeText={text => setNewPassword(text)}
-              />
-              {passwordError ? (
-                <Text style={Styles.ERRORTEXT}>{passwordError}</Text>
-              ) : null}
-            </View>
-            <View style={{}}>
-              <TextInput
-                style={[Styles.TEXTINPUT]}
-                placeholder="Confirm Password"
-                secureTextEntry={true}
-                placeholderTextColor={COLORS.GRAYDARK}
-                value={confirmPassword}
-                onChangeText={text => setConfirmPassword(text)}
-              />
-              {passwordConfirmError ? (
-                <Text style={Styles.ERRORTEXT}>{passwordConfirmError}</Text>
-              ) : null}
-            </View>
           </View>
           <View style={{flex: 1, justifyContent: 'flex-end', marginTop: 30}}>
             <Button
-              title={'Sign Up'}
-              // onPress={_SignUp}
-              onPress={() => navigation.navigate(Routes.BOTTOM_TAB_BAR)}
+              title={
+                state.isLoading ? (
+                  <View style={Styles.activStylesIndicator}>
+                    <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                    <Text style={Styles.activeStylesTitleIndicator}>
+                      Please wait....
+                    </Text>
+                  </View>
+                ) : (
+                  'Sign Up'
+                )
+              }
+              onPress={_SignUp}
+              // onPress={() => navigation.navigate(Routes.BOTTOM_TAB_BAR)}
             />
-            <View
-              style={{
-                justifyContent: 'center',
-                flexDirection: 'row',
-                marginTop: 15,
-              }}>
-              <Text
-                style={{
-                  alignItems: 'center',
-                  color: COLORS.GRAYDARK,
-                  fontWeight: '500',
-                  fontSize: fontPixel(16),
-                }}>
-                Already have an Account?
-              </Text>
-              <TouchableOpacity onPress={() => navigation.goBack()}>
-                <Text
-                  style={{
-                    color: COLORS.GREEN,
-                    fontWeight: '500',
-                    textAlign: 'center',
-                    left: 3,
-                    fontSize: fontPixel(16),
-                  }}>
-                  Login
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -322,4 +286,25 @@ const Styles = StyleSheet.create({
     paddingVertical: 14,
   },
   ERRORTEXT: {color: 'red', paddingHorizontal: 40, marginTop: 5},
+  circle: {
+    height: 115,
+    width: 115,
+    borderRadius: heightPixel(screenHeight),
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.DarkGreen2,
+    alignSelf: 'center',
+    top: 10,
+  },
+  activStylesIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeStylesTitleIndicator: {
+    color: COLORS.WHITE,
+    fontSize: fontPixel(15),
+    paddingLeft: 5,
+  },
 });
