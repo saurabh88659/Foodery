@@ -1,6 +1,5 @@
 // import { ADD_ITEM, DECREMENT_ITEM, INCREMENT_ITEM } from "../Action/actionCart";
 
-
 // const initialState = [];
 
 // const cartReducer = (state = initialState, action) => {
@@ -26,22 +25,20 @@
 
 // export default cartReducer
 
-
-import {INCREMENT,DECREMENT} from '../Action/actionCart'
-
+import {INCREMENT, DECREMENT} from '../Action/actionCart';
 
 const initialState = {
-  count:[]
-}
+  count: 0,
+};
 
 const cartReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'INCREMENT':
       return {
         ...state,
-        count: [...state.count, action.payload],
+        count: state.count + 1,
       };
-  
+
     case 'DECREMENT':
       return {
         ...state,
@@ -52,4 +49,4 @@ const cartReducer = (state = initialState, action) => {
   }
 };
 
-export default cartReducer
+export default cartReducer;

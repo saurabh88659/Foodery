@@ -8,23 +8,33 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import React, {createRef, useState} from 'react';
+import React, {createRef, useState, useEffect} from 'react';
 import MyHeader from '../Components/MyHeader';
-import {IonIcon, bannerIcon} from '../utils/Const';
+import {BASE_URL, IonIcon, bannerIcon} from '../utils/Const';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import ActionSheet from 'react-native-actions-sheet';
 import Productinfo from '../Components/Productinfo';
 import GlobelStyles from '../utils/GlobelStyles';
 import Collapsible from 'react-native-collapsible';
+import {_getStorage} from '../utils/Storage';
+import axios from 'axios';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function FruitsVegetables({navigation}) {
   const [heart, setHeart] = useState(true);
   const actionSheetRef = createRef(false);
+  const [prodcutDetails, setProdcutDetails] = useState('');
+  const [freshnes_ByID_Cat, setFreshnes_ByID_Cat] = useState({});
+  const IsFocused = useIsFocused();
   const toggleBottomNavigationView = id => {
     actionSheetRef?.current?.setModalVisible(true);
+    setProdcutDetails(id);
   };
   const [collapsed, setCollapsed] = useState(true);
+  const [freshness_Cat, setFreshnes_Cat] = useState([]);
+
+  console.log('freshnes_ByID_Cat', freshnes_ByID_Cat._id);
 
   const SRTDATA = [
     {
@@ -96,24 +106,68 @@ export default function FruitsVegetables({navigation}) {
     setCollapsed(!collapsed);
   };
 
+  useEffect(() => {
+    if (IsFocused) {
+      _FreshnessCategory();
+      if (freshnes_ByID_Cat._id) {
+        _FreshnessCategoryBYIdDetails();
+      }
+    }
+  }, [IsFocused]);
+
+  const _FreshnessCategory = async () => {
+    const token = await _getStorage('token');
+    // console.log(token);
+    axios
+      .get(BASE_URL + `/User/freshProductlist`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(res => {
+        console.log('Freshness Response QQQQQQQQQ----->>>', res?.data?.result);
+
+        setFreshnes_Cat(res?.data?.result);
+      })
+      .catch(error => {
+        console.log('Error Freshness catch error---->>>', error);
+      });
+  };
+
+  const _FreshnessCategoryBYIdDetails = async () => {
+    const token = await _getStorage('token');
+    // console.log(token);
+    axios
+      .get(BASE_URL + `/User/getOneFreshProduct/${prodcutDetails}`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(res => {
+        console.log('Freshness BY Id Response <<<<<<<<<<----->>>', res?.data);
+        if (res?.data) {
+          setFreshnes_ByID_Cat(res?.data?.getoneProduct);
+        }
+      })
+      .catch(error => {
+        console.log('Error Freshness BY ID catch error---->>>', error);
+      });
+  };
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <MyHeader title={'Fresh & Healthy'} onPress={() => navigation.goBack()} />
       <ScrollView showsVerticalScrollIndicator={false}>
         <Image source={bannerIcon} style={Styles.bannerImage} />
         <View style={Styles.CONTAINERBOXMAIN}>
-          {SRTDATA.map((value, index) => (
+          {freshness_Cat.map((value, index) => (
             <Productinfo
               key={index}
               heartonPress={() => setHeart(value.id)}
               IconColor={heart !== value.id ? COLORS.GRAYDARK : COLORS.BROWN}
               FontAwesomeIcontitle={heart !== value.id ? 'heart-o' : 'heart'}
-              onPress={() => toggleBottomNavigationView(value.id)}
-              Productimage={require('../Assets/Logo/mangoicon.png')}
-              ProductName={'Mango Alphonso'}
-              ProductSubName={'6 Pcs (Approx 1.2Kg - 1.4Kg)'}
-              discountPrice={'Rs.80'}
-              ProductPrice={'Rs.70'}
+              onPress={() => toggleBottomNavigationView(value._id)}
+              Productimage={{uri: value.productImage}}
+              ProductName={value.productName}
+              ProductSubName={value.productUnit}
+              discountPrice={`Rs.${value.discountPrice}`}
+              ProductPrice={`Rs.${value.productPrice}`}
               UIBotton={
                 <View>
                   {/* {cartData?.length !== 0 ? ( */}
@@ -163,15 +217,15 @@ export default function FruitsVegetables({navigation}) {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{}}>
           <Image
-            source={require('../Assets/Logo/mangoicon.png')}
+            source={{uri: freshnes_ByID_Cat?.productImage}}
             style={Styles.Modalimagestyle}
           />
           <View style={{marginHorizontal: 20, marginTop: '5%'}}>
             <Text numberOfLines={3} style={Styles.MODALTITLE}>
-              Mango Alphonso Ratanagiri(Hapus)
+              {freshnes_ByID_Cat?.productName}
             </Text>
             <Text numberOfLines={3} style={Styles.SUBMODALTITLE}>
-              6 Pcs (Approx 1.2Kg - 1.4Kg)
+              {freshnes_ByID_Cat?.productUnit}
             </Text>
             <View
               style={{
@@ -195,7 +249,7 @@ export default function FruitsVegetables({navigation}) {
                     color: COLORS.BLACK,
                     fontWeight: '500',
                   }}>
-                  Rs.600
+                  {freshnes_ByID_Cat?.productPrice}
                 </Text>
                 <Text
                   style={{
@@ -206,7 +260,7 @@ export default function FruitsVegetables({navigation}) {
                     top: 4,
                     textDecorationLine: 'line-through',
                   }}>
-                  Rs.700
+                  {freshnes_ByID_Cat?.discountPrice}
                 </Text>
               </View>
               <TouchableOpacity

@@ -23,7 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {checkInternetConnection} from '../utils/Handler/InternetInfo';
 import Lottie from 'lottie-react-native';
 import RNExitApp from 'react-native-exit-app';
-import { fetchData } from '../Redux/RootsagaEpic';
+import {fetchData} from '../Redux/RootsagaEpic';
 
 export default function SpalshScreen({navigation}) {
   const IsFocused = useIsFocused();
@@ -32,7 +32,6 @@ export default function SpalshScreen({navigation}) {
   const [isLoading, setIsLoading] = useState(true);
 
   const Locations = useSelector(state => state.locationReducer);
-
 
   // const {loading, data, error} = useSelector(state => state.Profilereducer);
   // console.log(
@@ -90,12 +89,11 @@ export default function SpalshScreen({navigation}) {
 
   useEffect(() => {
     _Handle_Splash();
-    
   }, []);
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(fetchData());
-  },[])
+  }, []);
 
   const _Handle_Splash = async () => {
     const token = await _getStorage('token');
@@ -110,12 +108,12 @@ export default function SpalshScreen({navigation}) {
             },
           })
           .then(resp => {
-            if (resp.data.result.name && resp.data.result.address) {
+            if (resp?.data?.result?.name || resp?.data?.result?.address) {
               navigation.navigate(Routes.BOTTOM_TAB_BAR);
-              console.log('Splahs screen =========', resp.data.result);
+              console.log('Splahs screen =========', resp?.data?.result);
             } else {
               navigation.navigate(Routes.LOG_IN_SCREEN);
-              console.log('Splahs screen =========', resp.data.result);
+              console.log('Splahs screen =========', resp?.data?.result);
             }
           })
 
@@ -140,18 +138,18 @@ export default function SpalshScreen({navigation}) {
                 axios
                   .post(BASE_URL + `/User/refreshToken`, SubmitDAta)
                   .then(async res => {
-                    console.log('dablu------------------', res.data);
-                    await AsyncStorage.setItem('token', res.data.token);
+                    console.log('dablu------------------', res?.data);
+                    await AsyncStorage.setItem('token', res?.data?.token);
                     await AsyncStorage.setItem(
                       'refreshToken',
                       res.data.refreshToken,
                     );
-                    if (res.data.token) {
+                    if (res?.data?.token) {
                       navigation.replace(Routes.BOTTOM_TAB_BAR);
                     }
                   })
                   .catch(error => {
-                    console.log('errr--->>>', error.response.data.message);
+                    console.log('errr--->>>', error?.response?.data?.message);
                     navigation.replace(Routes.BOTTOM_TAB_BAR);
                   });
                 // update access token in storage

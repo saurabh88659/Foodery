@@ -63,7 +63,7 @@ export default function LoginScreen({navigation}) {
       })
       .catch(error => {
         console.log('Login Catch error', error);
-        SimpleToast({title: error.response?.data.message, isLong: true});
+        SimpleToast({title: error?.response?.data?.message, isLong: true});
         setState({
           ...state,
           isLoading: false,

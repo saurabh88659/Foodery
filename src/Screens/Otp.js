@@ -50,7 +50,7 @@ export default function Otp({navigation, route}) {
     axios
       .post(BASE_URL + `/User/userPhoneVerifyOTP`, otpdata, {})
       .then(async response => {
-        await AsyncStorage.setItem('token', response.data.token);
+        await AsyncStorage.setItem('token', response?.data?.token);
         // await _setStorage()
         // await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
         // await AsyncStorage.setItem('user_id', response.data.user_id);
@@ -66,7 +66,7 @@ export default function Otp({navigation, route}) {
         axios
           .get(BASE_URL + `/User/getProfile`, {
             headers: {
-              Authorization: `Bearer ${response.data.token}`,
+              Authorization: `Bearer ${response?.data?.token}`,
             },
           })
           .then(resp => {
@@ -115,7 +115,7 @@ export default function Otp({navigation, route}) {
         console.log('Login response', response?.data);
       })
       .catch(error => {
-        console.log('Login Catch error', error?.response.data);
+        console.log('Login Catch error', error?.response?.data);
       });
   };
 

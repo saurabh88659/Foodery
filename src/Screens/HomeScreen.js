@@ -50,6 +50,7 @@ import {useDoubleBackPressExit} from '../utils/Handler/BackHandler';
 import Swiper from 'react-native-swiper';
 import {_getStorage} from '../utils/Storage';
 import {useIsFocused} from '@react-navigation/native';
+import Lottie from 'lottie-react-native';
 import axios from 'axios';
 
 const {diffClamp} = Animated;
@@ -70,6 +71,7 @@ export default function HomeScreen({navigation}) {
   const [all_Category, setAll_Category] = useState([]);
   const [ex_Category_Two, setEx_category_Two] = useState([]);
   const [freshness_Cat, setFreshnes_Cat] = useState([]);
+  const [nuts_and_Dry_Cat, setNuts_and_Dry_Cat] = useState([]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -182,6 +184,7 @@ export default function HomeScreen({navigation}) {
       _all_Category();
       _ExSubCategory();
       _FreshnessCategory();
+      _Nuts_and_Dry_sCategory();
     }
   }, [IsFocused]);
 
@@ -194,8 +197,8 @@ export default function HomeScreen({navigation}) {
       })
       .then(response => {
         // console.log('Banner Response=======', response.data);
-        setFirstBanner(response.data.advertisement);
-        setSecond_Banner(response.data.offer);
+        setFirstBanner(response?.data?.advertisement);
+        setSecond_Banner(response?.data?.offer);
       })
       .catch(error => {
         console.log('Banner Catch error', error);
@@ -210,7 +213,7 @@ export default function HomeScreen({navigation}) {
       })
       .then(response => {
         // console.log('All Category Response', response.data.getAll);
-        setAll_Category(response.data.getAll);
+        setAll_Category(response?.data?.getAll);
       })
       .catch(error => {
         console.log('All Category Catch error', error);
@@ -219,14 +222,16 @@ export default function HomeScreen({navigation}) {
 
   const _ExSubCategory = async () => {
     const token = await _getStorage('token');
-    console.log('hey');
     axios
       .get(BASE_URL + `/User/getCategory2`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('All Category Two Response----->>>', response.data.getAll);
-        setEx_category_Two(response.data.getAll);
+        console.log(
+          'All Category Two Response----->>>',
+          response?.data?.getAll,
+        );
+        setEx_category_Two(response?.data?.getAll);
       })
       .catch(error => {
         console.log('All Category Two Catch error', error);
@@ -235,19 +240,32 @@ export default function HomeScreen({navigation}) {
 
   const _FreshnessCategory = async () => {
     const token = await _getStorage('token');
-
-    console.log(token);
-
     axios
       .get(BASE_URL + `/User/freshProductlist`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(res => {
-        console.log('Freshness Response----->>>', res.data.result);
-        setFreshnes_Cat(res.data.result);
+        console.log('Freshness Response----->>>', res?.data?.result);
+        setFreshnes_Cat(res?.data?.result);
       })
       .catch(error => {
         console.log('Error Freshness catch error---->>>', error);
+      });
+  };
+
+  const _Nuts_and_Dry_sCategory = async () => {
+    const token = await _getStorage('token');
+    // console.log(token);
+    axios
+      .get(BASE_URL + `/User/nutdryProductlist`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(res => {
+        console.log('Nuts_and_Dry Response----->>>', res?.data?.result);
+        setNuts_and_Dry_Cat(res?.data?.result);
+      })
+      .catch(error => {
+        console.log('Error Nuts_and_Dry catch error---->>>', error);
       });
   };
 
@@ -564,7 +582,7 @@ export default function HomeScreen({navigation}) {
                       Productimage={{uri: item.productImage}}
                       ProductName={item.productName}
                       ProductSubName={item.productUnit}
-                      discountPrice={'Rs.80'}
+                      discountPrice={`Rs.${item.discountPrice}`}
                       StylesPrices={{top: heightPixel(5)}}
                       ProductPrice={`Rs.${item.productPrice}`}
                     />
@@ -615,7 +633,7 @@ export default function HomeScreen({navigation}) {
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{paddingLeft: '35%'}}
                   horizontal
-                  data={Orderagain}
+                  data={nuts_and_Dry_Cat}
                   renderItem={({item, index}) => (
                     //     <TouchableOpacity
                     //       onPress={() => navigation.navigate('FruitsVegetables')}
@@ -634,16 +652,24 @@ export default function HomeScreen({navigation}) {
                       FontAwesomeIcontitle={
                         heart !== item.id ? 'heart-o' : 'heart'
                       }
-                      Productimage={require('../Assets/Logo/mangoicon.png')}
-                      ProductName={'Mango Alphonso'}
-                      ProductSubName={'6 Pcs (Approx 1.2Kg - 1.4Kg)'}
-                      discountPrice={'Rs.80'}
+                      Productimage={{uri: item.productImage}}
+                      ProductName={item.productName}
+                      ProductSubName={item.productUnit}
+                      discountPrice={`Rs.${item.discountPrice}`}
                       StylesPrices={{top: heightPixel(4)}}
-                      ProductPrice={'Rs.70'}
+                      ProductPrice={`Rs.${item.productPrice}`}
                     />
                   )}
                 />
               </LinearGradient>
+            </View>
+            <View>
+              <Lottie
+                source={require('../Assets/Lottiejson/90553-delivery-boy.json')}
+                autoPlay
+                loop={true}
+                style={{height: heightPixel(200)}}
+              />
             </View>
           </Animated.ScrollView>
           <TouchableOpacity
@@ -883,8 +909,9 @@ const Styles = StyleSheet.create({
     marginTop: 5,
   },
   IMAGESTYLESBANNER: {
-    height: heightPixel(90),
+    height: heightPixel(100),
     width: widthPixel(130),
+    top: heightPixel(20),
   },
   ADDBOTTONSTYL: {
     borderWidth: 1,

@@ -26,8 +26,6 @@ export default function SubCategriesModal({navigation, route}) {
     isLoading: false,
   });
 
-  // console.log('item--------------->>>', itemAll);
-
   useEffect(() => {
     if (IsFocused) {
       _SubcategoryById();
@@ -55,14 +53,14 @@ export default function SubCategriesModal({navigation, route}) {
       .catch(error => {
         console.log(
           'SubCategory_By_Id Catch error',
-          error.response.data.message,
+          error?.response?.data?.message,
         );
         setState({
           ...state,
           isLoading: false,
         });
-        if (error.response.data.message == 'Data Not Founded') {
-          setErrorNotFound(error.response.data.message);
+        if (error?.response?.data?.message == 'Data Not Founded') {
+          setErrorNotFound(error?.response?.data?.message);
         }
       });
   };

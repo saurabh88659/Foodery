@@ -8,7 +8,6 @@ import {
   Keyboard,
   TextInput,
   ScrollView,
-  Pressable,
   ActivityIndicator,
   Image,
 } from 'react-native';
@@ -157,18 +156,17 @@ function SignUpscreen({navigation, route}) {
           },
         })
         .then(res => {
-          console.log('Profile image--------->>', res.data.message);
           SimpleToast({title: res.data.message, isLong: true});
           setState({...state, profileImg: null});
 
-          SimpleToast({title: res.data.message, isLong: true});
+          SimpleToast({title: res?.data?.message, isLong: true});
         })
         .catch(error => {
           console.log(
             'error in catch Profile image',
-            error.response.data.message,
+            error?.response?.data?.message,
           );
-          SimpleToast({title: error.response.data.message, isLong: true});
+          SimpleToast({title: error?.response?.data?.message, isLong: true});
           setState({...state, profileImg: null});
         });
     }
