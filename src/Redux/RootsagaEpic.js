@@ -1,5 +1,3 @@
-
-
 import axios from 'axios';
 import {
   fetchDataFailure,
@@ -13,17 +11,15 @@ const url =
   'https://jsonplaceholder.typicode.com/todos/1'
 
 
-export const fetchData = () => {
+export const fetchData =  () => {
   // const token = await _getStorage('token')
 
     return async dispatch => {
     dispatch(fetchDataRequest());
     try {
       const response = await axios.get(BASE_URL+`/User/getProfile`,{
-        headers: {
-          "Content-Type": "application/json"
-        }
-      });
+                // headers: {Authorization: `Bearer ${token}`},
+              });
       const data = response.data;
       dispatch(fetchDataSuccess(data));
     } catch (error) {

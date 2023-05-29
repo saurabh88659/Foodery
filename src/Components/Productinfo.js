@@ -10,7 +10,7 @@ export default function Productinfo(props) {
   const [heart, setHeart] = useState(true);
 
   return (
-    <View key={props.index} style={Styles.CONTAINERBOX}>
+    <View key={props.index} style={[Styles.CONTAINERBOX, props.Styles]}>
       <View>
         <TouchableOpacity
           onPress={props.heartonPress}
@@ -45,7 +45,7 @@ export default function Productinfo(props) {
           </Text>
           <Text style={Styles.TITLEPRICEDISSTYL}>{props.discountPrice}</Text>
           <View style={Styles.PRICECONTAINER}>
-            <Text style={Styles.PRICESTYL}>{props.ProductPrice}</Text>
+            <Text style={[Styles.PRICESTYL, props.StylesPrices]}>{props.ProductPrice}</Text>
 
             {/* <TouchableOpacity
               onPress={props.addtocartonPress}

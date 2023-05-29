@@ -25,7 +25,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPlaceHolder';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
-import { decrementItem, incrementItem } from '../Redux/Action/actionCart';
+import { decrement, decrementItem, increment, incrementItem } from '../Redux/Action/actionCart';
 import { addItem } from '../Redux/Action/actionCart';
 
 export default function SubCategories({navigation, route}) {
@@ -37,7 +37,7 @@ export default function SubCategories({navigation, route}) {
   const [isloading, setIsloading] = useState(false);
   const [cartitem, setCartitem] = useState(0);
   const [subCatProduct, setSubCatProduct] = useState([]);
-  const [productById, setProductById] = useState('');
+  const [productById, setProductById] = useState([]);
 
   const cartData = useSelector(state => state.reducer);
   // console.log('productById---------------->>>>', productById);
@@ -76,42 +76,59 @@ export default function SubCategories({navigation, route}) {
     {
       id: 1,
       itemname: 'Lemon Squeezer',
+      quantity:1
     },
     {
       id: 2,
       itemname: 'Hand Blender',
+      quantity:1
+
     },
     {
       id: 3,
 
       itemname: 'Pizza Cutter',
+      quantity:1
+
     },
     {
       id: 4,
 
       itemname: 'Stainless Steel',
+      quantity:1
+
     },
     {
       id: 5,
 
       itemname: 'Stainless Steel',
+      quantity:1
+
     },
     {
       id: 6,
 
       itemname: 'kitchen Tools',
+      quantity:1
+
     },
     {
       id: 7,
       itemname: 'kitchen Tools',
+      quantity:1
+
     },
     {
       id: 8,
       itemname: 'kitchen Tools',
+      quantity:1
+
     },
     {
       id: 9,
       itemname: 'kitchen Tools',
+      quantity:1
+
     },
   ];
 
@@ -135,7 +152,7 @@ export default function SubCategories({navigation, route}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(res => {
-        console.log('Product Item response------->>>>', res.data.result);
+        // console.log('Product Item response------->>>>', res.data.result);
         setSubCatProduct(res.data.result);
       })
       .catch(error => {
@@ -143,23 +160,26 @@ export default function SubCategories({navigation, route}) {
       });
   };
 
+
+
   const _ProductItemById = async () => {
     const token = await _getStorage('token');
-
-    // console.log('hey======', productById, CatItem._id);
-
+    // console.log('hey======', token);
     axios
       .get(
-        BASE_URL + `/User/getAllProduct2Byid/${productById}/${CatItem._id}`,
+        BASE_URL + `/User/getAllProduct2Byid/${CatItem._id}`,
         {
           headers: {Authorization: `Bearer ${token}`},
         },
       )
       .then(res => {
-        console.log(
-          'Product Item _ProductItemById response------->>>>',
-          res.data.result,
-        );
+        // console.log(
+        //   'Product Item _ProductItemById response------->>>>',
+        //   res.data,
+        // );
+        if(res.data.message== "All New Product list Founded Successfully."){
+          setProductById(res.data.result)
+        }
       })
       .catch(error => {
         console.log('Product Item catch error------->>>>', error.response.data);
@@ -171,6 +191,7 @@ export default function SubCategories({navigation, route}) {
       Type: 'All',
       name: 'Epic data',
       id: 1,
+
     },
     {
       Type: 'Purple',
@@ -234,15 +255,15 @@ export default function SubCategories({navigation, route}) {
     },
   ];
 
-  const [status, setStatus] = useState('All');
-  const [datalist, setDatalist] = useState(data);
-  const setStatusFilter = Type => {
-    if (Type !== 'All') {
-      setDatalist([...data.filter(item => item.Type === Type)]);
+  const [status, setStatus] = useState("tab1");
+  const [datalist, setDatalist] = useState(productById);
+  const setStatusFilter = type => {
+    if (type !== 'tab1') {
+      setDatalist([...productById.filter(item => item.type === type)]);
     } else {
-      setDatalist(data);
+      setDatalist(productById);
     }
-    setStatus(Type);
+    setStatus(type);
   };
 
   // const handleAddToWishlist = item => {
@@ -255,43 +276,46 @@ export default function SubCategories({navigation, route}) {
   //   SimpleToast({title: 'Item Remove To Wishlist', isLong: true});
   // };
 
-  const addToFavorites = item => dispatch(addToWishlist(item));
-  const removeFromFavorites = item => dispatch(removeFromWishlist(item));
+  // const addToFavorites = item => dispatch(addToWishlist(item));
+  // const removeFromFavorites = item => dispatch(removeFromWishlist(item));
 
   const handleAddToWishlist = item => {
-    addToFavorites(item);
+    // addToFavorites(item);
   };
   const handleRemoveFromWishlist = item => {
-    removeFromFavorites(item);
+    // removeFromFavorites(item);
   };
 
   const exists = item => {
-    if (SRTDATAItem.filter(item => item.id === item.id).length > 0) {
-      return true;
-    }
-    return false;
+    // if (SRTDATAItem.filter(item => item.id === item.id).length > 0) {
+    //   return true;
+    // }
+    // return false;
   };
 
   
 
-  const handleRemoveFromCart = () => {
-    removeItem(item.id);
-  };
+  // const handleRemoveFromCart = () => {
+  //   removeItem(item.id);
+  // };
 
   const handleAddToCart = (item) => {
-    dispatch(addItem(item.id))
+    // console.log(item._id)
+    dispatch(addItem())
   };
 
   const handleIncrementQuantity = item => {
-   dispatch(incrementItem(item.id)) 
+   dispatch(increment(item._id)) 
   };
 
   const handleDecrementQuantity = item => {
-   dispatch(decrementItem(item.id)) ;
+   dispatch(decrement(item._id)) ;
   };
 
-  // // console.log('count-------------<<<<<<', count)
 
+  const DataItem = useSelector(state => state.cartReducer.count._id);
+
+   console.log("DataItem------------>>>>", DataItem)
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -313,10 +337,10 @@ export default function SubCategories({navigation, route}) {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{}}
               horizontal
-              data={listTab}
+              data={subCatProduct}
               renderItem={({item, index}) => (
                 <TouchableOpacity
-                  onPress={() => setStatusFilter(item.Type)}
+                  onPress={() => setStatusFilter(item.type)}
                   activeOpacity={0.7}
                   style={{
                     alignItems: 'center',
@@ -324,10 +348,10 @@ export default function SubCategories({navigation, route}) {
                     alignItems: 'center',
                   }}>
                   <View style={Styles.BOXCONTAINE}>
-                    {/* <Image
+                    <Image
                       source={{uri: item.subCategoryPic}}
                       style={Styles.IMAGETOOLS}
-                    /> */}
+                    />
                   </View>
                   <Text
                     numberOfLines={2}
@@ -364,7 +388,7 @@ export default function SubCategories({navigation, route}) {
                   FontAwesomeIcontitle={exists(value) ? 'heart-o' : 'heart'}
                   //   onPress={() => toggleBottomNavigationView(value.id)}
                   Productimage={require('../Assets/Logo/mangoicon.png')}
-                  ProductName={value.itemname}
+                  ProductName={value.productName}
                   ProductSubName={'1 Piece'}
                   discountPrice={'Rs.80'}
                   ProductPrice={'Rs.190'}
@@ -373,12 +397,12 @@ export default function SubCategories({navigation, route}) {
                       {/* {cartData?.length !== 0 ? ( */}
                       <View style={Styles.INCREAMENTBOTTONMAIN}>
                         <TouchableOpacity
-                          onPress={handleDecrementQuantity(value)}>
+                          onPress={()=>handleDecrementQuantity(value)}>
                           <Text style={Styles.DCREAMENTTITLE}>-</Text>
                         </TouchableOpacity>
-                        <Text style={Styles.ITEMTITEL}>0</Text>
+                        <Text style={Styles.ITEMTITEL}>{DataItem}</Text>
                         <TouchableOpacity
-                          onPress={handleIncrementQuantity(value)}>
+                          onPress={()=>handleIncrementQuantity(value)}>
                           <Text style={Styles.INCREAMENTTITLE}>+</Text>
                         </TouchableOpacity>
                       </View>
@@ -420,7 +444,7 @@ const Styles = StyleSheet.create({
     backgroundColor: COLORS.WHITE,
   },
   bannerImage: {
-    height: heightPixel(195),
+    height: heightPixel(200),
     alignSelf: 'center',
     width: widthPixel(420),
   },
@@ -429,15 +453,17 @@ const Styles = StyleSheet.create({
     width: widthPixel(80),
     backgroundColor: COLORS.WHITE,
     elevation: 4,
-    borderRadius: 4,
+    borderRadius: 10,
     marginHorizontal: 5,
     marginVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
+    // backgroundColor:'red'
   },
   IMAGETOOLS: {
-    height: heightPixel(60),
+    height: heightPixel(90),
     width: widthPixel(80),
+    borderRadius:10
   },
   CONTAINERBOXMAIN: {
     flexDirection: 'row',

@@ -35,6 +35,7 @@ export default function MoreScreen({navigation}) {
     setModalVisible(!modalVisible);
     navigation.navigate(Routes.LOG_IN_SCREEN);
   };
+  
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -47,7 +48,7 @@ export default function MoreScreen({navigation}) {
         </View>
         <ScrollView>
           <TouchableOpacity
-            onPress={() => navigation.navigate('OrderHistory')}
+            onPress={() => navigation.navigate(Routes.ORDER_HISTORY)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>
@@ -56,7 +57,7 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>Order History</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Wishlist')}
+            onPress={() => navigation.navigate(Routes.WISHLIST_SCREEN)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>
@@ -65,7 +66,7 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>Wishlist</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Cart')}
+            onPress={() => navigation.navigate(Routes.CART_CSREEN)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>
@@ -92,7 +93,7 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>Upcoming Product</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('AboutUs')}
+            onPress={() => navigation.navigate(Routes.ABOUT_US)}
             TermsCondition
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
@@ -102,7 +103,7 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>About us</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('TermsCondition')}
+            onPress={() => navigation.navigate(Routes.TERMS_CONDITION)}
             PrivacyPolicy
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
@@ -112,7 +113,7 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>Terms & Condition</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('PrivacyPolicy')}
+            onPress={() => navigation.navigate(Routes.PRIVACY_POLICY)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>
@@ -137,12 +138,8 @@ export default function MoreScreen({navigation}) {
         _NO={() => {
           setModalVisible(!modalVisible);
         }}
-        _GoBack={() => navigation.navigate('Login')}
         isModal={modalVisible}
         _Visible={() => setModalVisible(!modalVisible)}
-        // backPress={() => toggleModal('imagePicker')}
-        // camera={() => setModalVisible(!modalVisible)}
-        // gallery={() => _pickImage('gallery')}
       />
     </SafeAreaView>
   );

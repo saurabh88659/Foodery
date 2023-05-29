@@ -69,6 +69,7 @@ export default function HomeScreen({navigation}) {
   const [second_Banner, setSecond_Banner] = useState([]);
   const [all_Category, setAll_Category] = useState([]);
   const [ex_Category_Two, setEx_category_Two] = useState([]);
+  const [freshness_Cat, setFreshnes_Cat] = useState([]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -180,6 +181,7 @@ export default function HomeScreen({navigation}) {
       _First_Banner();
       _all_Category();
       _ExSubCategory();
+      _FreshnessCategory();
     }
   }, [IsFocused]);
 
@@ -228,6 +230,24 @@ export default function HomeScreen({navigation}) {
       })
       .catch(error => {
         console.log('All Category Two Catch error', error);
+      });
+  };
+
+  const _FreshnessCategory = async () => {
+    const token = await _getStorage('token');
+
+    console.log(token);
+
+    axios
+      .get(BASE_URL + `/User/freshProductlist`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(res => {
+        console.log('Freshness Response----->>>', res.data.result);
+        setFreshnes_Cat(res.data.result);
+      })
+      .catch(error => {
+        console.log('Error Freshness catch error---->>>', error);
       });
   };
 
@@ -524,13 +544,30 @@ export default function HomeScreen({navigation}) {
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{paddingLeft: '35%'}}
                   horizontal
-                  data={Orderagain}
+                  data={freshness_Cat}
                   renderItem={({item, index}) => (
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('FruitsVegetables')}
-                      activeOpacity={0.8}
+                    // <TouchableOpacity
+                    //   onPress={() => navigation.navigate('FruitsVegetables')}
+                    //   activeOpacity={0.8}
+                    //   key={index}
+                    //   style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
+                    <Productinfo
+                      Styles={{top: -5}}
                       key={index}
-                      style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
+                      heartonPress={() => setHeart(item.id)}
+                      IconColor={
+                        heart !== item.id ? COLORS.GRAYDARK : COLORS.BROWN
+                      }
+                      FontAwesomeIcontitle={
+                        heart !== item.id ? 'heart-o' : 'heart'
+                      }
+                      Productimage={{uri: item.productImage}}
+                      ProductName={item.productName}
+                      ProductSubName={item.productUnit}
+                      discountPrice={'Rs.80'}
+                      StylesPrices={{top: heightPixel(5)}}
+                      ProductPrice={`Rs.${item.productPrice}`}
+                    />
                   )}
                 />
               </LinearGradient>
@@ -580,11 +617,30 @@ export default function HomeScreen({navigation}) {
                   horizontal
                   data={Orderagain}
                   renderItem={({item, index}) => (
-                    <TouchableOpacity
-                      onPress={() => navigation.navigate('FruitsVegetables')}
-                      activeOpacity={0.8}
+                    //     <TouchableOpacity
+                    //       onPress={() => navigation.navigate('FruitsVegetables')}
+                    //       activeOpacity={0.8}
+                    //       key={index}
+                    //       style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
+                    //   )}
+                    // />
+                    <Productinfo
+                      Styles={{top: heightPixel(-5)}}
                       key={index}
-                      style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
+                      heartonPress={() => setHeart(item.id)}
+                      IconColor={
+                        heart !== item.id ? COLORS.GRAYDARK : COLORS.BROWN
+                      }
+                      FontAwesomeIcontitle={
+                        heart !== item.id ? 'heart-o' : 'heart'
+                      }
+                      Productimage={require('../Assets/Logo/mangoicon.png')}
+                      ProductName={'Mango Alphonso'}
+                      ProductSubName={'6 Pcs (Approx 1.2Kg - 1.4Kg)'}
+                      discountPrice={'Rs.80'}
+                      StylesPrices={{top: heightPixel(4)}}
+                      ProductPrice={'Rs.70'}
+                    />
                   )}
                 />
               </LinearGradient>
@@ -817,7 +873,7 @@ const Styles = StyleSheet.create({
     alignSelf: 'center',
   },
   linearGradient: {
-    height: heightPixel(170),
+    height: heightPixel(200),
   },
   buttonText: {
     color: COLORS.WHITE,
