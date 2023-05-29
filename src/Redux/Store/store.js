@@ -1,14 +1,29 @@
-import {configureStore} from '@reduxjs/toolkit';
+// import {configureStore} from '@reduxjs/toolkit';
+// import rootReducer from '../rootReducer';
+// import createSagaMiddleware from 'redux-saga';
+// import RootsagaEpic from '../RootsagaEpic';
+// // import thunk from 'redux-thunk';
+
+// const sagaMiddleware = createSagaMiddleware();
+
+// const store = configureStore({
+//   reducer: rootReducer,
+//   middleware: () => [sagaMiddleware],
+// });
+
+// sagaMiddleware.run(RootsagaEpic);
+// export default store;
+
+import {applyMiddleware, createStore} from 'redux';
+// import {createEpicMiddleware} from 'redux-observable';
+
+import thunk from 'redux-thunk';
 import rootReducer from '../rootReducer';
-import createSagaMiddleware from 'redux-saga';
-import RootsagaEpic from '../RootsagaEpic';
+// import rootSaga from '../RootsagaEpic';
 
-const sagaMiddleware = createSagaMiddleware();
+// const epicMiddleWares = createEpicMiddleware();
 
-const store = configureStore({
-  reducer: rootReducer,
-  middleware: () => [sagaMiddleware],
-});
+const store = createStore(rootReducer, applyMiddleware(thunk));
 
-sagaMiddleware.run(RootsagaEpic);
+// epicMiddleWares.run(rootSaga);
 export default store;

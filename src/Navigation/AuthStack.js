@@ -1,7 +1,6 @@
 import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SpalshScreen from '../Screens/SpalshScreen';
-import Login from '../Screens/Login';
 import OtpScreen from '../Screens/OtpScreen';
 import CreateAccount from '../Screens/CreateAccount';
 import Resetpassword from '../Screens/Resetpassword';
@@ -13,6 +12,7 @@ import BottomTabBar from './BottomTabBar';
 import Routes from './Routes';
 import LoginScreen from '../Screens/LoginScreen';
 import Otp from '../Screens/Otp';
+import SearchBar from '../Screens/SearchBar';
 
 const Stack = createNativeStackNavigator();
 function AuthStack() {
@@ -33,11 +33,7 @@ function AuthStack() {
         component={Otp}
         options={{headerShown: false}}
       />
-      {/* <Stack.Screen
-        name={Routes.LOG_IN}
-        component={Login}
-        options={{headerShown: false}}
-      /> */}
+
       <Stack.Screen
         name="OtpScreen"
         component={OtpScreen}
@@ -72,6 +68,11 @@ function AuthStack() {
       <Stack.Screen
         name={Routes.BOTTOM_TAB_BAR}
         component={BottomTabBar}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name={Routes.SEARCH_BAR}
+        component={SearchBar}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

@@ -24,9 +24,17 @@ import {
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import MyModalinfo from '../Components/MyModalinfo';
 import Routes from '../Navigation/Routes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function MoreScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
+
+  const _Logout = async () => {
+    await AsyncStorage.removeItem('token');
+    await AsyncStorage.removeItem('isLoggedIn');
+    setModalVisible(!modalVisible);
+    navigation.navigate(Routes.LOG_IN_SCREEN);
+  };
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -125,7 +133,7 @@ export default function MoreScreen({navigation}) {
       </View>
       <MyModalinfo
         type={'log-out'}
-        _YES={() => setModalVisible(!modalVisible)}
+        _YES={_Logout}
         _NO={() => {
           setModalVisible(!modalVisible);
         }}

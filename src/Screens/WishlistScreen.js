@@ -13,6 +13,8 @@ import {COLORS} from '../utils/Colors';
 import MyHeader from '../Components/MyHeader';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import {bannerIcon} from '../utils/Const';
+import Routes from '../Navigation/Routes';
+import {useSelector} from 'react-redux';
 
 export default function WishlistScreen({navigation}) {
   const SRTDATA = [
@@ -23,6 +25,10 @@ export default function WishlistScreen({navigation}) {
     {name: 'Ravi rai'},
     {name: 'Ravi rai'},
   ];
+
+  const {item, favorites} = useSelector(state => state.wishlistReducer);
+  console.log('movies----------->>>>>>', item, favorites);
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <StatusBar
@@ -31,14 +37,18 @@ export default function WishlistScreen({navigation}) {
         backgroundColor={COLORS.GREEN}
         translucent={true}
       />
-      <MyHeader title={'Wishlist'} onPress={() => navigation.goBack()} />
+      <MyHeader
+        title={'Wishlist'}
+        onPress={() => navigation.goBack()}
+        onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
+      />
       <FlatList
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{paddingBottom: 5}}
         data={SRTDATA}
         renderItem={({item, index}) => (
-          <View>
+          <View key={index}>
             <View style={Styles.CONTAINERMAINBOX}>
               <View>
                 <Image source={bannerIcon} style={Styles.IMAGESTYLES} />

@@ -12,7 +12,7 @@ import {
 import React, {useState, useEffect} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {COLORS} from '../utils/Colors';
-import {SimpleToast, bannerIcon} from '../utils/Const';
+import {BASE_URL, SimpleToast, bannerIcon} from '../utils/Const';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import AddTocart from '../Components/AddTocart';
@@ -23,22 +23,31 @@ import {
 } from '../Redux/Action/actionwishlist';
 import {useDispatch, useSelector} from 'react-redux';
 import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPlaceHolder';
+import {_getStorage} from '../utils/Storage';
+import axios from 'axios';
+import { decrementItem, incrementItem } from '../Redux/Action/actionCart';
+import { addItem } from '../Redux/Action/actionCart';
 
 export default function SubCategories({navigation, route}) {
-  const SubName = route.params;
+  const CatItem = route.params;
+  // console.log('SubCatitem======>>> ======category', CatItem._id);
+  // console.log('SubCatitem======>>> sub category', SubCatitem.item._id);
   const [heart, setHeart] = useState(true);
   const dispatch = useDispatch();
   const [isloading, setIsloading] = useState(false);
   const [cartitem, setCartitem] = useState(0);
+  const [subCatProduct, setSubCatProduct] = useState([]);
+  const [productById, setProductById] = useState('');
 
   const cartData = useSelector(state => state.reducer);
+  // console.log('productById---------------->>>>', productById);
 
   const wishlistData = useSelector(
-    state => state.wishlistReducer.wishlistItems,
+      state => state.wishlistReducer.wishlistItems,
   );
-
-  console.log('wishlistData===========SUB==>', wishlistData);
-  console.log('Cartdata=============SUB', cartData);
+  // const count = useSelector((state) => state.cartReducer);
+  // console.log('wishlistData===========SUB==>', wishlistData);
+  // console.log('Cartdata=============SUB', cartData);
 
   useEffect(() => {
     setCartitem(cartData.length);
@@ -46,7 +55,7 @@ export default function SubCategories({navigation, route}) {
       cartData.forEach(element => {
         // if(element.itemname===item)
       });
-    }
+    } 
   }, [cartData]);
 
   // const [addwishlist, setAddwishlist] = useState(false);
@@ -62,27 +71,6 @@ export default function SubCategories({navigation, route}) {
   //     });
   //   }
   // }, [wishlistData]);
-
-  const SRTDATA = [
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-  ];
 
   const SRTDATAItem = [
     {
@@ -131,43 +119,204 @@ export default function SubCategories({navigation, route}) {
     dispatch(addToCart(item));
   };
 
-  const handleAddToWishlist = item => {
-    dispatch(addToWishlist(item));
-    SimpleToast({title: 'Item Save To Wishlist', isLong: true});
-  };
-
-  const handleRemoveFromWishlist = itemId => {
-    dispatch(removeFromWishlist(itemId));
-    SimpleToast({title: 'Item Remove To Wishlist', isLong: true});
-  };
-
   useEffect(() => {
+    _ProductItem();
+    _ProductItemById();
     setTimeout(() => {
       setIsloading(true);
     }, 1000);
   }, []);
 
+  const _ProductItem = async () => {
+    const token = await _getStorage('token');
+
+    axios
+      .get(BASE_URL + `/User/getsubCategory2/${CatItem._id}`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(res => {
+        console.log('Product Item response------->>>>', res.data.result);
+        setSubCatProduct(res.data.result);
+      })
+      .catch(error => {
+        console.log('Product Item catch error------->>>>', error.response.data);
+      });
+  };
+
+  const _ProductItemById = async () => {
+    const token = await _getStorage('token');
+
+    // console.log('hey======', productById, CatItem._id);
+
+    axios
+      .get(
+        BASE_URL + `/User/getAllProduct2Byid/${productById}/${CatItem._id}`,
+        {
+          headers: {Authorization: `Bearer ${token}`},
+        },
+      )
+      .then(res => {
+        console.log(
+          'Product Item _ProductItemById response------->>>>',
+          res.data.result,
+        );
+      })
+      .catch(error => {
+        console.log('Product Item catch error------->>>>', error.response.data);
+      });
+  };
+
+  const listTab = [
+    {
+      Type: 'All',
+      name: 'Epic data',
+      id: 1,
+    },
+    {
+      Type: 'Purple',
+      name: 'Epic number',
+      id: 2,
+    },
+    {
+      Type: 'Green',
+      name: 'Epic of To',
+      id: 3,
+    },
+  ];
+
+  const data = [
+    {
+      itemname: 'Lemon Squeezer',
+      Type: 'All',
+      id: 1,
+      quantity: 1,
+    },
+    {
+      itemname: 'Hand Blender',
+      Type: 'Purple',
+      id: 2,
+      quantity: 1,
+    },
+    {
+      itemname: 'Pizza Cutter',
+      Type: 'Green',
+      id: 3,
+      quantity: 1,
+    },
+    {
+      itemname: 'Stainless Steel',
+      Type: 'All',
+      id: 4,
+    },
+    {
+      itemname: 'kitchen Tools',
+      Type: 'Purple',
+      id: 5,
+      quantity: 1,
+    },
+    {
+      itemname: 'kitchen Tools',
+      Type: 'Green',
+      id: 6,
+      quantity: 1,
+    },
+    {
+      itemname: 'kitchen Tools',
+      Type: 'Green',
+      id: 7,
+      quantity: 1,
+    },
+    {
+      itemname: 'kitchen Tools',
+      Type: 'Green',
+      id: 8,
+      quantity: 1,
+    },
+  ];
+
+  const [status, setStatus] = useState('All');
+  const [datalist, setDatalist] = useState(data);
+  const setStatusFilter = Type => {
+    if (Type !== 'All') {
+      setDatalist([...data.filter(item => item.Type === Type)]);
+    } else {
+      setDatalist(data);
+    }
+    setStatus(Type);
+  };
+
+  // const handleAddToWishlist = item => {
+  //   dispatch(addToWishlist(item));
+  //   SimpleToast({title: 'Item Save To Wishlist', isLong: true});
+  // };
+
+  // const handleRemoveFromWishlist = itemId => {
+  //   dispatch(removeFromWishlist(itemId));
+  //   SimpleToast({title: 'Item Remove To Wishlist', isLong: true});
+  // };
+
+  const addToFavorites = item => dispatch(addToWishlist(item));
+  const removeFromFavorites = item => dispatch(removeFromWishlist(item));
+
+  const handleAddToWishlist = item => {
+    addToFavorites(item);
+  };
+  const handleRemoveFromWishlist = item => {
+    removeFromFavorites(item);
+  };
+
+  const exists = item => {
+    if (SRTDATAItem.filter(item => item.id === item.id).length > 0) {
+      return true;
+    }
+    return false;
+  };
+
+  
+
+  const handleRemoveFromCart = () => {
+    removeItem(item.id);
+  };
+
+  const handleAddToCart = (item) => {
+    dispatch(addItem(item.id))
+  };
+
+  const handleIncrementQuantity = item => {
+   dispatch(incrementItem(item.id)) 
+  };
+
+  const handleDecrementQuantity = item => {
+   dispatch(decrementItem(item.id)) ;
+  };
+
+  // // console.log('count-------------<<<<<<', count)
+
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <StatusBar
-        // barStyle="dark-content"
         hidden={false}
         backgroundColor={COLORS.GREEN}
         translucent={true}
       />
-      <MyHeader title={SubName} onPress={() => navigation.goBack()} />
+      <MyHeader title={CatItem.name} onPress={() => navigation.goBack()} />
       {isloading ? (
         <SafeAreaView style={Styles.CONTAINERMAIN}>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <Image source={bannerIcon} style={Styles.bannerImage} />
+            <Image
+              source={{uri: CatItem.categoryBanner}}
+              style={Styles.bannerImage}
+            />
             <FlatList
               keyExtractor={(item, index) => index.toString()}
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{}}
               horizontal
-              data={SRTDATA}
+              data={listTab}
               renderItem={({item, index}) => (
                 <TouchableOpacity
+                  onPress={() => setStatusFilter(item.Type)}
                   activeOpacity={0.7}
                   style={{
                     alignItems: 'center',
@@ -175,35 +324,44 @@ export default function SubCategories({navigation, route}) {
                     alignItems: 'center',
                   }}>
                   <View style={Styles.BOXCONTAINE}>
-                    <Image
-                      source={require('../Assets/Logo/mangoicon.png')}
+                    {/* <Image
+                      source={{uri: item.subCategoryPic}}
                       style={Styles.IMAGETOOLS}
-                    />
+                    /> */}
                   </View>
                   <Text
+                    numberOfLines={2}
                     style={{
                       fontWeight: '500',
                       color: COLORS.GRAYDARK,
                       textAlign: 'center',
+                      // backgroundColor: 'red',
+                      width: 100,
                     }}>
-                    Kitchen{`\n`} Tools
+                    {item.name}
                   </Text>
                 </TouchableOpacity>
               )}
             />
             <View style={Styles.CONTAINERBOXMAIN}>
-              {SRTDATAItem.map((value, index) => (
+              {datalist.map((value, index) => (
                 <Productinfo
                   // addtocartonPress={}
                   key={index}
-                  heartonPress={() => handleAddToWishlist(value)}
+                  // heartonPress={() => handleAddToWishlist(value)}
+                  heartonPress={() =>
+                    exists(value)
+                      ? handleRemoveFromWishlist(value)
+                      : handleAddToWishlist(value)
+                  }
                   // heartonPress={() => handleWishlistToggle(value)}
                   IconColor={
                     heart !== value.id ? COLORS.GRAYDARK : COLORS.BROWN
                   }
-                  FontAwesomeIcontitle={
-                    heart !== value.id ? 'heart-o' : 'heart'
-                  }
+                  // FontAwesomeIcontitle={
+                  //   heart !== value.id ? 'heart-o' : 'heart'
+                  // }
+                  FontAwesomeIcontitle={exists(value) ? 'heart-o' : 'heart'}
                   //   onPress={() => toggleBottomNavigationView(value.id)}
                   Productimage={require('../Assets/Logo/mangoicon.png')}
                   ProductName={value.itemname}
@@ -213,18 +371,21 @@ export default function SubCategories({navigation, route}) {
                   UIBotton={
                     <View>
                       {/* {cartData?.length !== 0 ? ( */}
-                      {/* <View style={Styles.INCREAMENTBOTTONMAIN}>
-                          <TouchableOpacity>
-                            <Text style={Styles.DCREAMENTTITLE}>-</Text>
-                          </TouchableOpacity>
-                          <Text style={Styles.ITEMTITEL}>0</Text>
-                          <TouchableOpacity>
-                            <Text style={Styles.INCREAMENTTITLE}>+</Text>
-                          </TouchableOpacity>
-                        </View> */}
+                      <View style={Styles.INCREAMENTBOTTONMAIN}>
+                        <TouchableOpacity
+                          onPress={handleDecrementQuantity(value)}>
+                          <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={Styles.ITEMTITEL}>0</Text>
+                        <TouchableOpacity
+                          onPress={handleIncrementQuantity(value)}>
+                          <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                        </TouchableOpacity>
+                      </View>
                       {/* ) : ( */}
                       <TouchableOpacity
-                        onPress={() => _Handle_AddToCart(value)}
+                        // onPress={() => _Handle_AddToCart(value)}
+                        onPress={()=>handleAddToCart(value)}
                         activeOpacity={0.5}
                         style={Styles.ADDBOTTONSTYL}>
                         <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
@@ -259,9 +420,9 @@ const Styles = StyleSheet.create({
     backgroundColor: COLORS.WHITE,
   },
   bannerImage: {
-    height: heightPixel(180),
+    height: heightPixel(195),
     alignSelf: 'center',
-    width: widthPixel(410),
+    width: widthPixel(420),
   },
   BOXCONTAINE: {
     height: heightPixel(90),

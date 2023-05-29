@@ -22,6 +22,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {checkInternetConnection} from '../utils/Handler/InternetInfo';
 import Lottie from 'lottie-react-native';
+import RNExitApp from 'react-native-exit-app';
+import { fetchData } from '../Redux/RootsagaEpic';
 
 export default function SpalshScreen({navigation}) {
   const IsFocused = useIsFocused();
@@ -30,6 +32,15 @@ export default function SpalshScreen({navigation}) {
   const [isLoading, setIsLoading] = useState(true);
 
   const Locations = useSelector(state => state.locationReducer);
+
+
+  // const {loading, data, error} = useSelector(state => state.Profilereducer);
+  // console.log(
+  //   'data-------------------------------->>>>>>>',
+  //   data,
+  //   loading,
+  //   error,
+  // );
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -79,15 +90,17 @@ export default function SpalshScreen({navigation}) {
 
   useEffect(() => {
     _Handle_Splash();
+    
   }, []);
+
+  useEffect(()=>{
+    dispatch(fetchData());
+  },[])
 
   const _Handle_Splash = async () => {
     const token = await _getStorage('token');
-
     const isInternet = await checkInternetConnection();
-
     console.log('isInternet', isInternet);
-
     if (isInternet) {
       if (token) {
         axios
@@ -97,7 +110,7 @@ export default function SpalshScreen({navigation}) {
             },
           })
           .then(resp => {
-            if (resp.data.result.name) {
+            if (resp.data.result.name && resp.data.result.address) {
               navigation.navigate(Routes.BOTTOM_TAB_BAR);
               console.log('Splahs screen =========', resp.data.result);
             } else {
@@ -109,17 +122,21 @@ export default function SpalshScreen({navigation}) {
           .catch(async err => {
             if (err.response?.data) {
               if (err.response?.data?.message == 'You are not  user.!') {
-                navigation.navigate(Routes.LOG_IN_SCREEN);
+                navigation.replace(Routes.LOG_IN_SCREEN);
               } else if (err.response.data?.message === 'Token is not valid!') {
                 const resfreshToken = await AsyncStorage.getItem(
                   'refreshToken',
                 );
                 const userId = await AsyncStorage.getItem('user_id');
+
+                console.log('userId--------->>', userId);
+
                 const SubmitDAta = {
                   refreshToken: resfreshToken,
                   user_id: userId,
                 };
                 //refresh token api
+                console.log('refresh token------->>', SubmitDAta);
                 axios
                   .post(BASE_URL + `/User/refreshToken`, SubmitDAta)
                   .then(async res => {
@@ -130,12 +147,12 @@ export default function SpalshScreen({navigation}) {
                       res.data.refreshToken,
                     );
                     if (res.data.token) {
-                      navigation.navigate(Routes.BOTTOM_TAB_BAR);
+                      navigation.replace(Routes.BOTTOM_TAB_BAR);
                     }
                   })
-
                   .catch(error => {
-                    console.log('errr--->>>', error.response?.data.message);
+                    console.log('errr--->>>', error.response.data.message);
+                    navigation.replace(Routes.BOTTOM_TAB_BAR);
                   });
                 // update access token in storage
               }
@@ -153,9 +170,9 @@ export default function SpalshScreen({navigation}) {
   return (
     <SafeAreaView style={Styles.Container}>
       <StatusBar
-        barStyle="dark-content"
+        barStyle="light-content"
         hidden={false}
-        backgroundColor={COLORS.WHITE}
+        backgroundColor={COLORS.GREEN}
         translucent={true}
       />
       {isLoading ? (
@@ -202,7 +219,8 @@ export default function SpalshScreen({navigation}) {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => checkInternetConnection()}
+              // onPress={() => checkInternetConnection()}
+              onPress={() => RNExitApp.exitApp()}
               activeOpacity={0.6}>
               <Text
                 style={{

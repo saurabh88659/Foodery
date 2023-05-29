@@ -1,28 +1,33 @@
-// function* RootsagaEpic() {}
 
-// export default RootsagaEpic;
 
-import {put, takeLatest} from 'redux-saga/effects';
 import axios from 'axios';
-import {LOGIN_FAILURE, LOGIN_REQUEST, LOGIN_SUCCESS} from './constants';
-import {BASE_URL} from '../utils/Const';
+import {
+  fetchDataFailure,
+  fetchDataRequest,
+  fetchDataSuccess,
+} from './Action/actionProfile';
+import { BASE_URL } from '../utils/Const';
+import { _getStorage } from '../utils/Storage';
 
-function* loginSaga(action) {
-  try {
-    const {email, password} = action.payload;
-    const response = yield axios.post(BASE_URL + `/User/userLoginApi`, {
-      email,
-      password,
-    });
-    console.log('++++++++++++', response);
-    yield put({type: LOGIN_SUCCESS, payload: response.data});
-  } catch (error) {
-    yield put({type: LOGIN_FAILURE, payload: error.response.data});
-  }
-}
+const url =
+  'https://jsonplaceholder.typicode.com/todos/1'
 
-function* rootSaga() {
-  yield takeLatest(LOGIN_REQUEST, loginSaga);
-}
 
-export default rootSaga;
+export const fetchData = () => {
+  // const token = await _getStorage('token')
+
+    return async dispatch => {
+    dispatch(fetchDataRequest());
+    try {
+      const response = await axios.get(BASE_URL+`/User/getProfile`,{
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      const data = response.data;
+      dispatch(fetchDataSuccess(data));
+    } catch (error) {
+      dispatch(fetchDataFailure(error.message));
+    }
+  };
+};

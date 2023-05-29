@@ -15,11 +15,19 @@ import {
   Keyboard,
   Alert,
   BackHandler,
+  Pressable,
+  Dimensions,
 } from 'react-native';
 import Header from '../Components/Header';
 // import {getCloser} from '../Components/utils';
 import {COLORS} from '../utils/Colors';
-import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
+import {
+  fontPixel,
+  heightPixel,
+  screenHeight,
+  screenWidth,
+  widthPixel,
+} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import LinearGradient from 'react-native-linear-gradient';
 import {
@@ -32,11 +40,17 @@ import {
   Footerbanner1,
   generousvegetablicon,
   SimpleToast,
+  BASE_URL,
 } from '../utils/Const';
 import Collapsible from 'react-native-collapsible';
 import MyModalinfo from '../Components/MyModalinfo';
 import HomeShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/HomeShimmerPlaceHolder';
 import Routes from '../Navigation/Routes';
+import {useDoubleBackPressExit} from '../utils/Handler/BackHandler';
+import Swiper from 'react-native-swiper';
+import {_getStorage} from '../utils/Storage';
+import {useIsFocused} from '@react-navigation/native';
+import axios from 'axios';
 
 const {diffClamp} = Animated;
 const headerHeight = 58 * 2;
@@ -50,6 +64,11 @@ export default function HomeScreen({navigation}) {
   const [collapsed, setCollapsed] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const IsFocused = useIsFocused();
+  const [firstBanner, setFirstBanner] = useState([]);
+  const [second_Banner, setSecond_Banner] = useState([]);
+  const [all_Category, setAll_Category] = useState([]);
+  const [ex_Category_Two, setEx_category_Two] = useState([]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -100,83 +119,6 @@ export default function HomeScreen({navigation}) {
   //     }
   //   }
   // };
-
-  const SRTDATANEW = [
-    {
-      id: 1,
-      Name: 'Masala & Dry Fruits',
-      FontAwesomeIcon: FontAwesomeIcon,
-    },
-    {
-      id: 2,
-      Name: 'Sweet Cravings',
-    },
-    {
-      id: 3,
-      Name: 'Frozen Food and Icoe Cream',
-    },
-    {
-      id: 4,
-      Name: `Packed ${`\n`}Food`,
-    },
-  ];
-  const SRTDATANEWOKAY = [
-    {
-      id: 1,
-      Name: 'Kitchen Needs',
-    },
-    {
-      id: 2,
-      Name: 'Sweet Cravings',
-    },
-    {
-      id: 3,
-      Name: 'Frozen Food and Icoe Cream',
-    },
-    {
-      id: 4,
-      Name: `Packed ${`\n`}Food`,
-    },
-    {
-      id: 5,
-      Name: `Packed ${`\n`}Food`,
-    },
-    {
-      id: 6,
-      Name: `Packed ${`\n`}Food`,
-    },
-    {
-      id: 7,
-      Name: `Packed ${`\n`}Food`,
-    },
-    {
-      id: 8,
-      Name: `Packed ${`\n`}Food`,
-    },
-  ];
-
-  const SRTDATANEWOKAYEXPOl = [
-    {
-      id: 1,
-      color: '#2DCAD6',
-      Name: `Kitchen Needs`,
-    },
-    {
-      id: 2,
-      color: '#A005A0',
-      Name: 'Sweet Cravings',
-    },
-    {
-      id: 3,
-      color: '#F19C06',
-      Name: `Bady Care`,
-    },
-    {
-      id: 4,
-      color: '#EC0C5E',
-      Name: `Makeup & Beauty`,
-    },
-  ];
 
   const Orderagain = [
     {
@@ -232,31 +174,62 @@ export default function HomeScreen({navigation}) {
 
   //  < ===================BackHandler Function =======================>
 
-  let backButtonPressedOnce = false;
+  useEffect(() => {
+    useDoubleBackPressExit();
+    if (IsFocused) {
+      _First_Banner();
+      _all_Category();
+      _ExSubCategory();
+    }
+  }, [IsFocused]);
 
-  // useEffect(() => {
-  //   const handleBackButton = () => {
-  //     SimpleToast({title: 'Press back again to exit'});
-  //     // Exit the app only if the back button is pressed twice in quick succession
-  //     if (backButtonPressedOnce) {
-  //       BackHandler.exitApp();
-  //     } else {
-  //       backButtonPressedOnce = true;
-  //       setTimeout(() => {
-  //         backButtonPressedOnce = false;
-  //       }, 2000); // Timeout duration to allow pressing back twice within 2 seconds
-  //     }
-  //     return true;
-  //   };
-  //   const backHandler = BackHandler.addEventListener(
-  //     'hardwareBackPress',
-  //     handleBackButton,
-  //   );
+  const _First_Banner = async () => {
+    const token = await _getStorage('token');
+    // console.log('token=========', token);
+    axios
+      .get(BASE_URL + `/User/getAllBanner`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(response => {
+        // console.log('Banner Response=======', response.data);
+        setFirstBanner(response.data.advertisement);
+        setSecond_Banner(response.data.offer);
+      })
+      .catch(error => {
+        console.log('Banner Catch error', error);
+      });
+  };
 
-  //   return () => {
-  //     backHandler.remove();
-  //   };
-  // }, []);
+  const _all_Category = async () => {
+    const token = await _getStorage('token');
+    axios
+      .get(BASE_URL + `/User/getAllcategorylist`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(response => {
+        // console.log('All Category Response', response.data.getAll);
+        setAll_Category(response.data.getAll);
+      })
+      .catch(error => {
+        console.log('All Category Catch error', error);
+      });
+  };
+
+  const _ExSubCategory = async () => {
+    const token = await _getStorage('token');
+    console.log('hey');
+    axios
+      .get(BASE_URL + `/User/getCategory2`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(response => {
+        console.log('All Category Two Response----->>>', response.data.getAll);
+        setEx_category_Two(response.data.getAll);
+      })
+      .catch(error => {
+        console.log('All Category Two Catch error', error);
+      });
+  };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -272,7 +245,7 @@ export default function HomeScreen({navigation}) {
           <Animated.View style={[Styles.header, {transform: [{translateY}]}]}>
             <Header
               titleonPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
-              onPress={() => navigation.navigate('ProfileScreen')}
+              onPress={() => navigation.navigate(Routes.PROFILE_SCREEN)}
               {...{headerHeight}}
             />
           </Animated.View>
@@ -301,46 +274,63 @@ export default function HomeScreen({navigation}) {
                 </TouchableOpacity>
               </View>
 
-              <View>
+              <View style={{}}>
                 <FlatList
                   keyExtractor={(item, index) => index.toString()}
                   showsHorizontalScrollIndicator={false}
                   // contentContainerStyle={{paddingBottom: 5}}
-                  horizontal
-                  data={SRTDATANEW}
+                  // horizontal
+                  numColumns={4}
+                  // data={showModal?all_Category:}
+                  data={all_Category.slice(0, 4)}
                   renderItem={({item, index}) => (
-                    <View style={Styles.CATALLMAINSTYLS}>
+                    <TouchableOpacity
+                      activeOpacity={0.6}
+                      onPress={() =>
+                        navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)
+                      }
+                      key={index}
+                      style={Styles.CATALLMAINSTYLS}>
                       <View style={Styles.CATBOXMAINSTYLS}>
-                        <IonIcon
-                          title="ios-home-sharp"
-                          size={25}
-                          IconColor={COLORS.GREEN}
+                        <Image
+                          source={{uri: item.categoryIcon}}
+                          style={Styles.IMAGEALLCATLOGO}
                         />
                       </View>
                       <Text numberOfLines={2} style={Styles.CATTITLESTYLS}>
-                        {item.Name}
+                        {item.categoryName}
                       </Text>
-                    </View>
+                    </TouchableOpacity>
                   )}
                 />
               </View>
+
               <View style={Styles.EXPLOREMAINCONTAINER}>
-                {SRTDATANEWOKAY.map((value, index) => (
-                  <Collapsible collapsed={collapsed} key={index}>
-                    <View style={Styles.EXPLOREBOX}>
-                      <View style={Styles.EXPLOREICON}>
-                        <IonIcon
-                          title="ios-home-sharp"
-                          size={25}
-                          IconColor={COLORS.GREEN}
-                        />
+                {all_Category
+                  .slice(4, all_Category.length)
+                  .map((item, index) => (
+                    <Collapsible collapsed={collapsed} key={index}>
+                      <View style={Styles.EXPLOREBOX}>
+                        <TouchableOpacity
+                          activeOpacity={0.6}
+                          onPress={() =>
+                            navigation.navigate(
+                              Routes.SUB_CATEGRIES_MODAL,
+                              item,
+                            )
+                          }
+                          style={Styles.EXPLOREICON}>
+                          <Image
+                            source={{uri: item.categoryIcon}}
+                            style={Styles.IMAGEALLCATLOGO}
+                          />
+                        </TouchableOpacity>
+                        <Text numberOfLines={2} style={Styles.CATTITLESTYLS}>
+                          {item.categoryName}
+                        </Text>
                       </View>
-                      <Text numberOfLines={2} style={Styles.EXPLORETITLESUB}>
-                        {value.Name}
-                      </Text>
-                    </View>
-                  </Collapsible>
-                ))}
+                    </Collapsible>
+                  ))}
               </View>
             </View>
             <TouchableOpacity
@@ -361,28 +351,42 @@ export default function HomeScreen({navigation}) {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{paddingBottom: 5}}
               horizontal
-              data={SRTDATANEWOKAYEXPOl}
+              data={ex_Category_Two}
               renderItem={({item, index}) => (
                 <TouchableOpacity
                   onPress={() =>
-                    navigation.navigate('SubCategories', item.Name)
+                    navigation.navigate(Routes.SUB_CATEGRIES_2, item)
                   }
                   activeOpacity={0.7}
                   key={index}
-                  style={[Styles.CONTAINERBOX, {backgroundColor: item.color}]}>
+                  style={[
+                    Styles.CONTAINERBOX,
+                    {backgroundColor: item.catColor},
+                  ]}>
                   <Image
-                    source={require('../Assets/Logo/expoloricon.png')}
+                    source={{uri: item.image}}
                     style={Styles.EXPLOREIMAGESTYL}
                   />
-                  <Text style={Styles.EXPLORESUBTITLE}>{item.Name}</Text>
+                  <Text style={Styles.EXPLORESUBTITLE}>{item.name}</Text>
                 </TouchableOpacity>
               )}
             />
-            <View style={{alignItems: 'center', marginTop: 20}}>
-              <Image
-                source={require('../Assets/Logo/baneer22.png')}
-                style={Styles.BANNERSTYLES}
-              />
+            <View style={Styles.SWIPERCONTANINER}>
+              <Swiper
+                showsButtons={false}
+                autoplay={true}
+                autoplayTimeout={10}
+                showsPagination={false}
+                style={{}}>
+                {firstBanner.map((item, index) => (
+                  <View key={index}>
+                    <Image
+                      source={{uri: item.bannerImageUrl}}
+                      style={Styles.BANNERSTYLES}
+                    />
+                  </View>
+                ))}
+              </Swiper>
             </View>
             <View style={{marginHorizontal: 10}}>
               <View style={Styles.SubTitleheader}>
@@ -448,13 +452,23 @@ export default function HomeScreen({navigation}) {
                 </View>
               )}
             />
-            <View style={{alignItems: 'center', marginTop: 20}}>
-              <Image
-                source={require('../Assets/Logo/baneer22.png')}
-                style={Styles.BANNERSTYLES}
-              />
-            </View>
-
+            <Pressable style={Styles.SWIPERCONTANINER}>
+              <Swiper
+                showsButtons={false}
+                autoplay={true}
+                autoplayTimeout={10}
+                showsPagination={false}
+                style={{}}>
+                {second_Banner.map((item, index) => (
+                  <View key={index}>
+                    <Image
+                      source={{uri: item.bannerImageUrl}}
+                      style={Styles.BANNERSTYLES}
+                    />
+                  </View>
+                ))}
+              </Swiper>
+            </Pressable>
             <View style={{marginHorizontal: 10}}>
               <View style={Styles.SubTitleheader}>
                 <Text style={Styles.titlemain}>Buy 'Em Now</Text>
@@ -588,6 +602,28 @@ export default function HomeScreen({navigation}) {
             _SubonPress={() => navigation.navigate(Routes.SUB_CATEGRIES_MODAL)}
             isModal={modalVisible}
             _Visible={() => setModalVisible(!modalVisible)}
+            _Ui={
+              <View style={Styles.MODALPRODUCTBOXMAIN}>
+                {all_Category.map((item, index) => (
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() =>
+                      navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)
+                    }
+                    style={Styles.GREENMAINBOXMODAL}>
+                    <View style={Styles.MODALBOX}>
+                      <Image
+                        source={{uri: item.categoryIcon}}
+                        style={Styles.IMAGEALLCATLOGO}
+                      />
+                    </View>
+                    <Text numberOfLines={2} style={Styles.MODALTEXT}>
+                      {item.categoryName}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            }
           />
         </SafeAreaView>
       ) : (
@@ -694,7 +730,11 @@ const Styles = StyleSheet.create({
     backgroundColor: COLORS.LIGHTGREEN,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 50,
+    borderRadius: heightPixel(screenWidth),
+  },
+  IMAGEALLCATLOGO: {
+    height: heightPixel(50),
+    width: widthPixel(50),
   },
   CATTITLESTYLS: {
     fontWeight: '500',
@@ -709,6 +749,15 @@ const Styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    // backgroundColor: 'red',
+    // elevation: 8,
+    // position: 'relative',
+    // alignSelf: 'center',
+    // borderBottomRightRadius: 25,
+    // borderBottomLeftRadius: 25,
+    // paddingVertical: '5%',
+    // height: heightPixel(290),
+    // zIndex: -1,
   },
   EXPLOREBOX: {
     alignItems: 'flex-start',
@@ -725,16 +774,9 @@ const Styles = StyleSheet.create({
     backgroundColor: COLORS.LIGHTGREEN,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 50,
+    borderRadius: heightPixel(screenWidth),
   },
-  EXPLORETITLESUB: {
-    fontWeight: '500',
-    color: COLORS.GRAYDARK,
-    letterSpacing: 0.5,
-    marginTop: 5,
-    textAlign: 'center',
-    fontSize: fontPixel(15),
-  },
+
   TOGGLEEXPOSTYLS: {
     alignItems: 'center',
     justifyContent: 'center',
@@ -763,6 +805,7 @@ const Styles = StyleSheet.create({
     height: heightPixel(130),
     width: widthPixel(400),
     borderRadius: 10,
+    alignSelf: 'center',
   },
 
   BACKGROUNDINDEXMAIN: {
@@ -838,5 +881,52 @@ const Styles = StyleSheet.create({
     color: COLORS.PURPLE,
     fontWeight: '500',
     fontSize: fontPixel(13),
+  },
+  SWIPERCONTANINER: {
+    alignItems: 'center',
+    marginTop: 15,
+    height: heightPixel(140),
+    paddingTop: '1%',
+  },
+  modalize: {
+    position: 'absolute',
+    top: 0,
+    backgroundColor: 'white',
+    borderBottomLeftRadius: 50,
+    borderBottomRightRadius: 50,
+    width: '97%',
+    alignSelf: 'center',
+    zIndex: 9998,
+    shadowColor: 'black',
+    shadowOpacity: 1,
+    shadowRadius: 20,
+    elevation: 45,
+  },
+  MODALPRODUCTBOXMAIN: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  GREENMAINBOXMODAL: {
+    marginTop: 30,
+    alignItems: 'center',
+    marginHorizontal: 5,
+  },
+  MODALBOX: {
+    height: heightPixel(70),
+    width: widthPixel(70),
+    backgroundColor: COLORS.LIGHTGREEN,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: heightPixel(screenHeight),
+  },
+  MODALTEXT: {
+    fontWeight: '500',
+    color: COLORS.GRAYDARK,
+    letterSpacing: 0.5,
+    marginTop: 5,
+    fontSize: fontPixel(15),
+    width: 70,
   },
 });

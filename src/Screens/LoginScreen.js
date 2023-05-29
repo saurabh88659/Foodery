@@ -14,13 +14,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import {BASE_URL, SimpleToast, createaccountTOPImage} from '../utils/Const';
 import {COLORS} from '../utils/Colors';
-import {
-  fontPixel,
-  heightPixel,
-  screenHeight,
-  screenWidth,
-  widthPixel,
-} from '../Components/Dimensions';
+import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Button from '../Components/Button';
 import axios from 'axios';
 import Routes from '../Navigation/Routes';
@@ -69,7 +63,6 @@ export default function LoginScreen({navigation}) {
       })
       .catch(error => {
         console.log('Login Catch error', error);
-        // console.log('hey Error', error.response.data.message);
         SimpleToast({title: error.response?.data.message, isLong: true});
         setState({
           ...state,
@@ -81,13 +74,15 @@ export default function LoginScreen({navigation}) {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <SafeAreaView style={Styles.CONTAINERMAIN}>
-        {/* <KeyboardAvoidingView style={{flex: 1}}> */}
         <View style={Styles.CONTAINERIMAGEMAIN}>
           <Image source={createaccountTOPImage} style={Styles.IMAGESTYL} />
         </View>
-        <View
+        <KeyboardAvoidingView
+          behavior="padding"
           style={{
-            top: '-8%',
+            alignItems: 'center',
+            alignSelf: 'center',
+            top: heightPixel(-50),
           }}>
           <View style={{alignItems: 'center'}}>
             <Text style={Styles.headerTitle}>Login</Text>
@@ -113,11 +108,6 @@ export default function LoginScreen({navigation}) {
             <Text style={Styles.Errortext}>{errorMobileNumber}</Text>
           ) : null}
           <View style={{marginTop: 20}}>
-            {/* <Button
-              title={'LogIn'}
-              onPress={_HandleSend}
-              // onPress={() => navigation.navigate(Routes.OTP_SCREEN)}
-            /> */}
             <View style={{marginTop: 30}}>
               <Button
                 title={
@@ -146,8 +136,7 @@ export default function LoginScreen({navigation}) {
               />
             </View>
           </View>
-        </View>
-        {/* </KeyboardAvoidingView> */}
+        </KeyboardAvoidingView>
         <View
           style={{alignItems: 'center', justifyContent: 'flex-end', flex: 1}}>
           <Text style={Styles.footerTitle}>
@@ -166,13 +155,12 @@ const Styles = StyleSheet.create({
   },
   CONTAINERIMAGEMAIN: {
     alignItems: 'center',
-    // flex: 1,
+    alignSelf: 'flex-end',
   },
   IMAGESTYL: {
-    width: widthPixel(580),
-    height: heightPixel(500),
-    resizeMode: 'contain',
-    // flex: 1,
+    width: widthPixel(420),
+    height: heightPixel(450),
+    alignSelf: 'flex-end',
   },
   sectionStyle: {
     flexDirection: 'row',

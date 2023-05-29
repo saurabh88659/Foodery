@@ -8,16 +8,16 @@ import {
   Keyboard,
   TextInput,
   ScrollView,
-  Alert,
   Pressable,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, screenHeight} from '../Components/Dimensions';
 import Button from '../Components/Button';
 import axios from 'axios';
-import {BASE_URL, FontAwesome5Icon} from '../utils/Const';
+import {BASE_URL, FontAwesome5Icon, SimpleToast} from '../utils/Const';
 import Routes from '../Navigation/Routes';
 import {_getStorage} from '../utils/Storage';
 import ImagePicker from 'react-native-image-crop-picker';
@@ -31,10 +31,9 @@ function SignUpscreen({navigation, route}) {
   const [addressError, setaddressError] = useState('');
   const [state, setState] = useState({
     isLoading: false,
+    profileImg: null,
   });
-
   const PNumber = route.params;
-  console.log(PNumber);
 
   const validateEmail = email => {
     const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -46,16 +45,6 @@ function SignUpscreen({navigation, route}) {
       return true;
     }
   };
-
-  // const validatePassword = password => {
-  //   if (password.length < 6) {
-  //     setPasswordError('Password must be at least 6 characters long');
-  //     return false;
-  //   } else {
-  //     setPasswordError('');
-  //     return true;
-  //   }
-  // };
 
   const validateFullName = () => {
     const namePattern = /^[A-Za-z\s]+$/;
@@ -83,16 +72,11 @@ function SignUpscreen({navigation, route}) {
     const isValidEmail = validateEmail(email);
     const isValidFullNmae = validateFullName(fullName);
     const isValidAddress = validateAddress(address);
-
-    if (isValidEmail && isValidFullNmae && isValidPhone && isValidAddress) {
-      // Submit login credentials
-      Alert.alert('Success', 'Sign Up successfully');
+    if (isValidEmail && isValidFullNmae && isValidAddress) {
+      _SignUp();
+      _UP_LoadProfile_Img();
     }
   };
-
-  // useEffect(() => {
-  //   requestUserPermission();
-  // }, []);
 
   const onGallary = () => {
     ImagePicker.openPicker({
@@ -101,16 +85,20 @@ function SignUpscreen({navigation, route}) {
       mediaType: 'any',
     })
       .then(image => {
-        console.log(image);
+        if (image) {
+          setState({...state, profileImg: image});
+        } else {
+          console.log('Please selected Image');
+        }
       })
       .catch(err => {
         console.log('Img picker Error--->>>', err);
+        SimpleToast({title: 'User cancelled image selection', isLong: true});
       });
   };
 
   const _SignUp = async () => {
     const token = await _getStorage('token');
-
     setState({
       ...state,
       isLoading: true,
@@ -122,9 +110,6 @@ function SignUpscreen({navigation, route}) {
       phone: PNumber,
       address: address,
     };
-
-    console.log(datasignup);
-
     axios
       .post(BASE_URL + `/User/addUser`, datasignup, {
         headers: {Authorization: `Bearer ${token}`},
@@ -149,6 +134,46 @@ function SignUpscreen({navigation, route}) {
       });
   };
 
+  const _UP_LoadProfile_Img = async () => {
+    const token = await _getStorage('token');
+
+    let formData = new FormData();
+    if (state.profileImg) {
+      var imgName = state.profileImg?.path?.replace(/^.*[\\\/]/, '');
+      formData.append('image', {
+        name: imgName,
+        type: state.profileImg?.mime,
+        uri:
+          Platform.OS === 'android'
+            ? state.profileImg?.path
+            : state.profileImg?.path?.replace('file://', ''),
+      });
+
+      axios
+        .post(BASE_URL + `/User/userAddPic`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then(res => {
+          console.log('Profile image--------->>', res.data.message);
+          SimpleToast({title: res.data.message, isLong: true});
+          setState({...state, profileImg: null});
+
+          SimpleToast({title: res.data.message, isLong: true});
+        })
+        .catch(error => {
+          console.log(
+            'error in catch Profile image',
+            error.response.data.message,
+          );
+          SimpleToast({title: error.response.data.message, isLong: true});
+          setState({...state, profileImg: null});
+        });
+    }
+  };
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -158,13 +183,20 @@ function SignUpscreen({navigation, route}) {
             <Text style={Styles.SUBTITLE}>Add your details to sign up</Text>
           </View>
           <View style={Styles.circle}>
-            <Pressable onPress={onGallary}>
-              <FontAwesome5Icon
-                title={'camera'}
-                size={50}
-                IconColor={COLORS.GRAYLIGHT}
-              />
-            </Pressable>
+            <TouchableOpacity activeOpacity={0.8} onPress={onGallary}>
+              {state.profileImg ? (
+                <Image
+                  source={{uri: state.profileImg.path}}
+                  style={[Styles.circle, {top: 0, resizeMode: 'cover'}]}
+                />
+              ) : (
+                <FontAwesome5Icon
+                  title={'camera'}
+                  size={50}
+                  IconColor={COLORS.GRAYLIGHT}
+                />
+              )}
+            </TouchableOpacity>
           </View>
           <View style={Styles.CONTAINERMAINTEXTINPU}>
             <View style={{paddingTop: 10}}>
@@ -195,27 +227,13 @@ function SignUpscreen({navigation, route}) {
               <Text
                 style={{
                   color: COLORS.BLACK,
-                  fontWeight: '500',
+                  // fontWeight: '500',
                   fontSize: fontPixel(16),
                 }}>
                 {PNumber}
               </Text>
             </View>
-            {/* <View>
-              <TextInput
-                style={[Styles.TEXTINPUT]}
-                placeholder="Mobile No"
-                keyboardType="number-pad"
-                placeholderTextColor={COLORS.GRAYDARK}
-                value={phoneNumber}
-                maxLength={10}
-                onBlur={validatePhoneNumber}
-                onChangeText={text => setPhoneNumber(text)}
-              />
-              {phoneNumberError ? (
-                <Text style={Styles.ERRORTEXT}>{phoneNumberError}</Text>
-              ) : null}
-            </View> */}
+
             <View>
               <TextInput
                 style={[Styles.TEXTINPUT]}
@@ -229,7 +247,12 @@ function SignUpscreen({navigation, route}) {
               ) : null}
             </View>
           </View>
-          <View style={{flex: 1, justifyContent: 'flex-end', marginTop: 30}}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'flex-end',
+              marginTop: heightPixel(100),
+            }}>
             <Button
               title={
                 state.isLoading ? (
@@ -243,7 +266,7 @@ function SignUpscreen({navigation, route}) {
                   'Sign Up'
                 )
               }
-              onPress={_SignUp}
+              onPress={handleSubmit}
               // onPress={() => navigation.navigate(Routes.BOTTOM_TAB_BAR)}
             />
           </View>

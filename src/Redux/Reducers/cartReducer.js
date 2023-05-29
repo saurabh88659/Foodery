@@ -1,4 +1,5 @@
-import {ADD_ITEM, DECREMENT_ITEM, INCREMENT_ITEM} from '../constants';
+import { ADD_ITEM, DECREMENT_ITEM, INCREMENT_ITEM } from "../Action/actionCart";
+
 
 const initialState = [];
 const cartReducer = (state = initialState, action) => {
@@ -23,3 +24,30 @@ const cartReducer = (state = initialState, action) => {
 };
 
 export default cartReducer;
+
+
+// import {INCREMENT,DECREMENT} from '../Action/actionCart'
+
+
+// const initialState = {
+//   count: 0,
+// };
+
+// const cartReducer = (state = initialState, action) => {
+//   switch (action.type) {
+//     case 'INCREMENT':
+//       return {
+//         ...state,
+//         count: state.count + 1,
+//       };
+//     case 'DECREMENT':
+//       return {
+//         ...state,
+//         count: state.count - 1,
+//       };
+//     default:
+//       return state;
+//   }
+// };
+
+// export default cartReducer

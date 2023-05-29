@@ -6,9 +6,7 @@ import {
   Image,
   TouchableWithoutFeedback,
   Keyboard,
-  TextInput,
   KeyboardAvoidingView,
-  Alert,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
@@ -22,6 +20,7 @@ import axios from 'axios';
 import {_setStorage} from '../utils/Storage';
 import Routes from '../Navigation/Routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {requestUserPermission} from '../utils/Handler/FirebaseMessagingNoti';
 
 export default function Otp({navigation, route}) {
   const [isOTP, setIsOTP] = useState('');
@@ -31,6 +30,10 @@ export default function Otp({navigation, route}) {
   const [state, setState] = useState({
     isLoading: false,
   });
+
+  useEffect(() => {
+    requestUserPermission();
+  }, []);
 
   const _HandleOTP = async () => {
     const fcmToken = await AsyncStorage.getItem('fcmToken');
@@ -43,24 +46,45 @@ export default function Otp({navigation, route}) {
       otp: isOTP,
       deviceToken: fcmToken,
     };
-    console.log('otpdata', otpdata);
+
     axios
       .post(BASE_URL + `/User/userPhoneVerifyOTP`, otpdata, {})
-
       .then(async response => {
         await AsyncStorage.setItem('token', response.data.token);
-        console.log('OTP Response', response?.data);
+        // await _setStorage()
+        // await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
+        // await AsyncStorage.setItem('user_id', response.data.user_id);
+        // console.log('refresh token ----------->>>', response.data.refreshToken);
+        // const refresh_token = await AsyncStorage.get('user_id', user_id);
+        // console.log('refresh user_id ----------->>>', refresh_token);
+
         SimpleToast({title: response?.data?.message, isLong: true});
-        navigation.navigate(Routes.SIGN_UP_SCREEN, phoneNumber);
         setState({
           ...state,
           isLoading: false,
         });
+        axios
+          .get(BASE_URL + `/User/getProfile`, {
+            headers: {
+              Authorization: `Bearer ${response.data.token}`,
+            },
+          })
+          .then(resp => {
+            if (resp.data.result.name && resp.data.result.address) {
+              navigation.navigate(Routes.BOTTOM_TAB_BAR);
+            } else {
+              navigation.navigate(Routes.SIGN_UP_SCREEN, phoneNumber);
+            }
+          })
+          .catch(err => {
+            if (err.response?.data?.message == 'You are not  user.!') {
+              navigation.navigate(Routes.LOG_IN_SCREEN);
+            }
+          });
       })
       .catch(e => {
-        console.log('OTP catch Error', e.response.data);
-        if (e.response.data) {
-          SimpleToast({title: e?.response?.data, isLong: true});
+        if (e.response?.data?.message) {
+          SimpleToast({title: e?.response?.data?.message, isLong: true});
         }
         setState({
           ...state,
@@ -82,7 +106,7 @@ export default function Otp({navigation, route}) {
     axios
       .post(BASE_URL + `/User/userLoginPhone`, dataPhone)
       .then(response => {
-        if (response?.data?.message == 'OTP sent successfully....') {
+        if (response?.data?.message == 'OTP sent successfully') {
           SimpleToast({title: ' resend OTP sent successfully', isLong: true});
           setCounter(60);
         } else {
@@ -98,68 +122,74 @@ export default function Otp({navigation, route}) {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <SafeAreaView style={Styles.CONTAINERMAIN}>
-        {/* <KeyboardAvoidingView style={{flex: 1}}> */}
         <View style={Styles.CONTAINERIMAGEMAIN}>
           <Image source={createaccountTOPImage} style={Styles.IMAGESTYL} />
         </View>
-        <View style={{top: '-8%'}}>
-          <View style={{alignItems: 'center'}}>
-            <Text style={Styles.headerTitle}>Enter OTP</Text>
-            <Text style={Styles.subTitle}>
-              We have sent you a 6-digit verifications code on +91 {fNumber}
-              ****
-            </Text>
-          </View>
+        <KeyboardAvoidingView
+          behavior="padding"
+          style={{
+            alignItems: 'center',
+            alignSelf: 'center',
+            top: heightPixel(-50),
+          }}>
+          <View>
+            <View style={{alignItems: 'center'}}>
+              <Text style={Styles.headerTitle}>Enter OTP</Text>
+              <Text style={Styles.subTitle}>
+                We have sent you a 6-digit verifications code on +91 {fNumber}
+                ****
+              </Text>
+            </View>
 
-          <View style={{marginHorizontal: 20, marginTop: 20}}>
-            <OTPInputView
-              style={{height: heightPixel(80)}}
-              pinCount={6}
-              autoFocusOnLoad={false}
-              codeInputFieldStyle={Styles.underlineStyleBase}
-              codeInputHighlightStyle={Styles.underlineStyleHighLighted}
-              onCodeFilled={tex => {
-                setIsOTP(tex);
-              }}
-            />
-          </View>
+            <View style={{marginHorizontal: 20, marginTop: 20}}>
+              <OTPInputView
+                style={{height: heightPixel(80)}}
+                pinCount={6}
+                autoFocusOnLoad={false}
+                codeInputFieldStyle={Styles.underlineStyleBase}
+                codeInputHighlightStyle={Styles.underlineStyleHighLighted}
+                onCodeFilled={tex => {
+                  setIsOTP(tex);
+                }}
+              />
+            </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              marginHorizontal: 20,
-            }}>
-            <Text style={{color: 'grey'}}>Time remaining</Text>
-            <View>
-              {counter !== 0 ? (
-                <Text style={{color: 'black'}}>{counter}s</Text>
-              ) : (
-                <TouchableOpacity onPress={resendsend} style={{}}>
-                  <Text style={{color: 'grey'}}>Resend code</Text>
-                </TouchableOpacity>
-              )}
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginHorizontal: 20,
+              }}>
+              <Text style={{color: 'grey'}}>Time remaining</Text>
+              <View>
+                {counter !== 0 ? (
+                  <Text style={{color: 'black'}}>{counter}s</Text>
+                ) : (
+                  <TouchableOpacity onPress={resendsend} style={{}}>
+                    <Text style={{color: 'grey'}}>Resend code</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+            <View style={{top: 20}}>
+              <Button
+                title={
+                  state.isLoading ? (
+                    <View style={Styles.activStylesIndicator}>
+                      <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                      <Text style={Styles.activeStylesTitleIndicator}>
+                        Please wait....
+                      </Text>
+                    </View>
+                  ) : (
+                    'Verify & Proceed'
+                  )
+                }
+                onPress={_HandleOTP}
+              />
             </View>
           </View>
-          <View style={{top: 20}}>
-            <Button
-              title={
-                state.isLoading ? (
-                  <View style={Styles.activStylesIndicator}>
-                    <ActivityIndicator color={COLORS.LIGHTGREEN} />
-                    <Text style={Styles.activeStylesTitleIndicator}>
-                      Please wait....
-                    </Text>
-                  </View>
-                ) : (
-                  'Verify & Proceed'
-                )
-              }
-              onPress={_HandleOTP}
-            />
-          </View>
-        </View>
-        {/* </KeyboardAvoidingView> */}
+        </KeyboardAvoidingView>
         <View
           style={{alignItems: 'center', justifyContent: 'flex-end', flex: 1}}>
           <Text style={Styles.footerTitle}>
@@ -179,12 +209,11 @@ const Styles = StyleSheet.create({
   CONTAINERIMAGEMAIN: {
     alignItems: 'center',
     justifyContent: 'center',
-    // flex: 1,
   },
   IMAGESTYL: {
-    width: widthPixel(480),
-    height: heightPixel(420),
-    resizeMode: 'contain',
+    width: widthPixel(420),
+    height: heightPixel(450),
+    alignSelf: 'flex-end',
   },
   sectionStyle: {
     flexDirection: 'row',

@@ -8,6 +8,7 @@ import AddressScreen from '../Screens/AddressScreen';
 import AddressScreenWithMap from '../Screens/AddressScreenWithMap';
 import SubCategriesModal from '../Screens/SubCategriesModal';
 import Routes from './Routes';
+import ProdcutsItem from '../Screens/ProdcutsItem';
 
 const Stack = createNativeStackNavigator();
 function HomeStack() {
@@ -46,6 +47,11 @@ function HomeStack() {
       <Stack.Screen
         name={Routes.SUB_CATEGRIES_MODAL}
         component={SubCategriesModal}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name={Routes.PRODUCT_ITEM}
+        component={ProdcutsItem}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

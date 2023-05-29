@@ -19,25 +19,7 @@ export const COLORS = {
   LightPurple: '#AD5389',
   DarkPurple: '#3C1053',
   LIGHT_WHITE: '#f4f7fa',
+  whiteWithOpacity: 'rgba(255, 255, 255, 0.5)',
+  grayWithOpacity: 'rgba(32, 32, 32, 0.6)',
+  black08: 'rgba(0, 0, 0, 0.6)',
 };
-
-export const fontFamily = {
-  Heavy: 'SFProDisplay-Heavy',
-  Regular: 'SFProDisplay-Regular',
-  Bold: 'SFProDisplay-Bold',
-  SemiBold: 'SFProDisplay-Semibold',
-  Medium: 'SFProDisplay-Medium',
-  InterRegular: 'Inter-Regular',
-  InterBold: 'Inter-Bold',
-  InterSemiBold: 'Inter-SemiBold',
-  InterMedium: 'Inter-Medium',
-  RubikRegular: 'Rubik-Regular',
-  RubikMedium: 'Rubik-Medium',
-  RubikBold: 'Rubik-Bold',
-  InterItalic: 'Inter-BoldItalic',
-};
-
-// #F2F2F2-Light Grey
-// #B6B7B7-Dark Grey
-// #367FC0-Facebook Box
-// #DD4B39-Google

@@ -42,7 +42,7 @@ const MyHeader = props => {
           {props.title}
         </Text>
       </View>
-      <TouchableOpacity activeOpacity={0.6}>
+      <TouchableOpacity activeOpacity={0.6} onPress={props.onPressserchbar}>
         <IonIcon title="ios-search-sharp" size={28} IconColor={COLORS.WHITE} />
       </TouchableOpacity>
     </View>

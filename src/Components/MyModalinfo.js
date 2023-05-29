@@ -1,8 +1,20 @@
 import React from 'react';
-import {View, Text, Pressable, TouchableOpacity} from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import Modal from 'react-native-modal';
 import {COLORS} from '../utils/Colors';
-import {fontPixel, heightPixel, widthPixel} from './Dimensions';
+import {
+  fontPixel,
+  heightPixel,
+  screenHeight,
+  screenWidth,
+  widthPixel,
+} from './Dimensions';
 import {EntypoIcon, IonIcon} from '../utils/Const';
 import Lottie from 'lottie-react-native';
 
@@ -15,56 +27,10 @@ export default function MyModalinfo({
   _SubonPress,
   _YES,
   _NO,
+  _Ui,
 }) {
   const UI = data => {
     switch (data) {
-      case 'internet':
-        return (
-          <View
-            style={{
-              alignSelf: 'center',
-              backgroundColor: COLORS.WHITE,
-              paddingHorizontal: 40,
-              paddingBottom: 20,
-              paddingTop: 10,
-              borderRadius: 6,
-              alignItems: 'center',
-            }}>
-            <Text
-              style={{
-                color: COLORS.RED,
-                fontSize: 15,
-                textAlign: 'center',
-              }}>
-              Unable to detect internet connection!
-            </Text>
-            <Text
-              style={{
-                color: COLORS.BLACK,
-                textAlign: 'center',
-                marginTop: 5,
-              }}>
-              Please enable internet connection {'\n'} and try again
-            </Text>
-            <Pressable
-              style={{
-                backgroundColor: COLORS.LIGHT_BLUE,
-                paddingVertical: 5,
-                paddingHorizontal: 25,
-                borderRadius: 2,
-                marginTop: 20,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-              onPress={() => RNExitApp.exitApp()}>
-              <Text
-                style={{color: COLORS.WHITE, fontWeight: '500', fontSize: 15}}>
-                OK
-              </Text>
-            </Pressable>
-          </View>
-        );
-
       case 'password-reset':
         return (
           <View
@@ -129,86 +95,56 @@ export default function MyModalinfo({
                 }}>
                 All Categories
               </Text>
-
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  marginHorizontal: 15,
-                  // backgroundColor: 'red',
-                  // paddingVertical: 30,
-                }}>
+              <ScrollView>
                 <View
                   style={{
-                    height: heightPixel(60),
-                    width: widthPixel(165),
-                    borderRadius: 10,
-                    backgroundColor: COLORS.LIGHTGREEN,
-                  }}></View>
-                <View
-                  style={{
-                    height: heightPixel(60),
-                    width: widthPixel(165),
-                    borderRadius: 10,
-                    backgroundColor: COLORS.LIGHTGREEN,
-                  }}></View>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-evenly',
-                  alignItems: 'center',
-                  marginTop: 8,
-                }}>
-                <Text
-                  style={{
-                    fontSize: fontPixel(17),
-                    fontWeight: '500',
-                    color: COLORS.GRAYDARK,
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginHorizontal: 15,
+                    // backgroundColor: 'red',
+                    // paddingVertical: 30,
                   }}>
-                  Fruits & Vegetables
-                </Text>
-                <Text
-                  style={{
-                    fontSize: fontPixel(17),
-                    fontWeight: '500',
-                    color: COLORS.GRAYDARK,
-                  }}>
-                  Atta, Rice, Oil & Dals
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                activeOpacity={0.6}
-                onPress={_SubonPress}
-                style={{marginHorizontal: 15, marginTop: 30}}>
-                <View
-                  style={{
-                    height: heightPixel(80),
-                    width: widthPixel(80),
-                    backgroundColor: COLORS.LIGHTGREEN,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    borderRadius: 50,
-                  }}>
-                  <IonIcon
-                    title="ios-home-sharp"
-                    size={25}
-                    IconColor={COLORS.GREEN}
-                  />
+                  <View
+                    style={{
+                      height: heightPixel(60),
+                      width: widthPixel(165),
+                      borderRadius: 10,
+                      backgroundColor: COLORS.LIGHTGREEN,
+                    }}></View>
+                  <View
+                    style={{
+                      height: heightPixel(60),
+                      width: widthPixel(165),
+                      borderRadius: 10,
+                      backgroundColor: COLORS.LIGHTGREEN,
+                    }}></View>
                 </View>
-                <Text
-                  numberOfLines={2}
+                <View
                   style={{
-                    fontWeight: '500',
-                    color: COLORS.GRAYDARK,
-                    letterSpacing: 0.5,
-                    marginTop: 5,
-                    fontSize: fontPixel(15),
+                    flexDirection: 'row',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                    marginTop: 8,
                   }}>
-                  Ravi rai noida
-                </Text>
-              </TouchableOpacity>
+                  <Text
+                    style={{
+                      fontSize: fontPixel(17),
+                      fontWeight: '500',
+                      color: COLORS.GRAYDARK,
+                    }}>
+                    Fruits & Vegetables
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: fontPixel(17),
+                      fontWeight: '500',
+                      color: COLORS.GRAYDARK,
+                    }}>
+                    Atta, Rice, Oil & Dals
+                  </Text>
+                </View>
+                <View>{_Ui}</View>
+              </ScrollView>
             </View>
 
             <TouchableOpacity
@@ -314,7 +250,10 @@ export default function MyModalinfo({
         onBackButtonPress={backPress ? backPress : () => {}}
         onBackdropPress={backPress ? backPress : () => {}}
         swipeDirection={
-          type == 'floating-Button' ? ['up', 'left', 'right', 'down'] : null
+          type == 'floating-Button'
+            ? //  ['up', 'left', 'right', 'down']
+              null
+            : null
         }>
         {UI(type)}
       </Modal>

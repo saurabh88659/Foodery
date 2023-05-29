@@ -7,11 +7,23 @@ import {
   Keyboard,
   ScrollView,
   TouchableOpacity,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {COLORS} from '../utils/Colors';
-import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
-import {BASE_URL, FontAwesome5Icon} from '../utils/Const';
+import {
+  fontPixel,
+  heightPixel,
+  screenHeight,
+  widthPixel,
+} from '../Components/Dimensions';
+import {
+  BASE_URL,
+  FontAwesome5Icon,
+  MaterialCommunityIconsTwo,
+  SimpleToast,
+} from '../utils/Const';
 import Button from '../Components/Button';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import {_getStorage} from '../utils/Storage';
@@ -19,14 +31,22 @@ import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
 // import {useDispatch, useSelector} from 'react-redux';
 // import actionProfile from '../Redux/Action/actionProfile';
+import ImagePicker from 'react-native-image-crop-picker';
+import ProfileshimmerPlaceHolder from '../Components/ShimmerPlaceHolder/ProfileshimmerPlaceHolder';
 
 export default function ProfileScreen({navigation}) {
   // const [text, setText] = useState('');
   const IsFocused = useIsFocused();
   const [isProfile, setIsProfile] = useState('');
   // const dispatch = useDispatch();
-
   // const profiledata = useSelector(state => state.Profilereducer);
+  // const [selectedImage, setSelectedImage] = useState(null);
+  const [state, setState] = useState({
+    profileImg: null,
+    isLoading: false,
+  });
+
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (IsFocused) {
@@ -35,6 +55,7 @@ export default function ProfileScreen({navigation}) {
   }, [IsFocused]);
 
   const _Handle_Profile = async () => {
+    setIsLoading(true);
     const token = await _getStorage('token');
     axios
       .get(BASE_URL + `/User/getProfile`, {
@@ -44,66 +65,194 @@ export default function ProfileScreen({navigation}) {
         console.log('Profile Response', response.data.result);
         setIsProfile(response.data.result);
         // dispatch(actionProfile(response.data));
+        setIsLoading(false);
       })
       .catch(error => {
         console.log('Profile Catch Error', error);
+        setIsLoading(false);
       });
+  };
+
+  const onGallary = () => {
+    ImagePicker.openPicker({
+      cropping: true,
+      quality: 1,
+      mediaType: 'any',
+    })
+      .then(image => {
+        if (image) {
+          setState({
+            ...state,
+            profileImg: image,
+          });
+        } else {
+          console.log('Please selected Image');
+        }
+      })
+      .catch(err => {
+        console.log('Img picker Error--->>>', err);
+        SimpleToast({title: 'User cancelled image selection', isLong: true});
+      });
+  };
+
+  const _UP_LoadProfile_Img = async () => {
+    const token = await _getStorage('token');
+    setState({
+      ...state,
+      isLoading: true,
+    });
+    console.log(token);
+    let formData = new FormData();
+    if (state.profileImg) {
+      var imgName = state.profileImg?.path?.replace(/^.*[\\\/]/, '');
+      formData.append('image', {
+        name: imgName,
+        type: state.profileImg?.mime,
+        uri:
+          Platform.OS === 'android'
+            ? state.profileImg?.path
+            : state.profileImg?.path?.replace('file://', ''),
+      });
+      axios
+        .post(BASE_URL + `/User/userAddPic`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data',
+          },
+        })
+        .then(res => {
+          console.log('Profile image--------->>', res.data);
+          console.log('Profile only response data--------->>', res);
+
+          // SimpleToast({title: res.data.message, isLong: true});
+          setState({...state, profileImg: null});
+          setState({
+            ...state,
+            isLoading: false,
+          });
+
+          // SimpleToast({title: res.data.message, isLong: true});
+        })
+        .catch(error => {
+          console.log('error in catch Profile image ', error.response.data);
+          SimpleToast({title: error.response.data, isLong: true});
+          setState({...state, profileImg: null});
+          setState({
+            ...state,
+            isLoading: false,
+          });
+        });
+    }
   };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <SafeAreaView style={Styles.CONTAINERMAIN}>
         <MyHeaderNo2 title={'Profile'} onPress={() => navigation.goBack()} />
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          // scrollEventThrottle={16}
-        >
-          <View style={Styles.CONTAINERProfile}>
-            <TouchableOpacity style={Styles.CAMERAICON}>
-              <FontAwesome5Icon
-                title={'camera'}
-                size={18}
-                IconColor={COLORS.GRAYDARK}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={{alignItems: 'center'}}>
-            <Text style={Styles.EDITTITLE}>Edit Profile</Text>
-            <Text style={Styles.NAMETITLE}>Hi there {isProfile.name}!</Text>
-            <Text style={{color: COLORS.GRAYDARK, fontWeight: '500'}}>
-              Sign out
-            </Text>
-          </View>
+        {isLoading ? (
+          <ProfileshimmerPlaceHolder />
+        ) : (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            scrollEventThrottle={16}>
+            <View style={Styles.CONTAINERProfile}>
+              <TouchableOpacity
+                onPress={onGallary}
+                activeOpacity={0.6}
+                style={Styles.CAMERAICON}>
+                {state.profileImg || isProfile?.profilePic ? (
+                  <Image
+                    source={
+                      state.profileImg
+                        ? {uri: state.profileImg.path}
+                        : {uri: isProfile?.profilePic}
+                    }
+                    style={[Styles.CONTAINERProfile, {}]}
+                  />
+                ) : null}
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={onGallary}
+                activeOpacity={0.6}
+                style={Styles.BALCKBOX_ICON}>
+                <FontAwesome5Icon
+                  title={'camera'}
+                  size={15}
+                  IconColor={COLORS.GRAYDARK}
+                />
+              </TouchableOpacity>
+            </View>
 
-          <View style={{marginVertical: '5%'}}>
-            <View style={Styles.MAINBOX}>
-              <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
-                Name
-              </Text>
-              <Text style={{color: COLORS.BLACK}}>{isProfile.name}</Text>
-            </View>
-            <View style={Styles.MAINBOX}>
-              <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
-                Email
-              </Text>
-              <Text style={{color: COLORS.BLACK}}>{isProfile.email}</Text>
-            </View>
-            <View style={Styles.MAINBOX}>
-              <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
-                Mobile No.
-              </Text>
-              <Text style={{color: COLORS.BLACK}}>{isProfile.phone}</Text>
-            </View>
-            <View style={Styles.MAINBOX}>
-              <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
-                Address
-              </Text>
-              <Text style={{color: COLORS.BLACK}}>{isProfile.address}</Text>
-            </View>
-          </View>
+            <View
+              style={{
+                alignItems: 'center',
+                marginTop: -10,
+              }}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <MaterialCommunityIconsTwo
+                  title={'pencil'}
+                  size={16}
+                  IconColor={COLORS.GREEN}
+                  IconStyle={{right: 5}}
+                />
+                <Text style={Styles.EDITTITLE}>Edit Profile</Text>
+              </View>
 
-          <Button title={'Save'} onPress={_Handle_Profile} />
-        </ScrollView>
+              <Text style={Styles.NAMETITLE}>Hi {isProfile.name}!</Text>
+              <Text style={{color: COLORS.GRAYDARK, fontWeight: '500'}}>
+                Sign out
+              </Text>
+            </View>
+
+            <View style={{marginVertical: '5%'}}>
+              <View style={Styles.MAINBOX}>
+                <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
+                  Name
+                </Text>
+                <Text style={{color: COLORS.BLACK}}>{isProfile.name}</Text>
+              </View>
+              <View style={Styles.MAINBOX}>
+                <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
+                  Email
+                </Text>
+                <Text style={{color: COLORS.BLACK}}>{isProfile.email}</Text>
+              </View>
+              <View style={Styles.MAINBOX}>
+                <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
+                  Mobile No.
+                </Text>
+                <Text style={{color: COLORS.BLACK}}>{isProfile.phone}</Text>
+              </View>
+              <View style={Styles.MAINBOX}>
+                <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
+                  Address
+                </Text>
+                <Text style={{color: COLORS.BLACK}}>{isProfile.address}</Text>
+              </View>
+            </View>
+
+            <Button
+              title={
+                state.isLoading ? (
+                  <View style={Styles.activStylesIndicator}>
+                    <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                    <Text style={Styles.activeStylesTitleIndicator}>
+                      Please wait....
+                    </Text>
+                  </View>
+                ) : (
+                  'Save'
+                )
+              }
+              onPress={_UP_LoadProfile_Img}
+            />
+          </ScrollView>
+        )}
       </SafeAreaView>
     </TouchableWithoutFeedback>
   );
@@ -114,19 +263,23 @@ const Styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.WHITE,
   },
+
   CONTAINERProfile: {
-    height: heightPixel(130),
-    width: widthPixel(130),
+    height: 115,
+    width: 115,
+    borderRadius: heightPixel(screenHeight),
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: COLORS.DarkGreen2,
-    marginVertical: 13,
-    justifyContent: 'flex-end',
     alignSelf: 'center',
-    borderRadius: 100,
-    marginTop: '8%',
+    // marginTop: heightPixel(40),
+    marginVertical: 20,
   },
+
   CAMERAICON: {
     alignItems: 'center',
-    top: -8,
+    // top: -8,
   },
   EDITTITLE: {
     alignItems: 'center',
@@ -148,5 +301,25 @@ const Styles = StyleSheet.create({
     paddingHorizontal: 25,
     paddingTop: 10,
     elevation: 1,
+  },
+  BALCKBOX_ICON: {
+    flex: 1,
+    position: 'absolute',
+    bottom: 0,
+    backgroundColor: COLORS.black08,
+    width: widthPixel(100),
+    height: heightPixel(25),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activStylesIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeStylesTitleIndicator: {
+    color: COLORS.WHITE,
+    fontSize: fontPixel(15),
+    paddingLeft: 5,
   },
 });

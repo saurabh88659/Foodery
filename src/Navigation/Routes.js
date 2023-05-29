@@ -14,6 +14,7 @@ export default {
   FORGOT_EMAIL_OTP: 'ForgotEmailOtp',
   FORGET_NEW_PASSWORD: 'ForgetNewPassword',
   BOTTOM_TAB_BAR: 'BottomTabBar',
+  SEARCH_BAR: 'SearchBar',
 
   /*
       BOTTOM TAB BAR
@@ -44,6 +45,7 @@ export default {
   ADDRESS_SCREEN: 'AddressScreen',
   ADDRESS_SCREEN_WITH_MAP: 'AddressScreenWithMap',
   SUB_CATEGRIES_MODAL: 'SubCategriesModal',
+  PRODUCT_ITEM: 'ProdcutsItem',
 
   /* OFFERS STACK NAVIGATOR */
 
