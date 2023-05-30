@@ -32,6 +32,7 @@ import {
   incrementItem,
 } from '../Redux/Action/actionCart';
 import {addItem} from '../Redux/Action/actionCart';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function SubCategories({navigation, route}) {
   const CatItem = route.params;
@@ -43,6 +44,7 @@ export default function SubCategories({navigation, route}) {
   const [cartitem, setCartitem] = useState(0);
   const [subCatProduct, setSubCatProduct] = useState([]);
   const [productById, setProductById] = useState([]);
+  const IsFocused = useIsFocused();
 
   const cartData = useSelector(state => state.reducer);
   // console.log('productById---------------->>>>', productById);
@@ -64,7 +66,6 @@ export default function SubCategories({navigation, route}) {
   }, [cartData]);
 
   // const [addwishlist, setAddwishlist] = useState(false);
-
   // useEffect(() => {
   //   if (wishlistData && wishlistData.length) {
   //     wishlistData.forEach(element => {
@@ -128,18 +129,20 @@ export default function SubCategories({navigation, route}) {
       quantity: 1,
     },
   ];
-
   const _Handle_AddToCart = item => {
     dispatch(addToCart(item));
   };
 
   useEffect(() => {
-    _ProductItem();
-    _ProductItemById();
+    if (IsFocused) {
+      _ProductItem();
+      _ProductItemById();
+      // setStatusFilter();
+    }
     setTimeout(() => {
       setIsloading(true);
     }, 1000);
-  }, []);
+  }, [IsFocused]);
 
   const _ProductItem = async () => {
     const token = await _getStorage('token');
@@ -253,12 +256,13 @@ export default function SubCategories({navigation, route}) {
   ];
 
   const [status, setStatus] = useState('tab1');
-  const [datalist, setDatalist] = useState(productById);
+  const [detalist, setDetalist] = useState(productById);
   const setStatusFilter = type => {
     if (type !== 'tab1') {
-      setDatalist([...productById.filter(item => item.type === type)]);
+      setDetalist([...productById.filter(item => item.type === type)]);
     } else {
-      setDatalist(productById);
+      setDetalist(productById);
+      // console.log('hey------------>>>>>DG');
     }
     setStatus(type);
   };
@@ -308,7 +312,6 @@ export default function SubCategories({navigation, route}) {
   };
 
   const DataItem = useSelector(state => state.cartReducer.count);
-
   console.log('DataItem------------>>>>', DataItem);
 
   return (
@@ -362,7 +365,7 @@ export default function SubCategories({navigation, route}) {
               )}
             />
             <View style={Styles.CONTAINERBOXMAIN}>
-              {datalist.map((value, index) => (
+              {detalist.map((value, index) => (
                 <Productinfo
                   // addtocartonPress={}
                   key={index}

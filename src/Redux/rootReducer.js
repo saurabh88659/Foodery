@@ -6,6 +6,7 @@ import cartReducer from './Reducers/cartReducer';
 import LoginUserReducer from '../Redux/Reducers/LoginUserReducer';
 import geolocationReducer from '../Redux/Reducers/geolocationReducer';
 import Profilereducer from './Reducers/Profilereducer';
+import counterSlice from '../Redux/Store/counterSlice';
 
 const rootReducer = combineReducers({
   reducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   LoginUserReducer,
   geolocationReducer,
   Profilereducer,
+  counterSlice,
 });
 
 export default rootReducer;

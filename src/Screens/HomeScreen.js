@@ -13,7 +13,6 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
-  Alert,
   BackHandler,
   Pressable,
   Dimensions,
@@ -663,13 +662,29 @@ export default function HomeScreen({navigation}) {
                 />
               </LinearGradient>
             </View>
-            <View>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'center',
+                // marginHorizontal: 10,
+              }}>
               <Lottie
                 source={require('../Assets/Lottiejson/90553-delivery-boy.json')}
                 autoPlay
                 loop={true}
                 style={{height: heightPixel(200)}}
               />
+
+              <Text
+                style={{
+                  fontSize: fontPixel(30),
+                  color: COLORS.GRAYDARK,
+                  letterSpacing: 0.4,
+                  textAlign: 'center',
+                }}>
+                Today Only 70%{`\n`}off ❤
+              </Text>
             </View>
           </Animated.ScrollView>
           <TouchableOpacity

@@ -5,7 +5,7 @@
 // export const addItem = item => ({
 //    type: ADD_ITEM,
 //   payload: item,
-  
+
 // });
 
 // export const incrementItem = (itemId) => ({
@@ -18,19 +18,15 @@
 //   payload: itemId,
 // });
 
-
 export const INCREMENT = 'INCREMENT';
 export const DECREMENT = 'DECREMENT';
 
-
-
-export const increment = (id) => ({
+export const increment = id => ({
   type: INCREMENT,
   payload: id,
-
 });
 
-export const decrement = (id) => ({
+export const decrement = id => ({
   type: DECREMENT,
   payload: id,
 });

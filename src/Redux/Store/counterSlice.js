@@ -1,24 +1,25 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, configureStore} from '@reduxjs/toolkit';
+
+const initialState = {
+  item: [],
+};
 
 export const counterSlice = createSlice({
-  name: 'counter',
-  initialState: {
-    value: 0,
-  },
+  name: 'basket',
+  initialState,
+
   reducers: {
-    increment: state => {
-      state.value += 1;
+    addtobasket: (state, action) => {
+      state.item = [...state.item, action.payload];
     },
-    decrement: state => {
+    removefrombasket: (state, action) => {
       state.value -= 1;
-    },
-    incrementByAmount: (state, action) => {
-      state.value += action.payload;
     },
   },
 });
 
-// Action creators are generated for each case reducer function
-export const {increment, decrement, incrementByAmount} = counterSlice.actions;
+export const {addtobasket, removefrombasket} = counterSlice.actions;
+
+export const selectBasketItem = state => state.basket.item;
 
 export default counterSlice.reducer;
