@@ -2,6 +2,8 @@
 // export const INCREMENT_ITEM = 'INCREMENT_ITEM';
 // export const DECREMENT_ITEM = 'DECREMENT_ITEM';
 
+import {DECREMENT, INCREMENT} from '../constants';
+
 // export const addItem = item => ({
 //    type: ADD_ITEM,
 //   payload: item,
@@ -18,15 +20,12 @@
 //   payload: itemId,
 // });
 
-export const INCREMENT = 'INCREMENT';
-export const DECREMENT = 'DECREMENT';
-
-export const increment = id => ({
+export const increment = (item) => ({
   type: INCREMENT,
-  payload: id,
+  payload: item,
 });
 
-export const decrement = id => ({
+export const decrement = (item) => ({
   type: DECREMENT,
-  payload: id,
+  payload: item,
 });

@@ -17,10 +17,6 @@ import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import AddTocart from '../Components/AddTocart';
 import {addToCart} from '../Redux/action';
-import {
-  addToWishlist,
-  removeFromWishlist,
-} from '../Redux/Action/actionwishlist';
 import {useDispatch, useSelector} from 'react-redux';
 import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPlaceHolder';
 import {_getStorage} from '../utils/Storage';
@@ -28,10 +24,6 @@ import axios from 'axios';
 
 export default function ProdcutsItem({navigation, route}) {
   const SubCatitem = route.params;
-
-  console.log('SubCatitem======>>> category', SubCatitem.categoryId);
-  console.log('SubCatitem======>>> sub category', SubCatitem.item._id);
-
   const [heart, setHeart] = useState(true);
   const dispatch = useDispatch();
   const [isloading, setIsloading] = useState(false);
@@ -41,82 +33,8 @@ export default function ProdcutsItem({navigation, route}) {
 
   const cartData = useSelector(state => state.reducer);
 
-  const SRTDATA = [
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-    {
-      name: 'kitchen Tools',
-    },
-  ];
-
-  const SRTDATAItem = [
-    {
-      id: 1,
-      itemname: 'Lemon Squeezer',
-    },
-    {
-      id: 2,
-      itemname: 'Hand Blender',
-    },
-    {
-      id: 3,
-
-      itemname: 'Pizza Cutter',
-    },
-    {
-      id: 4,
-
-      itemname: 'Stainless Steel',
-    },
-    {
-      id: 5,
-
-      itemname: 'Stainless Steel',
-    },
-    {
-      id: 6,
-
-      itemname: 'kitchen Tools',
-    },
-    {
-      id: 7,
-      itemname: 'kitchen Tools',
-    },
-    {
-      id: 8,
-      itemname: 'kitchen Tools',
-    },
-    {
-      id: 9,
-      itemname: 'kitchen Tools',
-    },
-  ];
-
   const _Handle_AddToCart = item => {
     dispatch(addToCart(item));
-  };
-
-  const handleAddToWishlist = item => {
-    dispatch(addToWishlist(item));
-    SimpleToast({title: 'Item Save To Wishlist', isLong: true});
-  };
-
-  const handleRemoveFromWishlist = itemId => {
-    dispatch(removeFromWishlist(itemId));
-    SimpleToast({title: 'Item Remove To Wishlist', isLong: true});
   };
 
   useEffect(() => {
@@ -189,7 +107,7 @@ export default function ProdcutsItem({navigation, route}) {
                   }
                   //   onPress={() => toggleBottomNavigationView(value.id)}
                   Productimage={require('../Assets/Logo/mangoicon.png')}
-                  ProductName={value.itemname}
+                  ProductName={value.productName}
                   ProductSubName={'1 Piece'}
                   discountPrice={'Rs.80'}
                   ProductPrice={'Rs.190'}

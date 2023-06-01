@@ -93,13 +93,12 @@ export default function SearchBar() {
     },
   ];
 
-  const incrementItem = item => {
-    console.log('hey________', item.id, item.price, item.title);
-    dispatch(increment(item.id, item.price, item.title));
+  const incrementItem = (item) => {
+    dispatch(increment(item));
   };
 
-  const decrementItem = () => {
-    dispatch(decrement());
+  const decrementItem = (item) => {
+    dispatch(decrement(item));
   };
 
   return (
@@ -151,7 +150,7 @@ export default function SearchBar() {
                   borderRadius: 7,
                 }}>
                 <Text style={{fontSize: 25, color: COLORS.WHITE}}>
-                  {dataProductItem}
+                  {/* {dataProductItem} */} 0
                 </Text>
               </View>
               <TouchableOpacity

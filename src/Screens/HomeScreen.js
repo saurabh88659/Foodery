@@ -206,6 +206,7 @@ export default function HomeScreen({navigation}) {
 
   const _all_Category = async () => {
     const token = await _getStorage('token');
+    console.log(token)
     axios
       .get(BASE_URL + `/User/getAllcategorylist`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -310,7 +311,6 @@ export default function HomeScreen({navigation}) {
                   />
                 </TouchableOpacity>
               </View>
-
               <View style={{}}>
                 <FlatList
                   keyExtractor={(item, index) => index.toString()}
@@ -683,7 +683,7 @@ export default function HomeScreen({navigation}) {
                   letterSpacing: 0.4,
                   textAlign: 'center',
                 }}>
-                Today Only 70%{`\n`}off ❤
+                Today Only 70%{`\n`}off ❤ 
               </Text>
             </View>
           </Animated.ScrollView>
@@ -985,6 +985,7 @@ const Styles = StyleSheet.create({
     marginTop: 15,
     height: heightPixel(140),
     paddingTop: '1%',
+    justifyContent:'center'
   },
   modalize: {
     position: 'absolute',

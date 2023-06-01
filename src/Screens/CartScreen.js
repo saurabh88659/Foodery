@@ -22,9 +22,17 @@ import Productinfo from '../Components/Productinfo';
 import GlobelStyles from '../utils/GlobelStyles';
 import Button from '../Components/Button';
 import Routes from '../Navigation/Routes';
+import {useSelector} from 'react-redux';
+import {
+  decrementQuantity,
+  incrementQuantity,
+  removeFromCart,
+} from '../Redux/ReducerSlice/CartReducerSlice';
+import {useDispatch} from 'react-redux';
 
 export default function CartScreen({navigation}) {
   const [heart, setHeart] = useState(true);
+  const dispatch = useDispatch();
 
   const SRTDATANOW = [
     {
@@ -61,6 +69,21 @@ export default function CartScreen({navigation}) {
     },
   ];
 
+  const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
+
+  // console.log('cart========>>', productDataByRe)
+
+  const increaseQuantity = item => {
+    dispatch(incrementQuantity(item));
+  };
+  const decreaseQuantity = item => {
+    if (item.quantity == 1) {
+      dispatch(removeFromCart(item));
+    } else {
+      dispatch(decrementQuantity(item));
+    }
+  };
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <MyHeader title={'Shopping Cart'} onPress={() => navigation.goBack()} />
@@ -96,7 +119,7 @@ export default function CartScreen({navigation}) {
           keyExtractor={(item, index) => index.toString()}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{paddingBottom: 5}}
-          data={SRTDATANOW}
+          data={productDataByRe}
           renderItem={({item, index}) => (
             <View style={Styles.MAINCARD}>
               <View
@@ -106,7 +129,7 @@ export default function CartScreen({navigation}) {
                 }}>
                 <Image source={bannerIcon} style={Styles.IMAGESTYLES} />
                 <View style={{paddingLeft: widthPixel(20)}}>
-                  <Text style={Styles.MAINTITEL}>Lady Fingr</Text>
+                  <Text style={Styles.MAINTITEL}>{item.productName}</Text>
                   <Text style={Styles.DISPRICE}>Rs.230</Text>
                   <Text style={Styles.PRICES}>Rs.120</Text>
                 </View>
@@ -125,12 +148,14 @@ export default function CartScreen({navigation}) {
                 </View>
                 <View style={Styles.CONTAINERMAINBOXPLUS}>
                   <TouchableOpacity
+                    onPress={() => decreaseQuantity(item)}
                     activeOpacity={0.6}
                     style={Styles.DCREAMENTBOTTONINCREAMENT}>
                     <Text style={Styles.TOTALITEMTITLE}>-</Text>
                   </TouchableOpacity>
-                  <Text style={Styles.TOTALITEMTITLE}>0</Text>
+                  <Text style={Styles.TOTALITEMTITLE}>{item.quantity}</Text>
                   <TouchableOpacity
+                    onPress={() => increaseQuantity(item)}
                     activeOpacity={0.6}
                     style={Styles.DCREAMENTBOTTONINCREAMENT}>
                     <Text style={Styles.TOTALITEMTITLE}>+</Text>

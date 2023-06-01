@@ -16,28 +16,25 @@ import {BASE_URL, SimpleToast, bannerIcon} from '../utils/Const';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import AddTocart from '../Components/AddTocart';
-import {addToCart} from '../Redux/action';
-import {
-  addToWishlist,
-  removeFromWishlist,
-} from '../Redux/Action/actionwishlist';
+// import {addToCart} from '../Redux/action';
+
 import {useDispatch, useSelector} from 'react-redux';
 import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPlaceHolder';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
-import {
-  decrement,
-  decrementItem,
-  increment,
-  incrementItem,
-} from '../Redux/Action/actionCart';
+
 import {addItem} from '../Redux/Action/actionCart';
 import {useIsFocused} from '@react-navigation/native';
+import {
+  decrementQuantity,
+  incrementQuantity,
+  removeFromCart,
+  addToCart,
+} from '../Redux/ReducerSlice/CartReducerSlice';
+import Routes from '../Navigation/Routes';
 
 export default function SubCategories({navigation, route}) {
   const CatItem = route.params;
-  // console.log('SubCatitem======>>> ======category', CatItem._id);
-  // console.log('SubCatitem======>>> sub category', SubCatitem.item._id);
   const [heart, setHeart] = useState(true);
   const dispatch = useDispatch();
   const [isloading, setIsloading] = useState(false);
@@ -52,9 +49,6 @@ export default function SubCategories({navigation, route}) {
   const wishlistData = useSelector(
     state => state.wishlistReducer.wishlistItems,
   );
-  // const count = useSelector((state) => state.cartReducer);
-  // console.log('wishlistData===========SUB==>', wishlistData);
-  // console.log('Cartdata=============SUB', cartData);
 
   useEffect(() => {
     setCartitem(cartData.length);
@@ -262,7 +256,6 @@ export default function SubCategories({navigation, route}) {
       setDetalist([...productById.filter(item => item.type === type)]);
     } else {
       setDetalist(productById);
-      // console.log('hey------------>>>>>DG');
     }
     setStatus(type);
   };
@@ -303,16 +296,28 @@ export default function SubCategories({navigation, route}) {
     dispatch(addItem());
   };
 
-  const handleIncrementQuantity = item => {
-    dispatch(increment());
+  const addItemToCart = item => {
+    console.log('hey------------>>', item);
+    dispatch(addToCart(item));
+  };
+  // const removeItemFromCart = item => {
+  //   dispatch(removeFromCart(item));
+  // };
+  const increaseQuantity = item => {
+    dispatch(incrementQuantity(item));
+  };
+  const decreaseQuantity = item => {
+    if (item.quantity == 1) {
+      dispatch(removeFromCart(item));
+    } else {
+      dispatch(decrementQuantity(item));
+    }
   };
 
-  const handleDecrementQuantity = item => {
-    dispatch(decrement());
-  };
+  const cartdata = useSelector(state => state.CartReducerSlice.cart);
+  console.log('cart------->>>', cartdata);
 
-  const DataItem = useSelector(state => state.cartReducer.count);
-  console.log('DataItem------------>>>>', DataItem);
+  console.log('detalist', detalist);
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -388,42 +393,42 @@ export default function SubCategories({navigation, route}) {
                   ProductName={value.productName}
                   ProductSubName={'1 Piece'}
                   discountPrice={'Rs.80'}
-                  ProductPrice={'Rs.190'}
+                  ProductPrice={value.productPrice}
                   UIBotton={
                     <View>
-                      {/* {cartData?.length !== 0 ? ( */}
-                      <View style={Styles.INCREAMENTBOTTONMAIN}>
-                        <TouchableOpacity
-                          onPress={() => handleDecrementQuantity(value)}>
-                          <Text style={Styles.DCREAMENTTITLE}>-</Text>
-                        </TouchableOpacity>
-                        <Text style={Styles.ITEMTITEL}>{DataItem}</Text>
-                        <TouchableOpacity
-                          onPress={() => handleIncrementQuantity(value)}>
-                          <Text style={Styles.INCREAMENTTITLE}>+</Text>
-                        </TouchableOpacity>
-                      </View>
-                      {/* ) : ( */}
                       <TouchableOpacity
                         // onPress={() => _Handle_AddToCart(value)}
-                        onPress={() => handleAddToCart(value)}
+                        onPress={() => addItemToCart(value)}
                         activeOpacity={0.5}
                         style={Styles.ADDBOTTONSTYL}>
                         <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
                       </TouchableOpacity>
-                      {/* )} */}
                     </View>
                   }
                 />
               ))}
             </View>
+            {cartdata.map((item, index) => (
+              <View>
+                <View style={Styles.INCREAMENTBOTTONMAIN}>
+                  <TouchableOpacity onPress={() => decreaseQuantity(item)}>
+                    <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                  </TouchableOpacity>
+                  <Text style={Styles.ITEMTITEL}>{item.quantity}</Text>
+                  <TouchableOpacity onPress={() => increaseQuantity(item)}>
+                    <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
           </ScrollView>
 
-          {cartData?.length !== 0 && (
+          {cartdata?.length !== 0 && (
             <AddTocart
-              onPress={() => navigation.navigate('Cart')}
+              onPress={() => navigation.navigate(Routes.TAB_CART)}
               Image={bannerIcon}
-              ItemTotalofnum={`item ${cartitem}`}
+              // ItemTotalofnum={`item ${cartitem}`}
+              ItemTotalofnum={`item ${cartdata.length}`}
               PriceTotalofnum={'Rs.10'}
             />
           )}

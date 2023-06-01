@@ -45,7 +45,9 @@ export default function Productinfo(props) {
           </Text>
           <Text style={Styles.TITLEPRICEDISSTYL}>{props.discountPrice}</Text>
           <View style={Styles.PRICECONTAINER}>
-            <Text style={[Styles.PRICESTYL, props.StylesPrices]}>{props.ProductPrice}</Text>
+            <Text style={[Styles.PRICESTYL, props.StylesPrices]}>
+              {props.ProductPrice}
+            </Text>
 
             {/* <TouchableOpacity
               onPress={props.addtocartonPress}
