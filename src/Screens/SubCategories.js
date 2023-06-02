@@ -425,31 +425,28 @@ export default function SubCategories({navigation, route}) {
                           <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
                         </TouchableOpacity>
                       )} */}
-                      {cartdata.map(
-                        (item, index) => (
-                          datanew.push(item),
-                          (
-                            <View>
-                              {value?._id == item?._id ? (
-                                <View style={Styles.INCREAMENTBOTTONMAIN}>
-                                  <TouchableOpacity
-                                    onPress={() => decreaseQuantity(item)}>
-                                    <Text style={Styles.DCREAMENTTITLE}>-</Text>
-                                  </TouchableOpacity>
-                                  <Text style={Styles.ITEMTITEL}>
-                                    {item.quantity}
-                                  </Text>
-                                  <TouchableOpacity
-                                    onPress={() => increaseQuantity(item)}>
-                                    <Text style={Styles.INCREAMENTTITLE}>
-                                      +
-                                    </Text>
-                                  </TouchableOpacity>
-                                </View>
-                              ) : null}
-                            </View>
-                          )
-                        ),
+                      {cartdata.map((item, index) =>
+                        ({
+                          /* datanew.push(item), */
+                        }(
+                          <View>
+                            {value?._id == item?._id ? (
+                              <View style={Styles.INCREAMENTBOTTONMAIN}>
+                                <TouchableOpacity
+                                  onPress={() => decreaseQuantity(item)}>
+                                  <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                                </TouchableOpacity>
+                                <Text style={Styles.ITEMTITEL}>
+                                  {item.quantity}
+                                </Text>
+                                <TouchableOpacity
+                                  onPress={() => increaseQuantity(item)}>
+                                  <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                                </TouchableOpacity>
+                              </View>
+                            ) : null}
+                          </View>,
+                        )),
                       )}
                       {value?._id == cartdata[0]?._id ? null : (
                         <TouchableOpacity
