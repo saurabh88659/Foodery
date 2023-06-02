@@ -17,6 +17,8 @@ import {Image, View} from 'react-native';
 import {heightPixel, widthPixel} from '../Components/Dimensions';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import Routes from './Routes';
+import {Badge} from 'react-native-paper';
+import {useSelector} from 'react-redux';
 const Tab = createBottomTabNavigator();
 
 const getTabBarVisibility = route => {
@@ -37,6 +39,10 @@ const getTabBarVisibility = route => {
 };
 
 function BottomTabBar() {
+  const cartdata = useSelector(state => state.CartReducerSlice.cart);
+
+  console.log('cartdata', cartdata.length);
+
   return (
     <Tab.Navigator
       initialRouteName={Routes.TAB_HOME}
@@ -64,14 +70,19 @@ function BottomTabBar() {
           headerShown: false,
           tabBarColor: COLORS.BLUE,
           tabBarIcon: ({focused}) => (
-            <Image
-              source={shoppingcartIcon}
-              style={{
-                height: heightPixel(27),
-                width: widthPixel(30),
-                tintColor: focused ? COLORS.GREEN : COLORS.GRAYDARK,
-              }}
-            />
+            <View style={{}}>
+              <Badge style={{top: 10, zIndex: +99999}} size={19}>
+                {cartdata.length}
+              </Badge>
+              <Image
+                source={shoppingcartIcon}
+                style={{
+                  height: heightPixel(27),
+                  width: widthPixel(30),
+                  tintColor: focused ? COLORS.GREEN : COLORS.GRAYDARK,
+                }}
+              />
+            </View>
           ),
         }}
       />

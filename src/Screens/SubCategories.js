@@ -297,7 +297,6 @@ export default function SubCategories({navigation, route}) {
   };
 
   const addItemToCart = item => {
-    console.log('hey------------>>', item);
     dispatch(addToCart(item));
   };
   // const removeItemFromCart = item => {
@@ -315,9 +314,12 @@ export default function SubCategories({navigation, route}) {
   };
 
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
-  console.log('cart------->>>', cartdata);
+  // console.log('cart------->>>', cartdata.length);
+  // console.log('detalist', detalist);
 
-  console.log('detalist', detalist);
+  const datanew = [];
+
+  console.log('datanew+++++++', datanew);
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -396,31 +398,72 @@ export default function SubCategories({navigation, route}) {
                   ProductPrice={value.productPrice}
                   UIBotton={
                     <View>
-                      <TouchableOpacity
-                        // onPress={() => _Handle_AddToCart(value)}
-                        onPress={() => addItemToCart(value)}
-                        activeOpacity={0.5}
-                        style={Styles.ADDBOTTONSTYL}>
-                        <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
-                      </TouchableOpacity>
+                      {/* {value?._id == cartdata[0]?._id ? (
+                        cartdata.map((item, index) => (
+                          <View>
+                            <View style={Styles.INCREAMENTBOTTONMAIN}>
+                              <TouchableOpacity
+                                onPress={() => decreaseQuantity(item)}>
+                                <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                              </TouchableOpacity>
+                              <Text style={Styles.ITEMTITEL}>
+                                {item.quantity}
+                              </Text>
+                              <TouchableOpacity
+                                onPress={() => increaseQuantity(item)}>
+                                <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        ))
+                      ) : (
+                        <TouchableOpacity
+                          // onPress={() => _Handle_AddToCart(value)}
+                          onPress={() => addItemToCart(value)}
+                          activeOpacity={0.5}
+                          style={Styles.ADDBOTTONSTYL}>
+                          <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                        </TouchableOpacity>
+                      )} */}
+                      {cartdata.map(
+                        (item, index) => (
+                          datanew.push(item),
+                          (
+                            <View>
+                              {value?._id == item?._id ? (
+                                <View style={Styles.INCREAMENTBOTTONMAIN}>
+                                  <TouchableOpacity
+                                    onPress={() => decreaseQuantity(item)}>
+                                    <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                                  </TouchableOpacity>
+                                  <Text style={Styles.ITEMTITEL}>
+                                    {item.quantity}
+                                  </Text>
+                                  <TouchableOpacity
+                                    onPress={() => increaseQuantity(item)}>
+                                    <Text style={Styles.INCREAMENTTITLE}>
+                                      +
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              ) : null}
+                            </View>
+                          )
+                        ),
+                      )}
+                      {value?._id == cartdata[0]?._id ? null : (
+                        <TouchableOpacity
+                          onPress={() => addItemToCart(value)}
+                          activeOpacity={0.5}
+                          style={Styles.ADDBOTTONSTYL}>
+                          <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                        </TouchableOpacity>
+                      )}
                     </View>
                   }
                 />
               ))}
             </View>
-            {cartdata.map((item, index) => (
-              <View>
-                <View style={Styles.INCREAMENTBOTTONMAIN}>
-                  <TouchableOpacity onPress={() => decreaseQuantity(item)}>
-                    <Text style={Styles.DCREAMENTTITLE}>-</Text>
-                  </TouchableOpacity>
-                  <Text style={Styles.ITEMTITEL}>{item.quantity}</Text>
-                  <TouchableOpacity onPress={() => increaseQuantity(item)}>
-                    <Text style={Styles.INCREAMENTTITLE}>+</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ))}
           </ScrollView>
 
           {cartdata?.length !== 0 && (
@@ -501,7 +544,7 @@ const Styles = StyleSheet.create({
   },
   DCREAMENTTITLE: {
     color: COLORS.WHITE,
-    fontSize: 14,
+    fontSize: 17,
     paddingVertical: 4,
   },
   ITEMTITEL: {

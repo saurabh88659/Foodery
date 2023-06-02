@@ -24,6 +24,7 @@ import Button from '../Components/Button';
 import Routes from '../Navigation/Routes';
 import {useSelector} from 'react-redux';
 import {
+  addToCart,
   decrementQuantity,
   incrementQuantity,
   removeFromCart,
@@ -33,18 +34,6 @@ import {useDispatch} from 'react-redux';
 export default function CartScreen({navigation}) {
   const [heart, setHeart] = useState(true);
   const dispatch = useDispatch();
-
-  const SRTDATANOW = [
-    {
-      nname: 'name',
-    },
-    {
-      nname: 'name',
-    },
-    {
-      nname: 'name',
-    },
-  ];
 
   const Orderagain = [
     {
@@ -70,9 +59,6 @@ export default function CartScreen({navigation}) {
   ];
 
   const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
-
-  // console.log('cart========>>', productDataByRe)
-
   const increaseQuantity = item => {
     dispatch(incrementQuantity(item));
   };
@@ -82,6 +68,14 @@ export default function CartScreen({navigation}) {
     } else {
       dispatch(decrementQuantity(item));
     }
+  };
+
+  const addItemToCart = item => {
+    dispatch(addToCart(item));
+  };
+
+  const removeItemFromCart = item => {
+    dispatch(removeFromCart(item));
   };
 
   return (
@@ -137,7 +131,9 @@ export default function CartScreen({navigation}) {
               <View>
                 <View style={Styles.CONBOXRIGHT}>
                   <Text style={Styles.SAVEPRICES}>Rs. 100 saved</Text>
-                  <TouchableOpacity activeOpacity={0.6}>
+                  <TouchableOpacity
+                    onPress={() => removeItemFromCart(item)}
+                    activeOpacity={0.6}>
                     <MaterialCommunityIconsTwo
                       title="delete"
                       size={25}
@@ -202,7 +198,7 @@ export default function CartScreen({navigation}) {
                       </View> */}
                       {/* ) : ( */}
                       <TouchableOpacity
-                        // onPress={() => _Handle_AddToCart(value)}
+                        onPress={() => addItemToCart(item)}
                         activeOpacity={0.5}
                         style={GlobelStyles.ADDBOTTONSTYL}>
                         <Text style={GlobelStyles.BOTTONTEXTSTYL}>ADD</Text>

@@ -51,6 +51,8 @@ import {_getStorage} from '../utils/Storage';
 import {useIsFocused} from '@react-navigation/native';
 import Lottie from 'lottie-react-native';
 import axios from 'axios';
+import {useDispatch} from 'react-redux';
+import {addToCart} from '../Redux/ReducerSlice/CartReducerSlice';
 
 const {diffClamp} = Animated;
 const headerHeight = 58 * 2;
@@ -71,6 +73,7 @@ export default function HomeScreen({navigation}) {
   const [ex_Category_Two, setEx_category_Two] = useState([]);
   const [freshness_Cat, setFreshnes_Cat] = useState([]);
   const [nuts_and_Dry_Cat, setNuts_and_Dry_Cat] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setTimeout(() => {
@@ -206,7 +209,7 @@ export default function HomeScreen({navigation}) {
 
   const _all_Category = async () => {
     const token = await _getStorage('token');
-    console.log(token)
+    console.log(token);
     axios
       .get(BASE_URL + `/User/getAllcategorylist`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -267,6 +270,10 @@ export default function HomeScreen({navigation}) {
       .catch(error => {
         console.log('Error Nuts_and_Dry catch error---->>>', error);
       });
+  };
+
+  const addItemToCart = item => {
+    dispatch(addToCart(item));
   };
 
   return (
@@ -477,7 +484,7 @@ export default function HomeScreen({navigation}) {
                       </View> */}
                         {/* ) : ( */}
                         <TouchableOpacity
-                          // onPress={() => _Handle_AddToCart(value)}
+                          onPress={() => addItemToCart(item)}
                           activeOpacity={0.5}
                           style={Styles.ADDBOTTONSTYL}>
                           <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
@@ -683,7 +690,7 @@ export default function HomeScreen({navigation}) {
                   letterSpacing: 0.4,
                   textAlign: 'center',
                 }}>
-                Today Only 70%{`\n`}off ❤ 
+                Today Only 70%{`\n`}off ❤
               </Text>
             </View>
           </Animated.ScrollView>
@@ -985,7 +992,7 @@ const Styles = StyleSheet.create({
     marginTop: 15,
     height: heightPixel(140),
     paddingTop: '1%',
-    justifyContent:'center'
+    justifyContent: 'center',
   },
   modalize: {
     position: 'absolute',

@@ -16,11 +16,12 @@ import {BASE_URL, SimpleToast, bannerIcon} from '../utils/Const';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import AddTocart from '../Components/AddTocart';
-import {addToCart} from '../Redux/action';
+// import {addToCart} from '../Redux/action';
 import {useDispatch, useSelector} from 'react-redux';
 import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPlaceHolder';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
+import {addToCart} from '../Redux/ReducerSlice/CartReducerSlice';
 
 export default function ProdcutsItem({navigation, route}) {
   const SubCatitem = route.params;
@@ -33,9 +34,9 @@ export default function ProdcutsItem({navigation, route}) {
 
   const cartData = useSelector(state => state.reducer);
 
-  const _Handle_AddToCart = item => {
-    dispatch(addToCart(item));
-  };
+  // const _Handle_AddToCart = item => {
+  //   dispatch(addToCart(item));
+  // };
 
   useEffect(() => {
     _ProductItem();
@@ -65,6 +66,12 @@ export default function ProdcutsItem({navigation, route}) {
         }
       });
   };
+
+  const addItemToCart = item => {
+    dispatch(addToCart(item));
+  };
+
+  const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -125,7 +132,7 @@ export default function ProdcutsItem({navigation, route}) {
                           </View> */}
                       {/* ) : ( */}
                       <TouchableOpacity
-                        onPress={() => _Handle_AddToCart(value)}
+                        onPress={() => addItemToCart(value)}
                         activeOpacity={0.5}
                         style={Styles.ADDBOTTONSTYL}>
                         <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
@@ -138,11 +145,11 @@ export default function ProdcutsItem({navigation, route}) {
             </View>
           </ScrollView>
 
-          {cartData?.length !== 0 && (
+          {cartdata?.length !== 0 && (
             <AddTocart
               onPress={() => navigation.navigate('Cart')}
               Image={bannerIcon}
-              ItemTotalofnum={`item ${cartitem}`}
+              ItemTotalofnum={`item ${cartdata.length}`}
               PriceTotalofnum={'Rs.10'}
             />
           )}
