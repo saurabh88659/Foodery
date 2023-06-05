@@ -11,6 +11,8 @@ import {
 import React, {useState} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {
+  BASE_URL,
+  FontAwesomeIcon,
   IonIcon,
   MaterialCommunityIconsTwo,
   MaterialIconsIcon,
@@ -30,35 +32,59 @@ import {
   removeFromCart,
 } from '../Redux/ReducerSlice/CartReducerSlice';
 import {useDispatch} from 'react-redux';
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from '../Redux/ReducerSlice/WishlistReducerSlice';
+import {_getStorage} from '../utils/Storage';
+import axios from 'axios';
 
 export default function CartScreen({navigation}) {
-  const [heart, setHeart] = useState(true);
+  const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
+
   const dispatch = useDispatch();
 
   const Orderagain = [
     {
-      id: 1,
+      _id: 1,
       Nmae: 'ravi rai',
     },
     {
-      id: 2,
+      _id: 2,
       Nmae: 'ravi rai',
     },
     {
-      id: 3,
+      _id: 3,
       Nmae: 'ravi rai',
     },
     {
-      id: 4,
+      _id: 4,
       Nmae: 'ravi rai',
     },
     {
-      id: 5,
+      _id: 5,
       Nmae: 'ravi rai',
     },
   ];
 
+  const _Order_Might_Missed = async () => {
+    const token = await _getStorage('token');
+
+    axios
+      .get(BASE_URL + `/getAllshowCar`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(response => {
+        console.log('hey=========', response.data.orderAgain);
+        setOrder_Might_Missed(response.data.orderAgain);
+      })
+      .catch(error => {
+        console.log('order again catch Error', error);
+      });
+  };
+
   const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
+
   const increaseQuantity = item => {
     dispatch(incrementQuantity(item));
   };
@@ -77,6 +103,14 @@ export default function CartScreen({navigation}) {
   const removeItemFromCart = item => {
     dispatch(removeFromCart(item));
   };
+
+  const addtoWishlist = value => {
+    dispatch(addToWishlist(value));
+  };
+  const removeItemFromWishlist = value => {
+    dispatch(removeFromWishlist(value));
+  };
+  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -121,11 +155,16 @@ export default function CartScreen({navigation}) {
                   flexDirection: 'row',
                   alignItems: 'center',
                 }}>
-                <Image source={bannerIcon} style={Styles.IMAGESTYLES} />
+                <Image
+                  source={{uri: item?.productImage}}
+                  style={Styles.IMAGESTYLES}
+                />
                 <View style={{paddingLeft: widthPixel(20)}}>
-                  <Text style={Styles.MAINTITEL}>{item.productName}</Text>
-                  <Text style={Styles.DISPRICE}>Rs.230</Text>
-                  <Text style={Styles.PRICES}>Rs.120</Text>
+                  <Text style={Styles.MAINTITEL}>{item?.productName}</Text>
+                  <Text
+                    style={Styles.DISPRICE}>{`Rs.${item?.discountPrice}`}</Text>
+                  <Text
+                    style={Styles.PRICES}>{`Rs.${item?.productPrice}`}</Text>
                 </View>
               </View>
               <View>
@@ -149,7 +188,7 @@ export default function CartScreen({navigation}) {
                     style={Styles.DCREAMENTBOTTONINCREAMENT}>
                     <Text style={Styles.TOTALITEMTITLE}>-</Text>
                   </TouchableOpacity>
-                  <Text style={Styles.TOTALITEMTITLE}>{item.quantity}</Text>
+                  <Text style={Styles.TOTALITEMTITLE}>{item?.quantity}</Text>
                   <TouchableOpacity
                     onPress={() => increaseQuantity(item)}
                     activeOpacity={0.6}
@@ -176,9 +215,31 @@ export default function CartScreen({navigation}) {
               <View key={index}>
                 <Productinfo
                   key={index}
-                  heartonPress={() => setHeart(item.id)}
-                  IconColor={heart !== item.id ? COLORS.GRAYDARK : COLORS.BROWN}
-                  FontAwesomeIcontitle={heart !== item.id ? 'heart-o' : 'heart'}
+                  HeartUI={
+                    <View>
+                      {wishlist.some(value => value?._id == item?._id) ? (
+                        <TouchableOpacity
+                          onPress={() => removeItemFromWishlist(item)}
+                          style={[Styles.CONTAINERHEART]}>
+                          <FontAwesomeIcon
+                            title={'heart'}
+                            size={20}
+                            IconColor={COLORS.BROWN}
+                          />
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={() => addtoWishlist(item)}
+                          style={[Styles.CONTAINERHEART]}>
+                          <FontAwesomeIcon
+                            title={'heart-o'}
+                            size={20}
+                            IconColor={COLORS.GRAYDARK}
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  }
                   Productimage={require('../Assets/Logo/mangoicon.png')}
                   ProductName={'Mango Alphonso'}
                   ProductSubName={'6 Pcs (Approx 1.2Kg - 1.4Kg)'}
@@ -186,24 +247,35 @@ export default function CartScreen({navigation}) {
                   ProductPrice={'Rs.70'}
                   UIBotton={
                     <View>
-                      {/* {cartData?.length !== 0 ? ( */}
-                      {/* <View style={Styles.INCREAMENTBOTTONMAIN}>
-                        <TouchableOpacity>
-                          <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                      {productDataByRe.map((value, index) => (
+                        <View key={value?._id}>
+                          {value?._id == item?._id ? (
+                            <View style={Styles.INCREAMENTBOTTONMAIN}>
+                              <TouchableOpacity
+                                onPress={() => decreaseQuantity(value)}>
+                                <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                              </TouchableOpacity>
+                              <Text style={Styles.ITEMTITEL}>
+                                {value.quantity}
+                              </Text>
+                              <TouchableOpacity
+                                onPress={() => increaseQuantity(value)}>
+                                <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                              </TouchableOpacity>
+                            </View>
+                          ) : null}
+                        </View>
+                      ))}
+                      {productDataByRe.some(
+                        value => value._id == item._id,
+                      ) ? null : (
+                        <TouchableOpacity
+                          onPress={() => addItemToCart(item)}
+                          activeOpacity={0.5}
+                          style={Styles.ADDBOTTONSTYL}>
+                          <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
                         </TouchableOpacity>
-                        <Text style={Styles.ITEMTITEL}>0</Text>
-                        <TouchableOpacity>
-                          <Text style={Styles.INCREAMENTTITLE}>+</Text>
-                        </TouchableOpacity>
-                      </View> */}
-                      {/* ) : ( */}
-                      <TouchableOpacity
-                        onPress={() => addItemToCart(item)}
-                        activeOpacity={0.5}
-                        style={GlobelStyles.ADDBOTTONSTYL}>
-                        <Text style={GlobelStyles.BOTTONTEXTSTYL}>ADD</Text>
-                      </TouchableOpacity>
-                      {/* )} */}
+                      )}
                     </View>
                   }
                 />
@@ -395,8 +467,8 @@ const Styles = StyleSheet.create({
     borderColor: COLORS.GRAYDARK,
   },
   IMAGESTYLES: {
-    height: heightPixel(100),
-    width: widthPixel(90),
+    height: heightPixel(90),
+    width: widthPixel(60),
     borderRadius: 10,
   },
   CONTAINERMAINBOXPLUS: {
@@ -513,4 +585,53 @@ const Styles = StyleSheet.create({
     width: widthPixel(350),
     paddingLeft: widthPixel(10),
   },
+  CONTAINERBOXMAIN: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+    marginTop: 5,
+    alignItems: 'center',
+  },
+  ADDBOTTONSTYL: {
+    borderWidth: 1,
+    borderColor: COLORS.PURPLE,
+    paddingVertical: 4,
+    width: widthPixel(60),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+    top: -5,
+  },
+  BOTTONTEXTSTYL: {
+    color: COLORS.PURPLE,
+    fontWeight: '500',
+    fontSize: fontPixel(13),
+  },
+  INCREAMENTBOTTONMAIN: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: widthPixel(60),
+    backgroundColor: COLORS.PURPLE,
+    alignItems: 'center',
+    paddingHorizontal: 7,
+    borderRadius: 4,
+    top: -5,
+  },
+  DCREAMENTTITLE: {
+    color: COLORS.WHITE,
+    fontSize: 17,
+    paddingVertical: 4,
+  },
+  ITEMTITEL: {
+    color: COLORS.WHITE,
+    fontSize: 13,
+    paddingVertical: 4,
+    fontWeight: '500',
+  },
+  INCREAMENTTITLE: {
+    color: COLORS.WHITE,
+    fontSize: 14,
+    paddingVertical: 4,
+  },
+  CONTAINERHEART: {alignItems: 'flex-end', margin: 5},
 });

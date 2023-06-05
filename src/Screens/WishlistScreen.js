@@ -7,27 +7,31 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Pressable,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import MyHeader from '../Components/MyHeader';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
-import {bannerIcon} from '../utils/Const';
 import Routes from '../Navigation/Routes';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {MaterialCommunityIconsTwo} from '../utils/Const';
+import {removeFromWishlist} from '../Redux/ReducerSlice/WishlistReducerSlice';
+import {BottomSheet} from 'react-native-btr';
 
 export default function WishlistScreen({navigation}) {
-  const SRTDATA = [
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
-  ];
+  const [visible, setVisible] = useState(false);
 
-  const {item, favorites} = useSelector(state => state.wishlistReducer);
-  console.log('movies----------->>>>>>', item, favorites);
+  const dispatch = useDispatch();
+  const wishlist = useSelector(state => state.WishlistReducerSlice?.wishlist);
+
+  const removeItemFromWishlist = item => {
+    setVisible(!visible);
+    dispatch(removeFromWishlist(item));
+  };
+  const toggleBottomNavigationView = () => {
+    setVisible(!visible);
+  };
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -46,16 +50,20 @@ export default function WishlistScreen({navigation}) {
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{paddingBottom: 5}}
-        data={SRTDATA}
+        data={wishlist}
         renderItem={({item, index}) => (
           <View key={index}>
             <View style={Styles.CONTAINERMAINBOX}>
               <View>
-                <Image source={bannerIcon} style={Styles.IMAGESTYLES} />
+                <Image
+                  source={{uri: item?.productImage}}
+                  style={Styles.IMAGESTYLES}
+                />
               </View>
+
               <View style={{}}>
                 <Text numberOfLines={1} style={Styles.TITLESTYLES}>
-                  Mango Alphonso
+                  {item?.productName}
                 </Text>
                 <Text numberOfLines={1} style={Styles.SUBTITLESTYLES}>
                   Pick up from organic farms
@@ -76,6 +84,16 @@ export default function WishlistScreen({navigation}) {
                 </View>
               </View>
               <View style={{marginTop: 3}}>
+                <Pressable
+                  // onPress={() => removeItemFromWishlist(item)}
+                  onPress={toggleBottomNavigationView}
+                  style={{alignSelf: 'flex-end'}}>
+                  <MaterialCommunityIconsTwo
+                    title={'dots-vertical'}
+                    size={22}
+                    IconColor={COLORS.GRAYDARK}
+                  />
+                </Pressable>
                 <Text style={Styles.STYLESPCS}>6 Pcs</Text>
                 <Text
                   // numberOfLines={1}
@@ -87,6 +105,38 @@ export default function WishlistScreen({navigation}) {
                 </TouchableOpacity>
               </View>
             </View>
+            <BottomSheet
+              visible={visible}
+              onBackButtonPress={toggleBottomNavigationView}
+              onBackdropPress={toggleBottomNavigationView}>
+              <View
+                style={{
+                  backgroundColor: COLORS.WHITE,
+                  height: heightPixel(80),
+                }}>
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => removeItemFromWishlist(item)}
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    justifyContent: 'flex-start',
+                    marginHorizontal: 20,
+                    paddingVertical: 20,
+                  }}>
+                  <MaterialCommunityIconsTwo
+                    title="delete"
+                    size={25}
+                    IconColor={COLORS.BLACK}
+                    IconStyle={{right: widthPixel(7)}}
+                  />
+                  <Text style={{color: COLORS.BLACK}}>
+                    Remove From collection
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </BottomSheet>
           </View>
         )}
       />
@@ -110,8 +160,8 @@ const Styles = StyleSheet.create({
     borderColor: COLORS.GRAYDARK,
   },
   IMAGESTYLES: {
-    height: heightPixel(115),
-    width: widthPixel(100),
+    height: heightPixel(90),
+    width: widthPixel(90),
     borderRadius: 10,
   },
   TITLESTYLES: {

@@ -1,50 +1,30 @@
 import {createSlice} from '@reduxjs/toolkit';
 
-export const cartSlice = createSlice({
-  name: 'cart',
+export const WishlistReducerSlice = createSlice({
+  name: 'wishlist',
   initialState: {
-    cart: [],
+    wishlist: [],
   },
   reducers: {
-    addToCart: (state, action) => {
-      const itemInCart = state.cart.find(
+    addToWishlist: (state, action) => {
+      const itemInWishlist = state.wishlist.find(
         item => item._id == action.payload._id,
       );
-      if (itemInCart) {
-        itemInCart.quantity++;
+      if (itemInWishlist) {
+        itemInWishlist.quantity++;
       } else {
-        state.cart.push({...action.payload, quantity: 1});
+        state.wishlist.push({...action.payload, quantity: 1});
       }
     },
-    removeFromCart: (state, action) => {
-      const removeFromCart = state.cart.filter(
+    removeFromWishlist: (state, action) => {
+      const removeFromwishlist = state.wishlist.filter(
         item => item._id !== action.payload._id,
       );
-      state.cart = removeFromCart;
-    },
-    incrementQuantity: (state, action) => {
-      const itemInCart = state.cart.find(
-        item => item._id == action.payload._id,
-      );
-      itemInCart.quantity++;
-    },
-    decrementQuantity: (state, action) => {
-      const itemInCart = state.cart.find(
-        item => item._id == action.payload._id,
-      );
-      if (itemInCart.quantity == 1) {
-        const removeFromCart = state.cart.filter(
-          item => item._id !== action.payload._id,
-        );
-        state.cart = removeFromCart;
-      } else {
-        itemInCart.quantity--;
-      }
+      state.wishlist = removeFromwishlist;
     },
   },
 });
 
-export const {addToCart, removeFromCart, incrementQuantity, decrementQuantity} =
-  cartSlice.actions;
+export const {addToWishlist, removeFromWishlist} = WishlistReducerSlice.actions;
 
-export default cartSlice.reducer;
+export default WishlistReducerSlice.reducer;

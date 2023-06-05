@@ -5,14 +5,13 @@ import {
   View,
   SafeAreaView,
   TouchableOpacity,
-  TextInput,
-  Image,
+  Pressable,
 } from 'react-native';
 import {COLORS} from '../utils/Colors';
 import {heightPixel, widthPixel, fontPixel} from '../Components/Dimensions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import {EvilIconsIcon, FontAwesome5Icon, userIconHome} from '../utils/Const';
+import {FontAwesome5Icon} from '../utils/Const';
 
 const Header = props => {
   const {headerHeight} = props;
@@ -64,14 +63,18 @@ const Header = props => {
         </TouchableOpacity>
       </View>
 
-      <View style={Styles.sectionStyle}>
+      <Pressable style={Styles.sectionStyle} onPress={props.onPressserch}>
         <EvilIcons name="search" color={COLORS.GRAYDARK} size={25} />
-        <TextInput
-          placeholderTextColor={COLORS.GRAY}
-          placeholder="Serch for you fovourites"
-          style={Styles.inputStyles}
-        />
-      </View>
+        <Text
+          style={{
+            color: COLORS.GRAY,
+            paddingLeft: 7,
+            fontSize: fontPixel(16),
+            fontWeight: '500',
+          }}>
+          Serch for you fovourites
+        </Text>
+      </Pressable>
     </SafeAreaView>
   );
 };
@@ -117,7 +120,7 @@ const Styles = StyleSheet.create({
   },
   sectionStyle: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     borderColor: COLORS.GRAY,
     height: 45,

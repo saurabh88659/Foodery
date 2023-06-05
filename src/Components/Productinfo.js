@@ -2,36 +2,11 @@ import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import React, {useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, widthPixel} from './Dimensions';
-import {FontAwesomeIcon} from '../utils/Const';
-import {IonIcon} from '../utils/Const';
-import {MaterialIconsIcon} from '../utils/Const';
 
 export default function Productinfo(props) {
-  const [heart, setHeart] = useState(true);
-
   return (
     <View key={props.index} style={[Styles.CONTAINERBOX, props.Styles]}>
-      <View>
-        <TouchableOpacity
-          onPress={props.heartonPress}
-          style={[Styles.CONTAINERHEART]}>
-          <FontAwesomeIcon
-            title={props.FontAwesomeIcontitle}
-            size={20}
-            IconColor={props.IconColor}
-          />
-        </TouchableOpacity>
-        {/* <TouchableOpacity
-          onPress={props.heartonPress}
-          style={[Styles.CONTAINERHEART, {backgroundColor: 'red'}]}>
-          <FontAwesomeIcon
-            title={props.FontAwesomeIcontitle}
-            size={20}
-            IconColor={props.IconColor}
-          />
-        </TouchableOpacity> */}
-      </View>
-
+      <View>{props.HeartUI}</View>
       <TouchableOpacity onPress={props.onPress}>
         <View style={{alignItems: 'center'}}>
           <Image source={props.Productimage} style={Styles.imagestyle} />
@@ -120,6 +95,7 @@ const Styles = StyleSheet.create({
     marginTop: 10,
     elevation: 10,
     borderRadius: 4,
+    // paddingVertical: '2%',
   },
   CONTAINERBOXMAIN: {
     flexDirection: 'row',

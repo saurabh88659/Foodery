@@ -12,21 +12,52 @@ import React from 'react';
 import {COLORS} from '../utils/Colors';
 import MyHeader from '../Components/MyHeader';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
-import {bannerIcon} from '../utils/Const';
+import {FontAwesomeIcon, bannerIcon} from '../utils/Const';
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from '../Redux/ReducerSlice/WishlistReducerSlice';
+
+import {useDispatch, useSelector} from 'react-redux';
 
 export default function OrderHistory({navigation}) {
+  const dispatch = useDispatch();
+
+  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
+  console.log('wishlist', wishlist);
+
   const SRTDATA = [
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
-    {name: 'Ravi rai'},
+    {
+      id: '0',
+      image:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqg_OBzcVDnKHv1d3hyVk_WlCo43pzit4CJQ&usqp=CAU',
+      name: 'icecream',
+    },
+    {
+      id: '1',
+      image:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT85O96gPiso_j2gaS0cePTBY4mCR3pumV6tw&usqp=CAU',
+      name: 'biscuit',
+    },
+    {
+      id: '2',
+      image:
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSicQWeRoxxLEr1RLIp8dJtw-NQvSE4xtlhwA&usqp=CAU',
+      name: 'chocolate',
+    },
   ];
+
+  const addtoWishlist = item => {
+    // console.log('hey', item);
+    dispatch(addToWishlist(item));
+  };
+  const removeItemFromWishlist = item => {
+    dispatch(removeFromWishlist(item));
+  };
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <StatusBar
-        // barStyle="dark-content"
         hidden={false}
         backgroundColor={COLORS.GREEN}
         translucent={true}
@@ -72,9 +103,28 @@ export default function OrderHistory({navigation}) {
                   style={Styles.KGSTYLES}>
                   (Approx. 1.2Kg - 1.4kg)
                 </Text>
-                <TouchableOpacity style={Styles.ADDTOCARTBOTTON}>
-                  <Text style={{color: COLORS.WHITE}}>ADD</Text>
-                </TouchableOpacity>
+
+                {wishlist.some(value => value?.id == item?.id) ? (
+                  <TouchableOpacity
+                    onPress={() => removeItemFromWishlist(item)}
+                    style={Styles.ADDTOCARTBOTTON}>
+                    <FontAwesomeIcon
+                      title={'heart-o'}
+                      size={20}
+                      IconColor={COLORS.GRAYDARK}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    onPress={() => addtoWishlist(item)}
+                    style={Styles.ADDTOCARTBOTTON}>
+                    <FontAwesomeIcon
+                      title={'heart'}
+                      size={20}
+                      IconColor={COLORS.BROWN}
+                    />
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </View>

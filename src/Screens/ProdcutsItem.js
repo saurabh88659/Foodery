@@ -12,7 +12,12 @@ import {
 import React, {useState, useEffect} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {COLORS} from '../utils/Colors';
-import {BASE_URL, SimpleToast, bannerIcon} from '../utils/Const';
+import {
+  BASE_URL,
+  FontAwesomeIcon,
+  SimpleToast,
+  bannerIcon,
+} from '../utils/Const';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import AddTocart from '../Components/AddTocart';
@@ -21,7 +26,17 @@ import {useDispatch, useSelector} from 'react-redux';
 import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPlaceHolder';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
-import {addToCart} from '../Redux/ReducerSlice/CartReducerSlice';
+import {
+  addToCart,
+  decrementQuantity,
+  incrementQuantity,
+  removeFromCart,
+} from '../Redux/ReducerSlice/CartReducerSlice';
+import Routes from '../Navigation/Routes';
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from '../Redux/ReducerSlice/WishlistReducerSlice';
 
 export default function ProdcutsItem({navigation, route}) {
   const SubCatitem = route.params;
@@ -71,6 +86,25 @@ export default function ProdcutsItem({navigation, route}) {
     dispatch(addToCart(item));
   };
 
+  const increaseQuantity = item => {
+    dispatch(incrementQuantity(item));
+  };
+  const decreaseQuantity = item => {
+    if (item.quantity == 1) {
+      dispatch(removeFromCart(item));
+    } else {
+      dispatch(decrementQuantity(item));
+    }
+  };
+
+  const addtoWishlist = value => {
+    dispatch(addToWishlist(value));
+  };
+  const removeItemFromWishlist = value => {
+    dispatch(removeFromWishlist(value));
+  };
+  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
+
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
   return (
@@ -81,6 +115,7 @@ export default function ProdcutsItem({navigation, route}) {
         translucent={true}
       />
       <MyHeader
+        onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
         title={SubCatitem.item.subCategoryName}
         onPress={() => navigation.goBack()}
       />
@@ -102,54 +137,78 @@ export default function ProdcutsItem({navigation, route}) {
             <View style={Styles.CONTAINERBOXMAIN}>
               {productiItem.map((value, index) => (
                 <Productinfo
-                  // addtocartonPress={}
                   key={index}
-                  heartonPress={() => handleAddToWishlist(value)}
-                  // heartonPress={() => handleWishlistToggle(value)}
-                  IconColor={
-                    heart !== value.id ? COLORS.GRAYDARK : COLORS.BROWN
-                  }
-                  FontAwesomeIcontitle={
-                    heart !== value.id ? 'heart-o' : 'heart'
+                  HeartUI={
+                    <View>
+                      {wishlist.some(item => item?._id == value?._id) ? (
+                        <TouchableOpacity
+                          onPress={() => removeItemFromWishlist(value)}
+                          style={[Styles.CONTAINERHEART]}>
+                          <FontAwesomeIcon
+                            title={'heart'}
+                            size={20}
+                            IconColor={COLORS.BROWN}
+                          />
+                        </TouchableOpacity>
+                      ) : (
+                        <TouchableOpacity
+                          onPress={() => addtoWishlist(value)}
+                          style={[Styles.CONTAINERHEART]}>
+                          <FontAwesomeIcon
+                            title={'heart-o'}
+                            size={20}
+                            IconColor={COLORS.GRAYDARK}
+                          />
+                        </TouchableOpacity>
+                      )}
+                    </View>
                   }
                   //   onPress={() => toggleBottomNavigationView(value.id)}
-                  Productimage={require('../Assets/Logo/mangoicon.png')}
-                  ProductName={value.productName}
-                  ProductSubName={'1 Piece'}
+                  Productimage={{uri: value?.productImage}}
+                  ProductName={value?.productName}
+                  ProductSubName={value?.productUnit}
                   discountPrice={'Rs.80'}
-                  ProductPrice={'Rs.190'}
+                  ProductPrice={value.productPrice}
                   UIBotton={
                     <View>
-                      {/* {cartData?.length !== 0 ? ( */}
-                      {/* <View style={Styles.INCREAMENTBOTTONMAIN}>
-                            <TouchableOpacity>
-                              <Text style={Styles.DCREAMENTTITLE}>-</Text>
-                            </TouchableOpacity>
-                            <Text style={Styles.ITEMTITEL}>0</Text>
-                            <TouchableOpacity>
-                              <Text style={Styles.INCREAMENTTITLE}>+</Text>
-                            </TouchableOpacity>
-                          </View> */}
-                      {/* ) : ( */}
-                      <TouchableOpacity
-                        onPress={() => addItemToCart(value)}
-                        activeOpacity={0.5}
-                        style={Styles.ADDBOTTONSTYL}>
-                        <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
-                      </TouchableOpacity>
-                      {/* )} */}
+                      {cartdata.map((item, index) => (
+                        <View key={item?._id}>
+                          {value?._id == item?._id ? (
+                            <View style={Styles.INCREAMENTBOTTONMAIN}>
+                              <TouchableOpacity
+                                onPress={() => decreaseQuantity(item)}>
+                                <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                              </TouchableOpacity>
+                              <Text style={Styles.ITEMTITEL}>
+                                {item?.quantity}
+                              </Text>
+                              <TouchableOpacity
+                                onPress={() => increaseQuantity(item)}>
+                                <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                              </TouchableOpacity>
+                            </View>
+                          ) : null}
+                        </View>
+                      ))}
+                      {cartdata.some(item => item._id == value._id) ? null : (
+                        <TouchableOpacity
+                          onPress={() => addItemToCart(value)}
+                          activeOpacity={0.5}
+                          style={Styles.ADDBOTTONSTYL}>
+                          <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                        </TouchableOpacity>
+                      )}
                     </View>
                   }
                 />
               ))}
             </View>
           </ScrollView>
-
           {cartdata?.length !== 0 && (
             <AddTocart
-              onPress={() => navigation.navigate('Cart')}
+              onPress={() => navigation.navigate(Routes.TAB_CART)}
               Image={bannerIcon}
-              ItemTotalofnum={`item ${cartdata.length}`}
+              ItemTotalofnum={`item ${cartdata?.length}`}
               PriceTotalofnum={'Rs.10'}
             />
           )}
@@ -228,4 +287,5 @@ const Styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 4,
   },
+  CONTAINERHEART: {alignItems: 'flex-end', margin: 5},
 });

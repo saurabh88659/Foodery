@@ -51,8 +51,17 @@ import {_getStorage} from '../utils/Storage';
 import {useIsFocused} from '@react-navigation/native';
 import Lottie from 'lottie-react-native';
 import axios from 'axios';
-import {useDispatch} from 'react-redux';
-import {addToCart} from '../Redux/ReducerSlice/CartReducerSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {
+  addToCart,
+  decrementQuantity,
+  incrementQuantity,
+  removeFromCart,
+} from '../Redux/ReducerSlice/CartReducerSlice';
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from '../Redux/ReducerSlice/WishlistReducerSlice';
 
 const {diffClamp} = Animated;
 const headerHeight = 58 * 2;
@@ -73,6 +82,7 @@ export default function HomeScreen({navigation}) {
   const [ex_Category_Two, setEx_category_Two] = useState([]);
   const [freshness_Cat, setFreshnes_Cat] = useState([]);
   const [nuts_and_Dry_Cat, setNuts_and_Dry_Cat] = useState([]);
+  const [order_Again, setOrder_Again] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -127,23 +137,23 @@ export default function HomeScreen({navigation}) {
 
   const Orderagain = [
     {
-      id: 1,
+      _id: 1,
       Nmae: 'ravi rai',
     },
     {
-      id: 2,
+      _id: 2,
       Nmae: 'ravi rai',
     },
     {
-      id: 3,
+      _id: 3,
       Nmae: 'ravi rai',
     },
     {
-      id: 4,
+      _id: 4,
       Nmae: 'ravi rai',
     },
     {
-      id: 5,
+      _id: 5,
       Nmae: 'ravi rai',
     },
   ];
@@ -187,6 +197,7 @@ export default function HomeScreen({navigation}) {
       _ExSubCategory();
       _FreshnessCategory();
       _Nuts_and_Dry_sCategory();
+      _Order_Again();
     }
   }, [IsFocused]);
 
@@ -272,9 +283,46 @@ export default function HomeScreen({navigation}) {
       });
   };
 
+  const _Order_Again = async () => {
+    const token = await _getStorage('token');
+
+    axios
+      .get(BASE_URL + `/getOrderAgain`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(response => {
+        console.log('hey=========', response.data.orderAgain);
+        setOrder_Again(response.data.orderAgain);
+      })
+      .catch(error => {
+        console.log('order again catch Error', error);
+      });
+  };
+
   const addItemToCart = item => {
     dispatch(addToCart(item));
   };
+
+  const increaseQuantity = item => {
+    dispatch(incrementQuantity(item));
+  };
+  const decreaseQuantity = item => {
+    if (item.quantity == 1) {
+      dispatch(removeFromCart(item));
+    } else {
+      dispatch(decrementQuantity(item));
+    }
+  };
+
+  const addtoWishlist = value => {
+    dispatch(addToWishlist(value));
+  };
+  const removeItemFromWishlist = value => {
+    dispatch(removeFromWishlist(value));
+  };
+  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
+
+  const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -289,6 +337,7 @@ export default function HomeScreen({navigation}) {
 
           <Animated.View style={[Styles.header, {transform: [{translateY}]}]}>
             <Header
+              onPressserch={() => navigation.navigate(Routes.SEARCH_BAR)}
               titleonPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
               onPress={() => navigation.navigate(Routes.PROFILE_SCREEN)}
               {...{headerHeight}}
@@ -435,17 +484,22 @@ export default function HomeScreen({navigation}) {
             <View style={{marginHorizontal: 10}}>
               <View style={Styles.SubTitleheader}>
                 <Text style={Styles.titlemain}>Order Again</Text>
-                <TouchableOpacity
-                  // onPress={toggleExpanded}
-                  activeOpacity={0.6}
-                  style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text style={Styles.titleview}>View all</Text>
-                  <MaterialIconsIcon
-                    title={'keyboard-arrow-right'}
-                    size={22}
-                    IconColor={COLORS.GRAYDARK}
-                  />
-                </TouchableOpacity>
+                {order_Again.some(item => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate(Routes.PRODUCT_ITEM, item)
+                    }
+                    // onPress={toggleExpanded}
+                    activeOpacity={0.6}
+                    style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text style={Styles.titleview}>View all</Text>
+                    <MaterialIconsIcon
+                      title={'keyboard-arrow-right'}
+                      size={22}
+                      IconColor={COLORS.GRAYDARK}
+                    />
+                  </TouchableOpacity>
+                ))}
               </View>
             </View>
             <FlatList
@@ -453,43 +507,76 @@ export default function HomeScreen({navigation}) {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{paddingBottom: 5}}
               horizontal
-              data={Orderagain}
+              data={order_Again}
               renderItem={({item, index}) => (
                 <View key={index}>
                   <Productinfo
                     key={index}
-                    heartonPress={() => setHeart(item.id)}
-                    IconColor={
-                      heart !== item.id ? COLORS.GRAYDARK : COLORS.BROWN
+                    HeartUI={
+                      <View>
+                        {wishlist.some(value => value?._id == item?._id) ? (
+                          <TouchableOpacity
+                            onPress={() => removeItemFromWishlist(item)}
+                            style={[Styles.CONTAINERHEART]}>
+                            <FontAwesomeIcon
+                              title={'heart'}
+                              size={20}
+                              IconColor={COLORS.BROWN}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => addtoWishlist(item)}
+                            style={[Styles.CONTAINERHEART]}>
+                            <FontAwesomeIcon
+                              title={'heart-o'}
+                              size={20}
+                              IconColor={COLORS.GRAYDARK}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
                     }
-                    FontAwesomeIcontitle={
-                      heart !== item.id ? 'heart-o' : 'heart'
-                    }
-                    Productimage={require('../Assets/Logo/mangoicon.png')}
-                    ProductName={'Mango Alphonso'}
-                    ProductSubName={'6 Pcs (Approx 1.2Kg - 1.4Kg)'}
-                    discountPrice={'Rs.80'}
-                    ProductPrice={'Rs.70'}
+                    Productimage={{uri: item?.productImage}}
+                    ProductName={item?.productName}
+                    ProductSubName={item?.productUnit}
+                    discountPrice={item?.discountPrice}
+                    ProductPrice={item?.productPrice}
                     UIBotton={
                       <View>
-                        {/* {cartData?.length !== 0 ? ( */}
-                        {/* <View style={Styles.INCREAMENTBOTTONMAIN}>
-                        <TouchableOpacity>
-                          <Text style={Styles.DCREAMENTTITLE}>-</Text>
-                        </TouchableOpacity>
-                        <Text style={Styles.ITEMTITEL}>0</Text>
-                        <TouchableOpacity>
-                          <Text style={Styles.INCREAMENTTITLE}>+</Text>
-                        </TouchableOpacity>
-                      </View> */}
-                        {/* ) : ( */}
-                        <TouchableOpacity
-                          onPress={() => addItemToCart(item)}
-                          activeOpacity={0.5}
-                          style={Styles.ADDBOTTONSTYL}>
-                          <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
-                        </TouchableOpacity>
-                        {/* )} */}
+                        <View>
+                          {cartdata.map((value, index) => (
+                            <View key={value?._id}>
+                              {value?._id == item?._id ? (
+                                <View style={Styles.INCREAMENTBOTTONMAIN}>
+                                  <TouchableOpacity
+                                    onPress={() => decreaseQuantity(value)}>
+                                    <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                                  </TouchableOpacity>
+                                  <Text style={Styles.ITEMTITEL}>
+                                    {value?.quantity}
+                                  </Text>
+                                  <TouchableOpacity
+                                    onPress={() => increaseQuantity(value)}>
+                                    <Text style={Styles.INCREAMENTTITLE}>
+                                      +
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              ) : null}
+                            </View>
+                          ))}
+                          {cartdata.some(
+                            value => value?._id == item?._id,
+                          ) ? null : (
+                            <TouchableOpacity
+                              onPress={() => addItemToCart(item)}
+                              activeOpacity={0.5}
+                              style={Styles.ADDBOTTONSTYL}>
+                              <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                            </TouchableOpacity>
+                          )}
+                        </View>
                       </View>
                     }
                   />
@@ -1035,4 +1122,5 @@ const Styles = StyleSheet.create({
     fontSize: fontPixel(15),
     width: 70,
   },
+  CONTAINERHEART: {alignItems: 'flex-end', margin: 5},
 });

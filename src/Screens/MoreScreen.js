@@ -35,7 +35,6 @@ export default function MoreScreen({navigation}) {
     setModalVisible(!modalVisible);
     navigation.navigate(Routes.LOG_IN_SCREEN);
   };
-  
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -66,7 +65,7 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>Wishlist</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate(Routes.CART_CSREEN)}
+            onPress={() => navigation.navigate(Routes.TAB_CART)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>
