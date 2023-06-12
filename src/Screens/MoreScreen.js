@@ -56,7 +56,7 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>Order History</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate(Routes.WISHLIST_SCREEN)}
+            onPress={() => navigation.navigate(Routes.TAB_WISHLIST)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>
@@ -74,7 +74,7 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>My Cart</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Notification')}
+            onPress={() => navigation.navigate(Routes.NOTIFICATION)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>

@@ -41,11 +41,11 @@ export default function ProfileScreen({navigation}) {
   // const dispatch = useDispatch();
   // const profiledata = useSelector(state => state.Profilereducer);
   // const [selectedImage, setSelectedImage] = useState(null);
+
   const [state, setState] = useState({
     profileImg: null,
     isLoading: false,
   });
-
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -62,8 +62,8 @@ export default function ProfileScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('Profile Response', response.data.result);
-        setIsProfile(response.data.result);
+        // console.log('Profile Response', response.data.result);
+        setIsProfile(response?.data?.result);
         // dispatch(actionProfile(response.data));
         setIsLoading(false);
       })
@@ -134,8 +134,8 @@ export default function ProfileScreen({navigation}) {
           // SimpleToast({title: res.data.message, isLong: true});
         })
         .catch(error => {
-          console.log('error in catch Profile image ', error.response.data);
-          SimpleToast({title: error.response.data, isLong: true});
+          console.log('error in catch Profile image ', error?.response?.data);
+          SimpleToast({title: error?.response?.data, isLong: true});
           setState({...state, profileImg: null});
           setState({
             ...state,
@@ -164,10 +164,10 @@ export default function ProfileScreen({navigation}) {
                   <Image
                     source={
                       state.profileImg
-                        ? {uri: state.profileImg.path}
+                        ? {uri: state.profileImg?.path}
                         : {uri: isProfile?.profilePic}
                     }
-                    style={[Styles.CONTAINERProfile, {}]}
+                    style={[Styles.CONTAINERProfile]}
                   />
                 ) : null}
               </TouchableOpacity>
@@ -203,7 +203,7 @@ export default function ProfileScreen({navigation}) {
                 <Text style={Styles.EDITTITLE}>Edit Profile</Text>
               </View>
 
-              <Text style={Styles.NAMETITLE}>Hi {isProfile.name}!</Text>
+              <Text style={Styles.NAMETITLE}>Hi {isProfile?.name}!</Text>
               <Text style={{color: COLORS.GRAYDARK, fontWeight: '500'}}>
                 Sign out
               </Text>
@@ -214,25 +214,25 @@ export default function ProfileScreen({navigation}) {
                 <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
                   Name
                 </Text>
-                <Text style={{color: COLORS.BLACK}}>{isProfile.name}</Text>
+                <Text style={{color: COLORS.BLACK}}>{isProfile?.name}</Text>
               </View>
               <View style={Styles.MAINBOX}>
                 <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
                   Email
                 </Text>
-                <Text style={{color: COLORS.BLACK}}>{isProfile.email}</Text>
+                <Text style={{color: COLORS.BLACK}}>{isProfile?.email}</Text>
               </View>
               <View style={Styles.MAINBOX}>
                 <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
                   Mobile No.
                 </Text>
-                <Text style={{color: COLORS.BLACK}}>{isProfile.phone}</Text>
+                <Text style={{color: COLORS.BLACK}}>{isProfile?.phone}</Text>
               </View>
               <View style={Styles.MAINBOX}>
                 <Text style={{color: COLORS.GRAYDARK, fontSize: fontPixel(16)}}>
                   Address
                 </Text>
-                <Text style={{color: COLORS.BLACK}}>{isProfile.address}</Text>
+                <Text style={{color: COLORS.BLACK}}>{isProfile?.address}</Text>
               </View>
             </View>
 

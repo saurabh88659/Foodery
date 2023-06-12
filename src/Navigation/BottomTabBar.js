@@ -31,7 +31,12 @@ const getTabBarVisibility = route => {
     routeName === 'Notification' ||
     routeName === 'AddressScreen' ||
     routeName === 'AddressScreenWithMap' ||
-    routeName === 'ProdcutsItem'
+    routeName === 'ProdcutsItem' ||
+    routeName === 'TermsCondition' ||
+    routeName === 'PrivacyPolicy' ||
+    routeName === 'AboutUs' ||
+    routeName === 'Notification' ||
+    routeName === 'OrderHistory'
   ) {
     return 'none';
   }

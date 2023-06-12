@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   Text,
@@ -15,6 +15,52 @@ import {FontAwesome5Icon} from '../utils/Const';
 
 const Header = props => {
   const {headerHeight} = props;
+
+  const texts = [
+    'Search "rice"',
+    'Search "eggs"',
+    'Search "atta"',
+    'Search "Butter"',
+    'Search "Broccoli"',
+    'Search "Bananas"',
+    'Search "Peanut butter"',
+    'Search "Bread"',
+    'Search "Spinach"',
+    'Search "Onions"',
+    'Search "Tomatoes"',
+  ];
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentText, setCurrentText] = useState('');
+
+  useEffect(() => {
+    const text = texts[currentIndex];
+    let currentIndexCopy = currentIndex;
+
+    const interval = setInterval(() => {
+      if (currentIndexCopy === currentIndex) {
+        const newText = text.substring(0, currentText.length + 1);
+        setCurrentText(newText);
+      } else {
+        currentIndexCopy = currentIndex;
+        setCurrentText('');
+      }
+
+      if (currentText === text) {
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [currentIndex, currentText]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex(prevIndex => (prevIndex + 1) % texts.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <SafeAreaView style={{backgroundColor: COLORS.GREEN}}>
       <View style={Styles.HeadersSty}>
@@ -72,7 +118,8 @@ const Header = props => {
             fontSize: fontPixel(16),
             fontWeight: '500',
           }}>
-          Serch for you fovourites
+          {/* Serch for you fovourites */}
+          {currentText}
         </Text>
       </Pressable>
     </SafeAreaView>

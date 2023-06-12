@@ -51,12 +51,15 @@ export default function Otp({navigation, route}) {
       .post(BASE_URL + `/User/userPhoneVerifyOTP`, otpdata, {})
       .then(async response => {
         await AsyncStorage.setItem('token', response?.data?.token);
-        // await _setStorage()
-        // await AsyncStorage.setItem('refreshToken', response.data.refreshToken);
-        // await AsyncStorage.setItem('user_id', response.data.user_id);
+
+        await AsyncStorage.setItem(
+          'refreshToken',
+          response?.data?.refreshToken,
+        );
+        await AsyncStorage.setItem('user_id', response?.data?.user_id);
+
         // console.log('refresh token ----------->>>', response.data.refreshToken);
-        // const refresh_token = await AsyncStorage.get('user_id', user_id);
-        // console.log('refresh user_id ----------->>>', refresh_token);
+        // console.log('user id  ----------->>>', response.data.user_id);
 
         SimpleToast({title: response?.data?.message, isLong: true});
         setState({

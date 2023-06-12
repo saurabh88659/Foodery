@@ -8,7 +8,7 @@ import {
   FlatList,
   ScrollView,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {
   BASE_URL,
@@ -16,12 +16,13 @@ import {
   IonIcon,
   MaterialCommunityIconsTwo,
   MaterialIconsIcon,
+  SimpleToast,
   bannerIcon,
 } from '../utils/Const';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
-import GlobelStyles from '../utils/GlobelStyles';
+// import GlobelStyles from '../utils/GlobelStyles';a
 import Button from '../Components/Button';
 import Routes from '../Navigation/Routes';
 import {useSelector} from 'react-redux';
@@ -38,53 +39,36 @@ import {
 } from '../Redux/ReducerSlice/WishlistReducerSlice';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function CartScreen({navigation}) {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
-
+  const IsFocused = useIsFocused();
+  const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
+  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const dispatch = useDispatch();
 
-  const Orderagain = [
-    {
-      _id: 1,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 2,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 3,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 4,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 5,
-      Nmae: 'ravi rai',
-    },
-  ];
+  useEffect(() => {
+    if (IsFocused) {
+      _Order_Might_Missed();
+    }
+  }, [IsFocused]);
 
   const _Order_Might_Missed = async () => {
     const token = await _getStorage('token');
 
     axios
-      .get(BASE_URL + `/getAllshowCar`, {
+      .get(BASE_URL + `/getAllshowCarts`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('hey=========', response.data.orderAgain);
-        setOrder_Might_Missed(response.data.orderAgain);
+        console.log('_Order_Might_Missed=========', response.data.categoryData);
+        setOrder_Might_Missed(response.data.categoryData);
       })
       .catch(error => {
-        console.log('order again catch Error', error);
+        console.log('_Order_Might_Missed catch Error', error);
       });
   };
-
-  const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
-
   const increaseQuantity = item => {
     dispatch(incrementQuantity(item));
   };
@@ -95,26 +79,30 @@ export default function CartScreen({navigation}) {
       dispatch(decrementQuantity(item));
     }
   };
-
   const addItemToCart = item => {
     dispatch(addToCart(item));
   };
-
   const removeItemFromCart = item => {
     dispatch(removeFromCart(item));
   };
-
   const addtoWishlist = value => {
-    dispatch(addToWishlist(value));
+    if (value) {
+      dispatch(addToWishlist(value));
+      SimpleToast({title: 'added to the wishlist.', isLong: true});
+    }
   };
   const removeItemFromWishlist = value => {
     dispatch(removeFromWishlist(value));
+    SimpleToast({title: 'removed from the wishlist.', isLong: true});
   };
-  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
-      <MyHeader title={'Shopping Cart'} onPress={() => navigation.goBack()} />
+      <MyHeader
+        onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
+        title={'Shopping Cart'}
+        onPress={() => navigation.goBack()}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
@@ -210,7 +198,7 @@ export default function CartScreen({navigation}) {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{paddingBottom: 5}}
             horizontal
-            data={Orderagain}
+            data={order_Might_Missed}
             renderItem={({item, index}) => (
               <View key={index}>
                 <Productinfo
@@ -240,11 +228,11 @@ export default function CartScreen({navigation}) {
                       )}
                     </View>
                   }
-                  Productimage={require('../Assets/Logo/mangoicon.png')}
-                  ProductName={'Mango Alphonso'}
-                  ProductSubName={'6 Pcs (Approx 1.2Kg - 1.4Kg)'}
-                  discountPrice={'Rs.80'}
-                  ProductPrice={'Rs.70'}
+                  Productimage={{uri: item?.productImage}}
+                  ProductName={item?.productName}
+                  ProductSubName={item?.productUnit}
+                  discountPrice={item?.discountPrice}
+                  ProductPrice={item?.productPrice}
                   UIBotton={
                     <View>
                       {productDataByRe.map((value, index) => (

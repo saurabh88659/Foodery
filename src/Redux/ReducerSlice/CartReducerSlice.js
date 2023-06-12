@@ -1,4 +1,23 @@
-import {createSlice} from '@reduxjs/toolkit';
+import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
+
+import axios from 'axios';
+import {BASE_URL} from '../../utils/Const';
+
+export const addItemToCart = createAsyncThunk(
+  'cart/addItemToCart',
+  async (item, thunkAPI) => {
+    try {
+      const response = await axios.post(BASE_URL + `/User/getCart1`);
+      console.log(
+        'slise data----------------------------------------->>>>>>>>>',
+        response.data,
+      );
+      return response.data;
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error.response.data);
+    }
+  },
+);
 
 export const cartSlice = createSlice({
   name: 'cart',
@@ -29,7 +48,7 @@ export const cartSlice = createSlice({
       //   console.log('price=========DG+++', itemInCart);
       if (itemInCart) {
         itemInCart.quantity++;
-        itemInCart.productPrice = itemInCart.quantity * itemInCart.productPrice;
+        // itemInCart.productPrice = itemInCart.quantity * itemInCart.productPrice;
         // console.log('price------------------++', itemInCart.productPrice);
       }
     },

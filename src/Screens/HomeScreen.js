@@ -16,6 +16,10 @@ import {
   BackHandler,
   Pressable,
   Dimensions,
+  Linking,
+  Platform,
+  Alert,
+  PermissionsAndroid,
 } from 'react-native';
 import Header from '../Components/Header';
 // import {getCloser} from '../Components/utils';
@@ -62,6 +66,7 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from '../Redux/ReducerSlice/WishlistReducerSlice';
+import {checkLocationEnabled} from '../utils/Handler/Locationhandles';
 
 const {diffClamp} = Animated;
 const headerHeight = 58 * 2;
@@ -114,26 +119,6 @@ export default function HomeScreen({navigation}) {
       useNativeDriver: true,
     },
   );
-
-  // const handleSnap = ({nativeEvent}) => {
-  //   const offsetY = nativeEvent.contentOffset.y;
-  //   if (
-  //     !(
-  //       translateYNumber.current === 0 ||
-  //       translateYNumber.current === -headerHeight / 2
-  //     )
-  //   ) {
-  //     if (ref.current) {
-  //       ref.current.scrollToOffset({
-  //         offset:
-  //           getCloser(translateYNumber.current, -headerHeight / 2, 0) ===
-  //           -headerHeight / 2
-  //             ? offsetY + headerHeight / 2
-  //             : offsetY - headerHeight / 2,
-  //       });
-  //     }
-  //   }
-  // };
 
   const Orderagain = [
     {
@@ -198,6 +183,7 @@ export default function HomeScreen({navigation}) {
       _FreshnessCategory();
       _Nuts_and_Dry_sCategory();
       _Order_Again();
+      checkLocationEnabled();
     }
   }, [IsFocused]);
 
@@ -237,12 +223,12 @@ export default function HomeScreen({navigation}) {
   const _ExSubCategory = async () => {
     const token = await _getStorage('token');
     axios
-      .get(BASE_URL + `/User/getCategory2`, {
+      .get(BASE_URL + `/User/getAllcategorylist1`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
         console.log(
-          'All Category Two Response----->>>',
+          '_ExSubCategory Category Two Response----->>>',
           response?.data?.getAll,
         );
         setEx_category_Two(response?.data?.getAll);
@@ -315,13 +301,18 @@ export default function HomeScreen({navigation}) {
   };
 
   const addtoWishlist = value => {
-    dispatch(addToWishlist(value));
+    if (value) {
+      dispatch(addToWishlist(value));
+      SimpleToast({title: 'added to the wishlist.', isLong: true});
+    }
   };
   const removeItemFromWishlist = value => {
-    dispatch(removeFromWishlist(value));
+    if (value) {
+      dispatch(removeFromWishlist(value));
+      SimpleToast({title: 'removed from the wishlist.', isLong: true});
+    }
   };
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
-
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
   return (
@@ -457,10 +448,12 @@ export default function HomeScreen({navigation}) {
                     {backgroundColor: item.catColor},
                   ]}>
                   <Image
-                    source={{uri: item.image}}
+                    source={{uri: item.categoryIcon}}
                     style={Styles.EXPLOREIMAGESTYL}
                   />
-                  <Text style={Styles.EXPLORESUBTITLE}>{item.name}</Text>
+                  <Text style={Styles.EXPLORESUBTITLE}>
+                    {item.categoryName}
+                  </Text>
                 </TouchableOpacity>
               )}
             />
@@ -663,7 +656,7 @@ export default function HomeScreen({navigation}) {
                     //   key={index}
                     //   style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
                     <Productinfo
-                      Styles={{top: -5}}
+                      Styles={{top: -5, paddingVertical: '15%'}}
                       key={index}
                       heartonPress={() => setHeart(item.id)}
                       IconColor={
@@ -736,7 +729,7 @@ export default function HomeScreen({navigation}) {
                     //   )}
                     // />
                     <Productinfo
-                      Styles={{top: heightPixel(-5)}}
+                      Styles={{top: heightPixel(-5), paddingVertical: '15%'}}
                       key={index}
                       heartonPress={() => setHeart(item.id)}
                       IconColor={
@@ -797,6 +790,7 @@ export default function HomeScreen({navigation}) {
               <View style={Styles.MODALPRODUCTBOXMAIN}>
                 {all_Category.map((item, index) => (
                   <TouchableOpacity
+                    key={index}
                     activeOpacity={0.6}
                     onPress={() =>
                       navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)

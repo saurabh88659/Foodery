@@ -10,7 +10,13 @@ import {
 } from 'react-native';
 import React, {createRef, useState, useEffect} from 'react';
 import MyHeader from '../Components/MyHeader';
-import {BASE_URL, IonIcon, bannerIcon} from '../utils/Const';
+import {
+  BASE_URL,
+  FontAwesomeIcon,
+  IonIcon,
+  SimpleToast,
+  bannerIcon,
+} from '../utils/Const';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import ActionSheet from 'react-native-actions-sheet';
@@ -20,6 +26,11 @@ import Collapsible from 'react-native-collapsible';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
+import {
+  addToWishlist,
+  removeFromWishlist,
+} from '../Redux/ReducerSlice/WishlistReducerSlice';
+import {useSelector, useDispatch} from 'react-redux';
 
 export default function FruitsVegetables({navigation}) {
   const [heart, setHeart] = useState(true);
@@ -33,6 +44,7 @@ export default function FruitsVegetables({navigation}) {
   };
   const [collapsed, setCollapsed] = useState(true);
   const [freshness_Cat, setFreshnes_Cat] = useState([]);
+  const dispatch = useDispatch();
 
   console.log('freshnes_ByID_Cat', freshnes_ByID_Cat._id);
 
@@ -150,6 +162,20 @@ export default function FruitsVegetables({navigation}) {
       });
   };
 
+  const addtoWishlist = value => {
+    if (value) {
+      dispatch(addToWishlist(value));
+      SimpleToast({title: 'added to the wishlist.', isLong: true});
+    }
+  };
+  const removeItemFromWishlist = value => {
+    if (value) {
+      dispatch(removeFromWishlist(value));
+      SimpleToast({title: 'removed from the wishlist.', isLong: true});
+    }
+  };
+  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <MyHeader title={'Fresh & Healthy'} onPress={() => navigation.goBack()} />
@@ -159,9 +185,34 @@ export default function FruitsVegetables({navigation}) {
           {freshness_Cat.map((value, index) => (
             <Productinfo
               key={index}
-              heartonPress={() => setHeart(value.id)}
-              IconColor={heart !== value.id ? COLORS.GRAYDARK : COLORS.BROWN}
-              FontAwesomeIcontitle={heart !== value.id ? 'heart-o' : 'heart'}
+              HeartUI={
+                <View>
+                  {wishlist.some(item => item?._id == value?._id) ? (
+                    <TouchableOpacity
+                      onPress={() => removeItemFromWishlist(value)}
+                      style={[Styles.CONTAINERHEART]}>
+                      <FontAwesomeIcon
+                        title={'heart'}
+                        size={20}
+                        IconColor={COLORS.BROWN}
+                      />
+                    </TouchableOpacity>
+                  ) : (
+                    <TouchableOpacity
+                      onPress={() => addtoWishlist(value)}
+                      style={[Styles.CONTAINERHEART]}>
+                      <FontAwesomeIcon
+                        title={'heart-o'}
+                        size={20}
+                        IconColor={COLORS.GRAYDARK}
+                      />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              }
+              // heartonPress={() => setHeart(value.id)}
+              // IconColor={heart !== value.id ? COLORS.GRAYDARK : COLORS.BROWN}
+              // FontAwesomeIcontitle={heart !== value.id ? 'heart-o' : 'heart'}
               onPress={() => toggleBottomNavigationView(value._id)}
               Productimage={{uri: value.productImage}}
               ProductName={value.productName}
@@ -468,4 +519,5 @@ const Styles = StyleSheet.create({
     letterSpacing: 0.5,
     paddingTop: 5,
   },
+  CONTAINERHEART: {alignItems: 'flex-end', margin: 5},
 });

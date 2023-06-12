@@ -5,6 +5,7 @@ export const WishlistReducerSlice = createSlice({
   initialState: {
     wishlist: [],
   },
+
   reducers: {
     addToWishlist: (state, action) => {
       const itemInWishlist = state.wishlist.find(

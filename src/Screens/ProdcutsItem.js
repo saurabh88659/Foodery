@@ -40,14 +40,14 @@ import {
 
 export default function ProdcutsItem({navigation, route}) {
   const SubCatitem = route.params;
-  const [heart, setHeart] = useState(true);
+  // const [heart, setHeart] = useState(true);
   const dispatch = useDispatch();
   const [isloading, setIsloading] = useState(false);
-  const [cartitem, setCartitem] = useState(0);
+  // const [cartitem, setCartitem] = useState(0);
   const [productiItem, setProductItem] = useState([]);
   const [notFound, setNoFound] = useState('');
 
-  const cartData = useSelector(state => state.reducer);
+  // const cartData = useSelector(state => state.reducer);
 
   // const _Handle_AddToCart = item => {
   //   dispatch(addToCart(item));
@@ -98,13 +98,19 @@ export default function ProdcutsItem({navigation, route}) {
   };
 
   const addtoWishlist = value => {
-    dispatch(addToWishlist(value));
+    if (value) {
+      dispatch(addToWishlist(value));
+      SimpleToast({title: 'added to the wishlist.', isLong: true});
+    }
   };
   const removeItemFromWishlist = value => {
-    dispatch(removeFromWishlist(value));
+    if (value) {
+      dispatch(removeFromWishlist(value));
+      SimpleToast({title: 'removed from the wishlist.', isLong: true});
+    }
   };
-  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
 
+  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
   return (
