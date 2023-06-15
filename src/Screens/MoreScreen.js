@@ -47,7 +47,7 @@ export default function MoreScreen({navigation}) {
         </View>
         <ScrollView>
           <TouchableOpacity
-            onPress={() => navigation.navigate(Routes.ORDER_HISTORY)}
+            onPress={() => navigation.navigate(Routes.ORDER_HISTORY_MAIN)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>

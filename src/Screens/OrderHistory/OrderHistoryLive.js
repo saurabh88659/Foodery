@@ -9,18 +9,17 @@ import {
   FlatList,
 } from 'react-native';
 import React from 'react';
-import {COLORS} from '../utils/Colors';
-import MyHeader from '../Components/MyHeader';
-import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
-import {FontAwesomeIcon, bannerIcon} from '../utils/Const';
+import {useDispatch, useSelector} from 'react-redux';
+import MyHeader from '../../Components/MyHeader';
 import {
   addToWishlist,
   removeFromWishlist,
-} from '../Redux/ReducerSlice/WishlistReducerSlice';
+} from '../../Redux/ReducerSlice/WishlistReducerSlice';
+import {COLORS} from '../../utils/Colors';
+import {FontAwesomeIcon, bannerIcon} from '../../utils/Const';
+import {heightPixel, fontPixel, widthPixel} from '../../Components/Dimensions';
 
-import {useDispatch, useSelector} from 'react-redux';
-
-export default function OrderHistory({navigation}) {
+export default function OrderHistoryLive({navigation}) {
   const dispatch = useDispatch();
 
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
@@ -57,12 +56,6 @@ export default function OrderHistory({navigation}) {
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
-      <StatusBar
-        hidden={false}
-        backgroundColor={COLORS.GREEN}
-        translucent={true}
-      />
-      <MyHeader title={'Order History'} onPress={() => navigation.goBack()} />
       <FlatList
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}

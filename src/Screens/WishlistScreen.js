@@ -18,13 +18,32 @@ import {useDispatch, useSelector} from 'react-redux';
 import {MaterialCommunityIconsTwo} from '../utils/Const';
 import {removeFromWishlist} from '../Redux/ReducerSlice/WishlistReducerSlice';
 import {BottomSheet} from 'react-native-btr';
+import {
+  decrementQuantity,
+  incrementQuantity,
+  removeFromCart,
+} from '../Redux/ReducerSlice/CartReducerSlice';
 
 export default function WishlistScreen({navigation}) {
   const [visible, setVisible] = useState(false);
 
   const dispatch = useDispatch();
   const wishlist = useSelector(state => state.WishlistReducerSlice?.wishlist);
+  const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
+  const addItemToCart = item => {
+    dispatch(addToCart(item));
+  };
+  const increaseQuantity = item => {
+    dispatch(incrementQuantity(item));
+  };
+  const decreaseQuantity = item => {
+    if (item.quantity == 1) {
+      dispatch(removeFromCart(item));
+    } else {
+      dispatch(decrementQuantity(item));
+    }
+  };
   const removeItemFromWishlist = item => {
     setVisible(!visible);
     dispatch(removeFromWishlist(item));
@@ -61,14 +80,14 @@ export default function WishlistScreen({navigation}) {
                 />
               </View>
 
-              <View style={{}}>
+              <View style={{width: widthPixel(170)}}>
                 <Text numberOfLines={1} style={Styles.TITLESTYLES}>
                   {item?.productName}
                 </Text>
                 <Text numberOfLines={1} style={Styles.SUBTITLESTYLES}>
                   Pick up from organic farms
                 </Text>
-                <Text style={{fontSize: 16, marginTop: 3}}>⭐⭐⭐⭐⭐</Text>
+                <Text style={{fontSize: 16}}>⭐⭐⭐⭐⭐</Text>
                 <View style={Styles.CONTAINERMAINBOXPLUS}>
                   <TouchableOpacity
                     activeOpacity={0.6}
@@ -100,7 +119,10 @@ export default function WishlistScreen({navigation}) {
                   style={Styles.KGSTYLES}>
                   (Approx. 1.2Kg - 1.4kg)
                 </Text>
-                <TouchableOpacity style={Styles.ADDTOCARTBOTTON}>
+
+                <TouchableOpacity
+                  // onPress={() => addItemToCart(value)}
+                  style={Styles.ADDTOCARTBOTTON}>
                   <Text style={{color: COLORS.WHITE}}>ADD</Text>
                 </TouchableOpacity>
               </View>
@@ -160,9 +182,10 @@ const Styles = StyleSheet.create({
     borderColor: COLORS.GRAYDARK,
   },
   IMAGESTYLES: {
-    height: heightPixel(90),
-    width: widthPixel(90),
+    height: heightPixel(120),
+    width: widthPixel(83),
     borderRadius: 10,
+    // backgroundColor: 'red',
   },
   TITLESTYLES: {
     color: COLORS.BLACK,
@@ -179,7 +202,8 @@ const Styles = StyleSheet.create({
     width: widthPixel(100),
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 13,
+    marginTop: 10,
+    top: heightPixel(13),
   },
   DCREAMENTBOTTONINCREAMENT: {
     paddingVertical: 3,

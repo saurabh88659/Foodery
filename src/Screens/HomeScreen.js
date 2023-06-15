@@ -261,7 +261,7 @@ export default function HomeScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(res => {
-        console.log('Nuts_and_Dry Response----->>>', res?.data?.result);
+        // console.log('Nuts_and_Dry Response----->>>', res?.data?.result);
         setNuts_and_Dry_Cat(res?.data?.result);
       })
       .catch(error => {
@@ -475,13 +475,12 @@ export default function HomeScreen({navigation}) {
               </Swiper>
             </View>
             <View style={{marginHorizontal: 10}}>
-              <View style={Styles.SubTitleheader}>
-                <Text style={Styles.titlemain}>Order Again</Text>
-                {order_Again.some(item => (
+              {order_Again?.length !== 0 ? (
+                <View style={Styles.SubTitleheader}>
+                  <Text style={Styles.titlemain}>Order Again</Text>
+                  {/* {order_Again.some(item => ( */}
                   <TouchableOpacity
-                    onPress={() =>
-                      navigation.navigate(Routes.PRODUCT_ITEM, item)
-                    }
+                    onPress={() => navigation.navigate(Routes.PRODUCT_ITEM)}
                     // onPress={toggleExpanded}
                     activeOpacity={0.6}
                     style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -492,8 +491,9 @@ export default function HomeScreen({navigation}) {
                       IconColor={COLORS.GRAYDARK}
                     />
                   </TouchableOpacity>
-                ))}
-              </View>
+                  {/* ))} */}
+                </View>
+              ) : null}
             </View>
             <FlatList
               keyExtractor={(item, index) => index.toString()}
@@ -596,9 +596,14 @@ export default function HomeScreen({navigation}) {
             <View style={{marginHorizontal: 10}}>
               <View style={Styles.SubTitleheader}>
                 <Text style={Styles.titlemain}>Buy 'Em Now</Text>
+                {/* {freshness_Cat.includes(item => { */}
                 <TouchableOpacity
                   // onPress={toggleExpanded}
-                  onPress={() => navigation.navigate('FruitsVegetables')}
+                  onPress={() =>
+                    navigation.navigate(Routes.FRUITS_VEGETABLES, {
+                      // fruitItem: freshness_Cat,
+                    })
+                  }
                   activeOpacity={0.6}
                   style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Text style={Styles.titleview}>View all</Text>
@@ -608,6 +613,7 @@ export default function HomeScreen({navigation}) {
                     IconColor={COLORS.GRAYDARK}
                   />
                 </TouchableOpacity>
+                {/* })} */}
               </View>
             </View>
             <View style={{marginTop: 10}}>
@@ -649,30 +655,50 @@ export default function HomeScreen({navigation}) {
                   contentContainerStyle={{paddingLeft: '35%'}}
                   horizontal
                   data={freshness_Cat}
-                  renderItem={({item, index}) => (
-                    // <TouchableOpacity
-                    //   onPress={() => navigation.navigate('FruitsVegetables')}
-                    //   activeOpacity={0.8}
-                    //   key={index}
-                    //   style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
-                    <Productinfo
-                      Styles={{top: -5, paddingVertical: '15%'}}
-                      key={index}
-                      heartonPress={() => setHeart(item.id)}
-                      IconColor={
-                        heart !== item.id ? COLORS.GRAYDARK : COLORS.BROWN
-                      }
-                      FontAwesomeIcontitle={
-                        heart !== item.id ? 'heart-o' : 'heart'
-                      }
-                      Productimage={{uri: item.productImage}}
-                      ProductName={item.productName}
-                      ProductSubName={item.productUnit}
-                      discountPrice={`Rs.${item.discountPrice}`}
-                      StylesPrices={{top: heightPixel(5)}}
-                      ProductPrice={`Rs.${item.productPrice}`}
-                    />
-                  )}
+                  renderItem={({item, index}) => {
+                    return (
+                      <Productinfo
+                        Styles={{top: -5}}
+                        key={index}
+                        onPress={() =>
+                          navigation.navigate(Routes.FRUITS_VEGETABLES, {
+                            fruitItem: item,
+                          })
+                        }
+                        HeartUI={
+                          <View>
+                            {wishlist.some(value => value?._id == item?._id) ? (
+                              <TouchableOpacity
+                                onPress={() => removeItemFromWishlist(item)}
+                                style={[Styles.CONTAINERHEART]}>
+                                <FontAwesomeIcon
+                                  title={'heart'}
+                                  size={20}
+                                  IconColor={COLORS.BROWN}
+                                />
+                              </TouchableOpacity>
+                            ) : (
+                              <TouchableOpacity
+                                onPress={() => addtoWishlist(item)}
+                                style={[Styles.CONTAINERHEART]}>
+                                <FontAwesomeIcon
+                                  title={'heart-o'}
+                                  size={20}
+                                  IconColor={COLORS.GRAYDARK}
+                                />
+                              </TouchableOpacity>
+                            )}
+                          </View>
+                        }
+                        Productimage={{uri: item?.productImage}}
+                        ProductName={item?.productName}
+                        ProductSubName={item?.productUnit}
+                        discountPrice={`Rs.${item?.discountPrice}`}
+                        StylesPrices={{top: heightPixel(5)}}
+                        ProductPrice={`Rs.${item?.productPrice}`}
+                      />
+                    );
+                  }}
                 />
               </LinearGradient>
             </View>
@@ -681,7 +707,7 @@ export default function HomeScreen({navigation}) {
                 <Text style={Styles.titlemain}>Nuts & Dry Fruits For You</Text>
                 <TouchableOpacity
                   // onPress={toggleExpanded}
-                  onPress={() => navigation.navigate('FruitsVegetables')}
+                  onPress={() => navigation.navigate(Routes.NUTS_DREY_FRUITS)}
                   activeOpacity={0.6}
                   style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Text style={Styles.titleview}>View all</Text>
@@ -721,22 +747,38 @@ export default function HomeScreen({navigation}) {
                   horizontal
                   data={nuts_and_Dry_Cat}
                   renderItem={({item, index}) => (
-                    //     <TouchableOpacity
-                    //       onPress={() => navigation.navigate('FruitsVegetables')}
-                    //       activeOpacity={0.8}
-                    //       key={index}
-                    //       style={Styles.BACKGROUNDINDEXMAIN}></TouchableOpacity>
-                    //   )}
-                    // />
                     <Productinfo
-                      Styles={{top: heightPixel(-5), paddingVertical: '15%'}}
+                      Styles={{margin: 5}}
                       key={index}
-                      heartonPress={() => setHeart(item.id)}
-                      IconColor={
-                        heart !== item.id ? COLORS.GRAYDARK : COLORS.BROWN
+                      onPress={() =>
+                        navigation.navigate(Routes.NUTS_DREY_FRUITS, {
+                          fruitItem: item,
+                        })
                       }
-                      FontAwesomeIcontitle={
-                        heart !== item.id ? 'heart-o' : 'heart'
+                      HeartUI={
+                        <View>
+                          {wishlist.some(value => value?._id == item?._id) ? (
+                            <TouchableOpacity
+                              onPress={() => removeItemFromWishlist(item)}
+                              style={[Styles.CONTAINERHEART]}>
+                              <FontAwesomeIcon
+                                title={'heart'}
+                                size={20}
+                                IconColor={COLORS.BROWN}
+                              />
+                            </TouchableOpacity>
+                          ) : (
+                            <TouchableOpacity
+                              onPress={() => addtoWishlist(item)}
+                              style={[Styles.CONTAINERHEART]}>
+                              <FontAwesomeIcon
+                                title={'heart-o'}
+                                size={20}
+                                IconColor={COLORS.GRAYDARK}
+                              />
+                            </TouchableOpacity>
+                          )}
+                        </View>
                       }
                       Productimage={{uri: item.productImage}}
                       ProductName={item.productName}

@@ -39,14 +39,15 @@ export default {
   /* HOME STACK NAVIGATOR */
 
   HOME_SCREEN: 'HomeScreen',
-  SUB_CATEGRIES: 'FruitsVegetables',
+  // SUB_CATEGRIES: 'FruitsVegetables',
   SUB_CATEGRIES_2: 'SubCategories',
   PROFILE_SCREEN: 'ProfileScreen',
   ADDRESS_SCREEN: 'AddressScreen',
   ADDRESS_SCREEN_WITH_MAP: 'AddressScreenWithMap',
   SUB_CATEGRIES_MODAL: 'SubCategriesModal',
   PRODUCT_ITEM: 'ProdcutsItem',
-
+  FRUITS_VEGETABLES: 'FruitsVegetables',
+  NUTS_DREY_FRUITS: 'NutsDryFruits',
   /* OFFERS STACK NAVIGATOR */
 
   OFFERS_SCREEN: 'Offersscreen',
@@ -54,7 +55,7 @@ export default {
   /* MORE STACK NAVIGATOR */
 
   MORE_SCREEN: 'MoreScreen',
-  ORDER_HISTORY: 'OrderHistory',
+  ORDER_HISTORY_MAIN: 'OrderHistoryMain',
   NOTIFICATION: 'Notification',
   ABOUT_US: 'AboutUs',
   TERMS_CONDITION: 'TermsCondition',

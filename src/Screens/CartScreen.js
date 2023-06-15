@@ -29,6 +29,7 @@ import {useSelector} from 'react-redux';
 import {
   addToCart,
   decrementQuantity,
+  getCartTotal,
   incrementQuantity,
   removeFromCart,
 } from '../Redux/ReducerSlice/CartReducerSlice';
@@ -40,6 +41,7 @@ import {
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
+import {fetchApiData} from '../Redux/ReducerSlice/cartapiSlice';
 
 export default function CartScreen({navigation}) {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
@@ -47,6 +49,29 @@ export default function CartScreen({navigation}) {
   const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const dispatch = useDispatch();
+
+  const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
+  const totalQuantity = useSelector(
+    state => state.CartReducerSlice.totalQuantity,
+  );
+  const totaldisPrice = useSelector(
+    state => state.CartReducerSlice.discountTotalPrice,
+  );
+
+  useEffect(() => {
+    dispatch(getCartTotal());
+  }, [productDataByRe]);
+
+  // const apiData = useSelector(state => state.apiSlice);
+
+  useEffect(() => {
+    apidataNew();
+  }, [dispatch]);
+
+  const apidataNew = async () => {
+    const token = await _getStorage('token');
+    dispatch(fetchApiData(token));
+  };
 
   useEffect(() => {
     if (IsFocused) {
@@ -275,7 +300,7 @@ export default function CartScreen({navigation}) {
           <View style={Styles.SUBBOX}>
             <Text style={Styles.TOTALTITLES}>Item Total</Text>
             <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
-              Rs. 1117
+              {`Rs.${totalprice}`}
             </Text>
           </View>
 
@@ -316,7 +341,7 @@ export default function CartScreen({navigation}) {
             ]}>
             <Text style={Styles.TOTALTITLES}>To pay</Text>
             <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
-              Rs.1122
+              {`Rs.${totalprice}`}
             </Text>
           </View>
           <View style={Styles.SAVETHISORDERTITLE}>

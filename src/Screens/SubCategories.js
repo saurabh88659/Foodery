@@ -10,7 +10,7 @@ import {
   StatusBar,
   SafeAreaViewComponent,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, createRef} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {COLORS} from '../utils/Colors';
 import {
@@ -18,11 +18,14 @@ import {
   FontAwesomeIcon,
   SimpleToast,
   bannerIcon,
+  IonIcon,
 } from '../utils/Const';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import AddTocart from '../Components/AddTocart';
 // import {addToCart} from '../Redux/action';
+import ActionSheet from 'react-native-actions-sheet';
+import Collapsible from 'react-native-collapsible';
 
 import {useDispatch, useSelector} from 'react-redux';
 import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPlaceHolder';
@@ -35,31 +38,50 @@ import {
   incrementQuantity,
   removeFromCart,
   addToCart,
+  getCartTotal,
 } from '../Redux/ReducerSlice/CartReducerSlice';
 import Routes from '../Navigation/Routes';
 import {
   addToWishlist,
   removeFromWishlist,
 } from '../Redux/ReducerSlice/WishlistReducerSlice';
-import {fetchApiData_wishlist} from '../Redux/RootsagaEpic';
+import {
+  cartdata_in_data_base,
+  fetchApiData_wishlist,
+} from '../Redux/RootsagaEpic';
+import GlobelStyles from '../utils/GlobelStyles';
 
 export default function SubCategories({navigation, route}) {
   const CatItem = route.params;
-
-  // console.log('CatItem---------------->>>>>>>>', CatItem);
-
-  const dispatch = useDispatch();
   const [isloading, setIsloading] = useState(false);
   const [cartitem, setCartitem] = useState(0);
   const [subCatProduct, setSubCatProduct] = useState([]);
   const [productById, setProductById] = useState([]);
-  const IsFocused = useIsFocused();
   const [status, setStatus] = useState('tab1');
   const [detalist, setDetalist] = useState(productById);
-  const [totl_Price, setTotal_Price] = useState('');
-  const [total_quantity, seTtotal_quantity] = useState('');
-
+  // const [totl_Price, setTotal_Price] = useState('');
+  // const [total_quantity, seTtotal_quantity] = useState('');
+  const [collapsed, setCollapsed] = useState(true);
+  const actionSheetRef = createRef(false);
+  const [PrductByiDetails, setPrductByiDetails] = useState('');
+  const dispatch = useDispatch();
+  const IsFocused = useIsFocused();
   const cartData = useSelector(state => state.reducer);
+  // const [iscartdata, setIscartdata] = useState('');
+  const [similar_Product, setSimilar_Product] = useState([]);
+
+  // const [state, setState] = useState({
+  //   cartquantity: null,
+  //   isLoading: false,
+  // });
+
+  const toggleExpanded = () => {
+    setCollapsed(!collapsed);
+  };
+  const toggleBottomNavigationView = value => {
+    actionSheetRef?.current?.setModalVisible(true);
+    setPrductByiDetails(value);
+  };
 
   useEffect(() => {
     setCartitem(cartData.length);
@@ -78,8 +100,10 @@ export default function SubCategories({navigation, route}) {
       setStatusFilter(status);
       _get_quantity_item();
       // calculateTotalPrice();
-      getTotal();
+      // getTotal();
       _Wishlist_get_data();
+      _Cart_get_data();
+      _Similar_Product();
     }
     setTimeout(() => {
       setIsloading(true);
@@ -148,14 +172,14 @@ export default function SubCategories({navigation, route}) {
 
   const addItemToCart = item => {
     if (item) {
-      _addTocart(item);
+      // _addTocart(item);
       dispatch(addToCart(item));
     }
   };
 
   const increaseQuantity = item => {
     if (item) {
-      _addTocart(item);
+      // _addTocart(item);
       dispatch(incrementQuantity(item));
     }
   };
@@ -181,48 +205,64 @@ export default function SubCategories({navigation, route}) {
       SimpleToast({title: 'removed from the wishlist.', isLong: true});
     }
   };
+
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
+  const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
+  const totalQuantity = useSelector(
+    state => state.CartReducerSlice.totalQuantity,
+  );
+  const totaldisPrice = useSelector(
+    state => state.CartReducerSlice.discountTotalPrice,
+  );
 
-  const _addTocart = async item => {
-    const token = await _getStorage('token');
-    axios
-      .put(
-        BASE_URL + `/addToCart`,
-        {productId: item?._id},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-      .then(response => {
-        console.log('add to cart-------->>>>>>', response?.data);
-      })
-      .catch(error => {
-        console.log('catch error', error?.response?.data);
-      });
-  };
+  // const _addTocart = async item => {
+  //   // console.log('DDDDDDDDDDDDDDD------', item);
+  //   const token = await _getStorage('token');
+  //   axios
+  //     .put(
+  //       BASE_URL + `/addToCart`,
+  //       {productId: item?._id},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       },
+  //     )
+  //     .then(response => {
+  //       console.log(
+  //         'add to cart-------->>>>>>',
+  //         response?.data?.result[0].quantity,
+  //       );
+  //       setIscartdata(response?.data?.result[0].quantity);
 
-  const _ReduceTocart = async item => {
-    const token = await _getStorage('token');
-    axios
-      .put(
-        BASE_URL + `/reduceItemFromCart`,
-        {productId: item?._id},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      )
-      .then(response => {
-        console.log('add to cart-------->>>>>>', response?.data);
-      })
-      .catch(error => {
-        console.log('catch error', error?.response?.data);
-      });
-  };
+  //       setState({...state, cartquantity: null});
+  //     })
+  //     .catch(error => {
+  //       console.log('catch error', error?.response?.data);
+  //       setState({...state, cartquantity: null});
+  //     });
+  // };
+
+  // const _ReduceTocart = async item => {
+  //   const token = await _getStorage('token');
+  //   axios
+  //     .put(
+  //       BASE_URL + `/reduceItemFromCart`,
+  //       {productId: item?._id},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       },
+  //     )
+  //     .then(response => {
+  //       console.log('add to cart-------->>>>>>', response?.data);
+  //     })
+  //     .catch(error => {
+  //       console.log('catch error', error?.response?.data);
+  //     });
+  // };
 
   const _get_quantity_item = async () => {
     const token = await _getStorage('token');
@@ -241,23 +281,51 @@ export default function SubCategories({navigation, route}) {
       });
   };
 
-  const getTotal = () => {
-    let totalQuantity = 0;
-    let totalPrice = 0;
-    cartdata.forEach(item => {
-      totalQuantity += item?.quantity;
-      totalPrice += item?.productPrice * item?.quantity;
-    });
-    setTotal_Price(totalPrice);
-    seTtotal_quantity(totalQuantity);
-    return totalPrice, totalQuantity;
-  };
-
-  // console.log('totalprice ---------------DG--------->>>>', totl_Price);
+  // const getTotal = () => {
+  //   let totalQuantity = 0;
+  //   let totalPrice = 0;
+  //   cartdata.forEach(item => {
+  //     totalQuantity += item?.quantity;
+  //     totalPrice += item?.productPrice * item?.quantity;
+  //   });
+  //   setTotal_Price(totalPrice);
+  //   seTtotal_quantity(totalQuantity);
+  //   return totalPrice, totalQuantity;
+  // };
 
   const _Wishlist_get_data = async () => {
     const token = await _getStorage('token');
     dispatch(fetchApiData_wishlist(token));
+  };
+
+  const _Similar_Product = async () => {
+    const token = await _getStorage('token');
+    axios
+      .get(BASE_URL + `/User/getSimmilarProductByCatId/${CatItem?._id}`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(res => {
+        // console.log(
+        //   '_Similar_Product Item response-++++++++++++++=-->>>>',
+        //   res?.data?.result,
+        // );
+        setSimilar_Product(res?.data?.result);
+      })
+      .catch(error => {
+        console.log(
+          '_Similar_Product Item catch error------->>>>',
+          error?.response?.data,
+        );
+      });
+  };
+
+  useEffect(() => {
+    dispatch(getCartTotal());
+  }, [cartdata]);
+
+  const _Cart_get_data = async () => {
+    const token = await _getStorage('token');
+    dispatch(cartdata_in_data_base(token));
   };
 
   return (
@@ -343,7 +411,7 @@ export default function SubCategories({navigation, route}) {
                         )}
                       </View>
                     }
-                    //   onPress={() => toggleBottomNavigationView(value.id)}
+                    onPress={() => toggleBottomNavigationView(value)}
                     Productimage={{uri: value?.productImage}}
                     ProductName={value?.productName}
                     ProductSubName={value?.productUnit}
@@ -359,9 +427,11 @@ export default function SubCategories({navigation, route}) {
                                   onPress={() => decreaseQuantity(item)}>
                                   <Text style={Styles.DCREAMENTTITLE}>-</Text>
                                 </TouchableOpacity>
+
                                 <Text style={Styles.ITEMTITEL}>
                                   {item?.quantity}
                                 </Text>
+
                                 <TouchableOpacity
                                   onPress={() => increaseQuantity(item)}>
                                   <Text style={Styles.INCREAMENTTITLE}>+</Text>
@@ -459,17 +529,203 @@ export default function SubCategories({navigation, route}) {
             <AddTocart
               onPress={() => navigation.navigate(Routes.TAB_CART)}
               Image={bannerIcon}
-              // ItemTotalofnum={`item ${cartitem}`}
-              // ItemTotalofnum={`item ${cartdata.length}`}
-              ItemTotalofnum={`item ${total_quantity}`}
-              // PriceTotalofnum={'Rs.10'}
-              PriceTotalofnum={`Rs.${totl_Price}`}
+              ItemTotalofnum={`item ${totalQuantity}`}
+              PriceTotalofnum={`Rs.${totalprice}`}
+              PriceTotalDis={`Rs.${totaldisPrice}`}
             />
           )}
         </SafeAreaView>
       ) : (
         <SubShimmerPlaceHolder />
       )}
+      <ActionSheet
+        ref={actionSheetRef}
+        containerStyle={GlobelStyles.ACTIONCON}
+        indicatorColor={'#7484'}
+        headerAlwaysVisible
+        closeOnPressBack
+        gestureEnabled
+        indicatorStyle={{
+          height: 5,
+          backgroundColor: COLORS.GRAYDARK,
+        }}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{}}>
+          <Image
+            source={{uri: PrductByiDetails?.productImage}}
+            style={GlobelStyles.Modalimagestyle}
+          />
+          <View style={{marginHorizontal: 20, marginTop: '5%'}}>
+            <Text numberOfLines={4} style={GlobelStyles.MODALTITLE}>
+              {PrductByiDetails?.productName}
+            </Text>
+            <Text numberOfLines={3} style={GlobelStyles.SUBMODALTITLE}>
+              {PrductByiDetails?.productUnit}
+            </Text>
+            <View style={GlobelStyles.ACTIONMAINCONQ}>
+              <View style={GlobelStyles.MAINQ}>
+                <Text style={GlobelStyles.MAINQTEXT}>
+                  {PrductByiDetails?.productPrice}
+                </Text>
+                <Text style={GlobelStyles.MAINQDISCOUNT}>
+                  {PrductByiDetails?.discountPrice}
+                </Text>
+              </View>
+
+              <View>
+                {cartdata.map((value, index) => (
+                  <View key={value?._id}>
+                    {PrductByiDetails?._id == value?._id ? (
+                      <View style={Styles.INCREAMENTBOTTONMAIN}>
+                        <TouchableOpacity
+                          onPress={() => decreaseQuantity(value)}>
+                          <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                        </TouchableOpacity>
+                        <Text style={Styles.ITEMTITEL}>{value?.quantity}</Text>
+                        <TouchableOpacity
+                          onPress={() => increaseQuantity(value)}>
+                          <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ) : null}
+                  </View>
+                ))}
+                {cartdata.some(
+                  value => value._id == PrductByiDetails._id,
+                ) ? null : (
+                  <TouchableOpacity
+                    onPress={() => addItemToCart(PrductByiDetails)}
+                    activeOpacity={0.5}
+                    style={GlobelStyles.ADDBOTTONSTYL}>
+                    <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+            </View>
+
+            <View style={GlobelStyles.MAINQCON}>
+              <Text numberOfLines={3} style={GlobelStyles.MAINQTEXTDEL}>
+                Product Details
+              </Text>
+              <Text
+                numberOfLines={3}
+                style={{fontSize: fontPixel(14), color: COLORS.BLACK}}>
+                Shelf Life
+              </Text>
+              <Text numberOfLines={3} style={GlobelStyles.MAINQTEXTDAY}>
+                5 Days
+              </Text>
+              <TouchableOpacity
+                onPress={toggleExpanded}
+                style={GlobelStyles.MAINQTEXTVIEWDETAILS}>
+                <Text numberOfLines={3} style={GlobelStyles.MAINQVIEWMORE}>
+                  View More Details
+                </Text>
+                <IonIcon
+                  title={collapsed ? 'chevron-down-sharp' : 'chevron-up-sharp'}
+                  size={16}
+                  IconColor={COLORS.PURPLE}
+                />
+              </TouchableOpacity>
+              <Collapsible collapsed={collapsed}>
+                <View style={GlobelStyles.EXPLOREBOX}>
+                  <Text style={GlobelStyles.manufTitle}>
+                    Manufacturer Details
+                  </Text>
+                  <Text numberOfLines={2} style={GlobelStyles.EXPLORETITLESUB}>
+                    {PrductByiDetails?.productDescription}
+                  </Text>
+                </View>
+              </Collapsible>
+            </View>
+            <View>
+              <Text numberOfLines={3} style={GlobelStyles.MAINQSIMILAR}>
+                Similar Product
+              </Text>
+              <FlatList
+                keyExtractor={(item, index) => index.toString()}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{paddingBottom: 5}}
+                horizontal
+                data={similar_Product}
+                renderItem={({item, index}) => (
+                  <View key={index}>
+                    <Productinfo
+                      key={index}
+                      HeartUI={
+                        <View>
+                          {wishlist.some(value => value?._id == item?._id) ? (
+                            <TouchableOpacity
+                              onPress={() => removeItemFromWishlist(item)}
+                              style={[Styles.CONTAINERHEART]}>
+                              <FontAwesomeIcon
+                                title={'heart'}
+                                size={20}
+                                IconColor={COLORS.BROWN}
+                              />
+                            </TouchableOpacity>
+                          ) : (
+                            <TouchableOpacity
+                              onPress={() => addtoWishlist(item)}
+                              style={[Styles.CONTAINERHEART]}>
+                              <FontAwesomeIcon
+                                title={'heart-o'}
+                                size={20}
+                                IconColor={COLORS.GRAYDARK}
+                              />
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      }
+                      Productimage={{uri: item?.productImage}}
+                      ProductName={item?.productName}
+                      ProductSubName={item?.productUnit}
+                      discountPrice={item?.discountPrice}
+                      ProductPrice={item?.productPrice}
+                      UIBotton={
+                        <View>
+                          {cartdata.map((value, index) => (
+                            <View key={value?._id}>
+                              {item?._id == value?._id ? (
+                                <View style={Styles.INCREAMENTBOTTONMAIN}>
+                                  <TouchableOpacity
+                                    onPress={() => decreaseQuantity(value)}>
+                                    <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                                  </TouchableOpacity>
+                                  <Text style={Styles.ITEMTITEL}>
+                                    {value?.quantity}
+                                  </Text>
+                                  <TouchableOpacity
+                                    onPress={() => increaseQuantity(value)}>
+                                    <Text style={Styles.INCREAMENTTITLE}>
+                                      +
+                                    </Text>
+                                  </TouchableOpacity>
+                                </View>
+                              ) : null}
+                            </View>
+                          ))}
+                          {cartdata.some(
+                            value => value._id == item._id,
+                          ) ? null : (
+                            <TouchableOpacity
+                              onPress={() => addItemToCart(item)}
+                              activeOpacity={0.5}
+                              style={GlobelStyles.ADDBOTTONSTYL}>
+                              <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                      }
+                    />
+                  </View>
+                )}
+              />
+            </View>
+          </View>
+        </ScrollView>
+      </ActionSheet>
     </SafeAreaView>
   );
 }

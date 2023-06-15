@@ -1,29 +1,14 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 
-import axios from 'axios';
-import {BASE_URL} from '../../utils/Const';
-
-export const addItemToCart = createAsyncThunk(
-  'cart/addItemToCart',
-  async (item, thunkAPI) => {
-    try {
-      const response = await axios.post(BASE_URL + `/User/getCart1`);
-      console.log(
-        'slise data----------------------------------------->>>>>>>>>',
-        response.data,
-      );
-      return response.data;
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response.data);
-    }
-  },
-);
-
-export const cartSlice = createSlice({
+export const CartReducerSlice = createSlice({
   name: 'cart',
   initialState: {
     cart: [],
+    totalQuantity: 0,
+    totalPrice: 0,
+    discountTotalPrice: 0,
   },
+
   reducers: {
     addToCart: (state, action) => {
       const itemInCart = state.cart.find(
@@ -45,11 +30,8 @@ export const cartSlice = createSlice({
       const itemInCart = state.cart.find(
         item => item._id == action.payload._id,
       );
-      //   console.log('price=========DG+++', itemInCart);
       if (itemInCart) {
         itemInCart.quantity++;
-        // itemInCart.productPrice = itemInCart.quantity * itemInCart.productPrice;
-        // console.log('price------------------++', itemInCart.productPrice);
       }
     },
     decrementQuantity: (state, action) => {
@@ -65,10 +47,37 @@ export const cartSlice = createSlice({
         itemInCart.quantity--;
       }
     },
+
+    getCartTotal: (state, action) => {
+      let {totalQuantity, totalPrice, discountTotalPrice} = state.cart.reduce(
+        (cartTotal, cartItem) => {
+          const {productPrice, quantity, discountPrice} = cartItem;
+          const itemTotal = productPrice * quantity;
+          const itemTotalDis = discountPrice * quantity;
+          cartTotal.discountTotalPrice += itemTotalDis;
+          cartTotal.totalPrice += itemTotal;
+          cartTotal.totalQuantity += quantity;
+          return cartTotal;
+        },
+        {
+          totalPrice: 0,
+          totalQuantity: 0,
+          discountTotalPrice: 0,
+        },
+      );
+      state.totalPrice = parseInt(totalPrice.toFixed(2));
+      state.discountTotalPrice = parseInt(discountTotalPrice.toFixed(2));
+      state.totalQuantity = totalQuantity;
+    },
   },
 });
 
-export const {addToCart, removeFromCart, incrementQuantity, decrementQuantity} =
-  cartSlice.actions;
+export const {
+  addToCart,
+  removeFromCart,
+  incrementQuantity,
+  decrementQuantity,
+  getCartTotal,
+} = CartReducerSlice.actions;
 
-export default cartSlice.reducer;
+export default CartReducerSlice.reducer;

@@ -41,19 +41,20 @@ import {
 import Routes from '../Navigation/Routes';
 import AddTocart from '../Components/AddTocart';
 
-export default function FruitsVegetables({navigation, route}) {
+export default function NutsDryFruits({navigation, route}) {
   const actionSheetRef = createRef(false);
+  // const [prodcutDetails, setProdcutDetails] = useState('');
   const [PrductByiDetails, setPrductByiDetails] = useState('');
-
   const [freshnes_ByID_Cat, setFreshnes_ByID_Cat] = useState({});
-  const IsFocused = useIsFocused();
-  const [collapsed, setCollapsed] = useState(true);
-  const [freshness_Cat, setFreshnes_Cat] = useState([]);
-  const dispatch = useDispatch();
+  // const [PrductByiDetails, setPrductByiDetails] = useState('');
 
+  const IsFocused = useIsFocused();
   const toggleBottomNavigationView = value => {
     actionSheetRef?.current?.setModalVisible(true);
   };
+  const [collapsed, setCollapsed] = useState(true);
+  const [freshness_Cat, setFreshnes_Cat] = useState([]);
+  const dispatch = useDispatch();
 
   async function ModalDataPass() {
     if (route.params.fruitItem) {
@@ -82,9 +83,9 @@ export default function FruitsVegetables({navigation, route}) {
   };
 
   useEffect(() => {
-    ModalDataPass();
     if (IsFocused) {
       _FreshnessCategory();
+      ModalDataPass();
       if (freshnes_ByID_Cat._id) {
         _FreshnessCategoryBYIdDetails();
       }
@@ -93,38 +94,25 @@ export default function FruitsVegetables({navigation, route}) {
 
   const _FreshnessCategory = async () => {
     const token = await _getStorage('token');
-    // console.log(token);
+
     axios
-      .get(BASE_URL + `/User/freshProductlist`, {
+      .get(BASE_URL + `/User/nutdryProductlist`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(res => {
-        console.log('Freshness Response QQQQQQQQQ----->>>', res?.data?.result);
-
+        console.log(
+          'NUTS & DRY FRUITS FOR YOU Response ----->>>',
+          res?.data?.result,
+        );
         setFreshnes_Cat(res?.data?.result);
       })
       .catch(error => {
-        console.log('Error Freshness catch error---->>>', error);
+        console.log(
+          'Error NUTS & DRY FRUITS FOR YOU Response catch error---->>>',
+          error,
+        );
       });
   };
-
-  // const _FreshnessCategoryBYIdDetails = async () => {
-  //   const token = await _getStorage('token');
-  //   // console.log(token);
-  //   axios
-  //     .get(BASE_URL + `/User/getOneProduct1/${prodcutDetails}`, {
-  //       headers: {Authorization: `Bearer ${token}`},
-  //     })
-  //     .then(res => {
-  //       console.log('Freshness BY Id Response <<<<<<<<<<----->>>', res?.data);
-  //       if (res?.data) {
-  //         setFreshnes_ByID_Cat(res?.data?.getoneProduct);
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.log('Error Freshness BY ID catch error---->>>', error);
-  //     });
-  // };
 
   const addItemToCart = item => {
     dispatch(addToCart(item));
@@ -155,7 +143,6 @@ export default function FruitsVegetables({navigation, route}) {
   };
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
-
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
   const totalQuantity = useSelector(
     state => state.CartReducerSlice.totalQuantity,
@@ -171,7 +158,7 @@ export default function FruitsVegetables({navigation, route}) {
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <MyHeader
-        title={'Fresh & Healthy'}
+        title={'Nuts and Dry Fruits'}
         onPress={() => navigation.goBack()}
         onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
       />
@@ -207,8 +194,8 @@ export default function FruitsVegetables({navigation, route}) {
                 </View>
               }
               onPress={() => {
-                toggleBottomNavigationView(value?._id),
-                  setPrductByiDetails(value);
+                toggleBottomNavigationView(value?._id);
+                setPrductByiDetails(value);
               }}
               Productimage={{uri: value?.productImage}}
               ProductName={value?.productName}
@@ -341,9 +328,7 @@ export default function FruitsVegetables({navigation, route}) {
 
               <Collapsible collapsed={collapsed}>
                 <View style={Styles.EXPLOREBOX}>
-                  <Text style={GlobelStyles.manufTitle}>
-                    Manufacturer Details
-                  </Text>
+                  <Text style={Styles.manufTitle}>Manufacturer Details</Text>
                   <Text numberOfLines={2} style={Styles.EXPLORETITLESUB}>
                     hello
                   </Text>
@@ -437,6 +422,7 @@ export default function FruitsVegetables({navigation, route}) {
           </View>
         </ScrollView>
       </ActionSheet>
+
       {cartdata?.length !== 0 && (
         <AddTocart
           onPress={() => navigation.navigate(Routes.TAB_CART)}

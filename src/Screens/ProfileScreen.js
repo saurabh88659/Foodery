@@ -35,7 +35,6 @@ import ImagePicker from 'react-native-image-crop-picker';
 import ProfileshimmerPlaceHolder from '../Components/ShimmerPlaceHolder/ProfileshimmerPlaceHolder';
 
 export default function ProfileScreen({navigation}) {
-  // const [text, setText] = useState('');
   const IsFocused = useIsFocused();
   const [isProfile, setIsProfile] = useState('');
   // const dispatch = useDispatch();
@@ -121,8 +120,8 @@ export default function ProfileScreen({navigation}) {
           },
         })
         .then(res => {
-          console.log('Profile image--------->>', res.data);
-          console.log('Profile only response data--------->>', res);
+          // console.log('Profile image--------->>', res.data);
+          // console.log('Profile only response data--------->>', res);
 
           // SimpleToast({title: res.data.message, isLong: true});
           setState({...state, profileImg: null});
@@ -188,7 +187,7 @@ export default function ProfileScreen({navigation}) {
                 alignItems: 'center',
                 marginTop: -10,
               }}>
-              <View
+              {/* <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -201,7 +200,7 @@ export default function ProfileScreen({navigation}) {
                   IconStyle={{right: 5}}
                 />
                 <Text style={Styles.EDITTITLE}>Edit Profile</Text>
-              </View>
+              </View> */}
 
               <Text style={Styles.NAMETITLE}>Hi {isProfile?.name}!</Text>
               <Text style={{color: COLORS.GRAYDARK, fontWeight: '500'}}>

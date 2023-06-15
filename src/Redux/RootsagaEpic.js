@@ -37,6 +37,7 @@ const fetchApiData_wishlist = token => {
         },
       });
       const data = response.data;
+      // return data;
       console.log('hey_______----------------->>>>', data.result.wishlists);
     } catch (error) {
       console.log('root saga api catch error', error);
@@ -45,4 +46,24 @@ const fetchApiData_wishlist = token => {
   };
 };
 
-export {fetchApiData_wishlist};
+const cartdata_in_data_base = token => {
+  return async dispatch => {
+    // dispatch({type: 'FETCH_API_DATA_REQUEST'});
+
+    try {
+      const response = await axios.get(BASE_URL + `/User/getCart1`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = response.data;
+
+      return data;
+    } catch (error) {
+      console.log('root saga api catch error', error);
+      // dispatch({type: 'FETCH_API_DATA_FAILURE', payload: error.message});
+    }
+  };
+};
+
+export {fetchApiData_wishlist, cartdata_in_data_base};

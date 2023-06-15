@@ -41,14 +41,31 @@ export default function AddTocart(props) {
             }}>
             {props.ItemTotalofnum}
           </Text>
-          <Text
+          <View
             style={{
-              color: COLORS.WHITE,
-              fontSize: fontPixel(17),
-              fontWeight: '500',
+              flexDirection: 'row',
+              // justifyContent: 'center',
+              alignItems: 'center',
             }}>
-            {props.PriceTotalofnum}
-          </Text>
+            <Text
+              style={{
+                color: COLORS.WHITE,
+                fontSize: fontPixel(17),
+                fontWeight: '500',
+              }}>
+              {props.PriceTotalofnum}
+            </Text>
+            <Text
+              style={{
+                color: COLORS.GRAYDARK,
+                fontSize: fontPixel(12),
+                fontWeight: '500',
+                paddingLeft: widthPixel(5),
+                textDecorationLine: 'line-through',
+              }}>
+              {props.PriceTotalDis}
+            </Text>
+          </View>
         </View>
       </View>
       <TouchableOpacity

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import MoreScreen from '../Screens/MoreScreen';
-import OrderHistory from '../Screens/OrderHistory';
 import Notification from '../Screens/Notification';
 import AboutUs from '../Screens/AboutUs';
 import TermsCondition from '../Screens/TermsCondition';
 import PrivacyPolicy from '../Screens/PrivacyPolicy';
+import OrderHistoryMain from '../Screens/OrderHistory/OrderHistoryMain';
 
 const Stack = createNativeStackNavigator();
 function MoreStack() {
@@ -17,8 +17,8 @@ function MoreStack() {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="OrderHistory"
-        component={OrderHistory}
+        name="OrderHistoryMain"
+        component={OrderHistoryMain}
         options={{headerShown: false}}
       />
       <Stack.Screen
