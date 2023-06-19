@@ -19,6 +19,7 @@ import {MaterialCommunityIconsTwo} from '../utils/Const';
 import {removeFromWishlist} from '../Redux/ReducerSlice/WishlistReducerSlice';
 import {BottomSheet} from 'react-native-btr';
 import {
+  addToCart,
   decrementQuantity,
   incrementQuantity,
   removeFromCart,
@@ -26,7 +27,6 @@ import {
 
 export default function WishlistScreen({navigation}) {
   const [visible, setVisible] = useState(false);
-
   const dispatch = useDispatch();
   const wishlist = useSelector(state => state.WishlistReducerSlice?.wishlist);
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
@@ -88,19 +88,30 @@ export default function WishlistScreen({navigation}) {
                   Pick up from organic farms
                 </Text>
                 <Text style={{fontSize: 16}}>⭐⭐⭐⭐⭐</Text>
-                <View style={Styles.CONTAINERMAINBOXPLUS}>
-                  <TouchableOpacity
-                    activeOpacity={0.6}
-                    style={Styles.DCREAMENTBOTTONINCREAMENT}>
-                    <Text style={Styles.TOTALITEMTITLE}>-</Text>
-                  </TouchableOpacity>
-                  <Text style={Styles.TOTALITEMTITLE}>0</Text>
-                  <TouchableOpacity
-                    activeOpacity={0.6}
-                    style={Styles.DCREAMENTBOTTONINCREAMENT}>
-                    <Text style={Styles.TOTALITEMTITLE}>+</Text>
-                  </TouchableOpacity>
-                </View>
+                {cartdata.map((value, index) => (
+                  <View key={index}>
+                    {value?._id == item?._id ? (
+                      <View style={Styles.CONTAINERMAINBOXPLUS}>
+                        <TouchableOpacity
+                          activeOpacity={0.6}
+                          onPress={() => decreaseQuantity(value)}
+                          style={Styles.DCREAMENTBOTTONINCREAMENT}>
+                          <Text style={Styles.TOTALITEMTITLE}>-</Text>
+                        </TouchableOpacity>
+
+                        <Text style={Styles.TOTALITEMTITLE}>
+                          {value.quantity}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => increaseQuantity(value)}
+                          activeOpacity={0.6}
+                          style={Styles.DCREAMENTBOTTONINCREAMENT}>
+                          <Text style={Styles.TOTALITEMTITLE}>+</Text>
+                        </TouchableOpacity>
+                      </View>
+                    ) : null}
+                  </View>
+                ))}
               </View>
               <View style={{marginTop: 3}}>
                 <Pressable
@@ -121,7 +132,7 @@ export default function WishlistScreen({navigation}) {
                 </Text>
 
                 <TouchableOpacity
-                  // onPress={() => addItemToCart(value)}
+                  onPress={() => addItemToCart(item)}
                   style={Styles.ADDTOCARTBOTTON}>
                   <Text style={{color: COLORS.WHITE}}>ADD</Text>
                 </TouchableOpacity>

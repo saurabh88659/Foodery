@@ -41,12 +41,6 @@ export default function SpalshScreen({navigation}) {
   //   error,
   // );
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     navigation.navigate(Routes.LOG_IN_SCREEN);
-  //   }, 5000);
-  // }, []);
-
   const getCurrentPosition = () => {
     Geolocation.getCurrentPosition(
       position => {
@@ -64,15 +58,10 @@ export default function SpalshScreen({navigation}) {
     }
   }, [IsFocused]);
 
-  // const _GetCurrentAddress = useSelector(state => state.geolocationReducer);
-
-  // console.log('_GetCurrentAddress', _GetCurrentAddress);
-
   // const geoCoding = async () => {
   //   Geocoder.init(MAP_API_KEY);
 
   //   Geocoder.from(Locations.latitude, Locations.longitude).then(json => {
-  //     // console.log('chack data=====', json.results.coords);
   //     json.results[0].address_components.forEach((value, index) => {
   //       console.log(
   //         'hey++++++++++++++++++++++++++DG',
@@ -110,10 +99,10 @@ export default function SpalshScreen({navigation}) {
           .then(resp => {
             if (resp?.data?.result?.name || resp?.data?.result?.address) {
               navigation.navigate(Routes.BOTTOM_TAB_BAR);
-              console.log('Splahs screen =========', resp?.data?.result);
+              // console.log('Splahs screen =========', resp?.data?.result);
             } else {
               navigation.navigate(Routes.LOG_IN_SCREEN);
-              console.log('Splahs screen =========', resp?.data?.result);
+              // console.log('Splahs screen =========', resp?.data?.result);
             }
           })
 
@@ -134,11 +123,11 @@ export default function SpalshScreen({navigation}) {
                   user_id: userId,
                 };
                 //refresh token api
-                console.log('refresh token------->>', SubmitDAta);
+                // console.log('refresh token------->>', SubmitDAta);
                 axios
                   .post(BASE_URL + `/User/refreshToken`, SubmitDAta)
                   .then(async res => {
-                    console.log('dablu------------------', res?.data);
+                    // console.log('dablu------------------', res?.data);
                     await AsyncStorage.setItem('token', res?.data?.token);
                     await AsyncStorage.setItem(
                       'refreshToken',

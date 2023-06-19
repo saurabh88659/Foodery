@@ -339,6 +339,13 @@ export default function SubCategories({navigation, route}) {
         title={CatItem.categoryName}
         onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
         onPress={() => navigation.goBack()}
+        UIBACK={
+          <IonIcon
+            title="arrow-back-outline"
+            size={30}
+            IconColor={COLORS.WHITE}
+          />
+        }
       />
       {isloading ? (
         <SafeAreaView style={Styles.CONTAINERMAIN}>

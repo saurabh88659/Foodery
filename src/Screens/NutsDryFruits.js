@@ -43,15 +43,13 @@ import AddTocart from '../Components/AddTocart';
 
 export default function NutsDryFruits({navigation, route}) {
   const actionSheetRef = createRef(false);
-  // const [prodcutDetails, setProdcutDetails] = useState('');
   const [PrductByiDetails, setPrductByiDetails] = useState('');
   const [freshnes_ByID_Cat, setFreshnes_ByID_Cat] = useState({});
-  // const [PrductByiDetails, setPrductByiDetails] = useState('');
-
   const IsFocused = useIsFocused();
   const toggleBottomNavigationView = value => {
     actionSheetRef?.current?.setModalVisible(true);
   };
+
   const [collapsed, setCollapsed] = useState(true);
   const [freshness_Cat, setFreshnes_Cat] = useState([]);
   const dispatch = useDispatch();
@@ -144,6 +142,7 @@ export default function NutsDryFruits({navigation, route}) {
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
+
   const totalQuantity = useSelector(
     state => state.CartReducerSlice.totalQuantity,
   );
@@ -161,6 +160,13 @@ export default function NutsDryFruits({navigation, route}) {
         title={'Nuts and Dry Fruits'}
         onPress={() => navigation.goBack()}
         onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
+        UIBACK={
+          <IonIcon
+            title="arrow-back-outline"
+            size={30}
+            IconColor={COLORS.WHITE}
+          />
+        }
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <Image source={bannerIcon} style={Styles.bannerImage} />

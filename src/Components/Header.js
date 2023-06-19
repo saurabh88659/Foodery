@@ -12,6 +12,7 @@ import {heightPixel, widthPixel, fontPixel} from '../Components/Dimensions';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import {FontAwesome5Icon} from '../utils/Const';
+import {useSelector} from 'react-redux';
 
 const Header = props => {
   const {headerHeight} = props;
@@ -61,6 +62,10 @@ const Header = props => {
     return () => clearInterval(interval);
   }, []);
 
+  const addressCurrent = useSelector(
+    state => state.AddressLSlice.currentAddress,
+  );
+
   return (
     <SafeAreaView style={{backgroundColor: COLORS.GREEN}}>
       <View style={Styles.HeadersSty}>
@@ -79,17 +84,21 @@ const Header = props => {
             style={{
               flexDirection: 'row',
               justifyContent: 'flex-start',
-              marginTop: 3,
-              width: widthPixel(300),
+              alignItems: 'center',
+              width: widthPixel(304),
+              // marginTop: 3,
             }}>
             <Text
+              numberOfLines={1}
               style={{
                 color: COLORS.WHITE,
-                fontSize: fontPixel(17),
+                fontSize: fontPixel(16),
                 fontWeight: '500',
-                letterSpacing: 0.5,
+                letterSpacing: 0.6,
               }}>
-              Home-Kickr Tech Home-Kickr Tech
+              {/* Home-Kickr Tech Home-Kickr Tech
+               */}
+              {addressCurrent}
             </Text>
             <Icon name="arrow-drop-down" color={COLORS.WHITE} size={25} />
           </View>

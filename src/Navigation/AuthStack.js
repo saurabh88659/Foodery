@@ -1,14 +1,12 @@
 import * as React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SpalshScreen from '../Screens/SpalshScreen';
-import OtpScreen from '../Screens/OtpScreen';
 import CreateAccount from '../Screens/CreateAccount';
 import Resetpassword from '../Screens/Resetpassword';
 import SignUpscreen from '../Screens/SignUpscreen';
 import ForgotEmailOtp from '../Screens/ForgotEmailOtp';
 import ForgetNewPassword from '../Screens/ForgetNewPassword';
 import BottomTabBar from './BottomTabBar';
-// import CartStack from './CartStack';
 import Routes from './Routes';
 import LoginScreen from '../Screens/LoginScreen';
 import Otp from '../Screens/Otp';
@@ -31,12 +29,6 @@ function AuthStack() {
       <Stack.Screen
         name={Routes.OTP_SCREEN}
         component={Otp}
-        options={{headerShown: false}}
-      />
-
-      <Stack.Screen
-        name="OtpScreen"
-        component={OtpScreen}
         options={{headerShown: false}}
       />
 

@@ -7,7 +7,7 @@ import rootReducer from '../rootReducer';
 // import { Storage } from 'redux-persist';
 // import storage from 'redux-persist/lib/storage';
 
-import {persistStore, persistReducer} from 'redux-persist';
+import {persistReducer} from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const sagaMiddleware = createSagaMiddleware();
@@ -33,6 +33,8 @@ export default store;
 // import thunk from 'redux-thunk';
 // import rootReducer from '../rootReducer';
 // import rootSaga from '../RootsagaEpic';
+// import {persistReducer} from 'redux-persist';
+// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const epicMiddleWares = createEpicMiddleware();
 

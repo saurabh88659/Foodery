@@ -30,6 +30,6 @@ package="com.foodery">
 
       <meta-data
         android:name="com.google.android.geo.API_KEY"
-        android:value="AIzaSyD5GUOMMrDY5Ml8JOQ5j7z7p9f8GaGCDBg"/>
+        android:value="AIzaSyChkQstsYAs6SgA0d4UIIBnhXfK_wf0iV4"/>
     </application>
 </manifest>

@@ -5,15 +5,51 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel} from '../Components/Dimensions';
-import {OcticonsIcon} from '../utils/Const';
+import {MAP_API_KEY, OcticonsIcon} from '../utils/Const';
 import {RadioButton} from 'react-native-paper';
+import {useDispatch, useSelector} from 'react-redux';
+import {setCurrentAddress} from '../Redux/ReducerSlice/AddressLSlice';
+import Geocoder from 'react-native-geocoding';
 
 export default function AddressScreen({navigation}) {
   const [checked, setChecked] = React.useState('first');
+  const dispatch = useDispatch();
+  const [newAddress, setNewAddress] = useState('');
+  const Locations = useSelector(state => state.locationReducer);
+  const addressCurrent = useSelector(
+    state => state.AddressLSlice.currentAddress,
+  );
+
+  console.log('addressCurrent==============>>>>>', addressCurrent);
+
+  useEffect(() => {
+    // geoCoding();
+  }, []);
+
+  const handleSetCurrentAddress = () => {
+    dispatch(setCurrentAddress(newAddress));
+    setNewAddress('');
+    geoCoding();
+  };
+
+  const handleSetAnimalAddress = () => {
+    dispatch(setAnimalAddress(newAddress));
+    setNewAddress('');
+  };
+
+  const geoCoding = async () => {
+    Geocoder.init(MAP_API_KEY);
+    Geocoder.from(Locations.latitude, Locations.longitude).then(json => {
+      setNewAddress(
+        json.results[0].formatted_address,
+        // tempAddress: json.results[0].formatted_address,
+      );
+    });
+  };
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -23,6 +59,7 @@ export default function AddressScreen({navigation}) {
       />
       <TouchableOpacity
         onPress={() => navigation.navigate('AddressScreenWithMap')}
+        // onPress={handleSetCurrentAddress}
         activeOpacity={0.6}
         style={Styles.BOX}>
         <OcticonsIcon title={'plus'} size={22} IconColor={COLORS.BLUE} />

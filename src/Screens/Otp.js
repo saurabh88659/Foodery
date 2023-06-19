@@ -73,14 +73,14 @@ export default function Otp({navigation, route}) {
             },
           })
           .then(resp => {
-            if (resp.data.result.name && resp.data.result.address) {
+            if (resp?.data?.result?.name && resp?.data?.result?.address) {
               navigation.navigate(Routes.BOTTOM_TAB_BAR);
             } else {
               navigation.navigate(Routes.SIGN_UP_SCREEN, phoneNumber);
             }
           })
           .catch(err => {
-            if (err.response?.data?.message == 'You are not  user.!') {
+            if (err?.response?.data?.message == 'You are not  user.!') {
               navigation.navigate(Routes.LOG_IN_SCREEN);
             }
           });

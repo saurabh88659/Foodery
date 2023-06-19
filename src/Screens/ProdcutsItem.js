@@ -29,7 +29,6 @@ import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPl
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import ActionSheet from 'react-native-actions-sheet';
-
 import {
   addToCart,
   decrementQuantity,
@@ -166,6 +165,13 @@ export default function ProdcutsItem({navigation, route}) {
         onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
         title={SubCatitem.item.subCategoryName}
         onPress={() => navigation.goBack()}
+        UIBACK={
+          <IonIcon
+            title="arrow-back-outline"
+            size={30}
+            IconColor={COLORS.WHITE}
+          />
+        }
       />
       {notFound ? (
         <Text

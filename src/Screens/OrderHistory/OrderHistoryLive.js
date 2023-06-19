@@ -1,128 +1,207 @@
 import {
   View,
   Text,
-  SafeAreaView,
   StyleSheet,
-  StatusBar,
+  SafeAreaView,
   Image,
+  ScrollView,
   TouchableOpacity,
-  FlatList,
 } from 'react-native';
-import React from 'react';
-import {useDispatch, useSelector} from 'react-redux';
-import MyHeader from '../../Components/MyHeader';
-import {
-  addToWishlist,
-  removeFromWishlist,
-} from '../../Redux/ReducerSlice/WishlistReducerSlice';
+import React, {useState} from 'react';
 import {COLORS} from '../../utils/Colors';
-import {FontAwesomeIcon, bannerIcon} from '../../utils/Const';
-import {heightPixel, fontPixel, widthPixel} from '../../Components/Dimensions';
+import {fontPixel, heightPixel, widthPixel} from '../../Components/Dimensions';
+import Lottie from 'lottie-react-native';
+import {BottomSheet} from 'react-native-btr';
+import {EntypoIcon, LATITUDE_DELTA, LONGITUDE_DELTA} from '../../utils/Const';
+import {useSelector} from 'react-redux';
+import MapView, {Marker} from 'react-native-maps';
 
-export default function OrderHistoryLive({navigation}) {
-  const dispatch = useDispatch();
-
-  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
-  console.log('wishlist', wishlist);
+export default function OrderHistoryLive() {
+  const [visible, setVisible] = useState(false);
+  const toggleBottomNavigationView = () => {
+    setVisible(!visible);
+  };
+  const Locations = useSelector(state => state.locationReducer);
 
   const SRTDATA = [
     {
-      id: '0',
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqg_OBzcVDnKHv1d3hyVk_WlCo43pzit4CJQ&usqp=CAU',
-      name: 'icecream',
+      name: 'ravi rai',
     },
     {
-      id: '1',
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT85O96gPiso_j2gaS0cePTBY4mCR3pumV6tw&usqp=CAU',
-      name: 'biscuit',
+      name: 'ravi rai',
     },
     {
-      id: '2',
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSicQWeRoxxLEr1RLIp8dJtw-NQvSE4xtlhwA&usqp=CAU',
-      name: 'chocolate',
+      name: 'ravi rai',
+    },
+    {
+      name: 'ravi rai',
+    },
+    {
+      name: 'ravi rai',
+    },
+    {
+      name: 'ravi rai',
+    },
+    {
+      name: 'ravi rai',
+    },
+    {
+      name: 'ravi rai',
+    },
+    {
+      name: 'ravi rai',
+    },
+    {
+      name: 'ravi rai',
+    },
+    {
+      name: 'ravi rai',
+    },
+    {
+      name: 'ravi rai',
     },
   ];
 
-  const addtoWishlist = item => {
-    // console.log('hey', item);
-    dispatch(addToWishlist(item));
-  };
-  const removeItemFromWishlist = item => {
-    dispatch(removeFromWishlist(item));
-  };
-
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
-      <FlatList
-        keyExtractor={(item, index) => index.toString()}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 5}}
-        data={SRTDATA}
-        renderItem={({item, index}) => (
-          <View>
-            <View style={Styles.CONTAINERMAINBOX}>
-              <View>
-                <Image source={bannerIcon} style={Styles.IMAGESTYLES} />
-              </View>
-              <View style={{}}>
-                <Text numberOfLines={1} style={Styles.TITLESTYLES}>
-                  Mango Alphonso
-                </Text>
-                <Text numberOfLines={1} style={Styles.SUBTITLESTYLES}>
-                  Pick up from organic farms
-                </Text>
-                <Text style={{fontSize: 16, marginTop: 3}}>⭐⭐⭐⭐⭐</Text>
-                <View style={Styles.CONTAINERMAINBOXPLUS}>
-                  <TouchableOpacity
-                    activeOpacity={0.6}
-                    style={Styles.DCREAMENTBOTTONINCREAMENT}>
-                    <Text style={Styles.TOTALITEMTITLE}>-</Text>
-                  </TouchableOpacity>
-                  <Text style={Styles.TOTALITEMTITLE}>0</Text>
-                  <TouchableOpacity
-                    activeOpacity={0.6}
-                    style={Styles.DCREAMENTBOTTONINCREAMENT}>
-                    <Text style={Styles.TOTALITEMTITLE}>+</Text>
-                  </TouchableOpacity>
+      <ScrollView contentContainerStyle={{paddingBottom: 25}}>
+        <Text style={Styles.QTEXT}>Order Summary</Text>
+        <View style={Styles.MAINCONTAINERMAIN}>
+          {SRTDATA.map((value, index) => (
+            <View key={index} style={Styles.MAINBOX}>
+              <View style={{flexDirection: 'row'}}>
+                <Image
+                  source={require('../../Assets/Logo/Laysicone.jpg')}
+                  style={Styles.IMAGESTYLES}
+                />
+                <View style={Styles.QTEXTBOX}>
+                  <View>
+                    <Text numberOfLines={1} style={Styles.QTEXTNAME}>
+                      Mango Alphonso
+                    </Text>
+                    <Text style={Styles.QSUBTITEL}>Mango Alphonso</Text>
+                  </View>
+                  <Text style={Styles.QPRICES}>Rs. 567</Text>
                 </View>
               </View>
-              <View style={{marginTop: 3}}>
-                <Text style={Styles.STYLESPCS}>6 Pcs</Text>
-                <Text
-                  // numberOfLines={1}
-                  style={Styles.KGSTYLES}>
-                  (Approx. 1.2Kg - 1.4kg)
-                </Text>
+            </View>
+          ))}
+          <View style={Styles.TOTALBOXSTY}>
+            <View style={Styles.SUBBOX}>
+              <Text style={Styles.TOTALTITLES}>Item Total</Text>
+              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
+                {`Rs.${'100'}`}
+              </Text>
+            </View>
 
-                {wishlist.some(value => value?.id == item?.id) ? (
-                  <TouchableOpacity
-                    onPress={() => removeItemFromWishlist(item)}
-                    style={Styles.ADDTOCARTBOTTON}>
-                    <FontAwesomeIcon
-                      title={'heart-o'}
-                      size={20}
-                      IconColor={COLORS.GRAYDARK}
-                    />
-                  </TouchableOpacity>
-                ) : (
-                  <TouchableOpacity
-                    onPress={() => addtoWishlist(item)}
-                    style={Styles.ADDTOCARTBOTTON}>
-                    <FontAwesomeIcon
-                      title={'heart'}
-                      size={20}
-                      IconColor={COLORS.BROWN}
-                    />
-                  </TouchableOpacity>
-                )}
+            <View style={[Styles.SUBBOX]}>
+              <Text style={Styles.HANDLINGTITLE}>
+                Handling Charges
+                <Text style={{color: COLORS.GREEN}}> (Rs.10 Saved)</Text>
+              </Text>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={Styles.DELIVERYTITLE}>Rs.15</Text>
+                <Text style={Styles.FREEPRICES}>Rs.5</Text>
               </View>
             </View>
+
+            <View
+              style={[
+                Styles.SUBBOX,
+                {
+                  borderBottomWidth: 0.2,
+                  color: COLORS.LIGHTGREEN,
+                  paddingVertical: 5,
+                },
+              ]}>
+              <Text style={Styles.HANDLINGTITLE}>
+                Delivery Free{' '}
+                <Text style={{color: COLORS.GREEN}}>(Rs.36 Saved)</Text>
+              </Text>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={Styles.DELIVERYTITLE}>Rs.18</Text>
+                <Text style={Styles.FREEPRICES}>Rs.8</Text>
+              </View>
+            </View>
+
+            <View
+              style={[
+                Styles.SUBBOX,
+                {
+                  alignItems: 'center',
+                  paddingVertical: 15,
+                  top: heightPixel(2),
+                },
+              ]}>
+              <Text style={Styles.TOTALTITLES}>To pay</Text>
+              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
+                {`Rs.${'100'}`}
+              </Text>
+            </View>
           </View>
-        )}
-      />
+        </View>
+        <TouchableOpacity
+          onPress={toggleBottomNavigationView}
+          activeOpacity={0.5}
+          style={Styles.QBOXBOT}>
+          <Lottie
+            source={require('../../Assets/Lottiejson/58352-delivery-boy.json')}
+            autoPlay
+            loop={true}
+            style={{height: heightPixel(90)}}
+          />
+          <View style={{width: widthPixel(200)}}>
+            <Text style={{fontSize: fontPixel(15), color: COLORS.BLACK}}>
+              Your Delivery Partner will be assigned soon
+            </Text>
+            <Text
+              style={{
+                fontSize: fontPixel(15),
+                color: COLORS.BLACK,
+                paddingTop: 5,
+              }}>
+              +91 7739*******980
+            </Text>
+          </View>
+        </TouchableOpacity>
+      </ScrollView>
+      <BottomSheet
+        visible={visible}
+        onBackButtonPress={toggleBottomNavigationView}
+        onBackdropPress={toggleBottomNavigationView}>
+        <View style={{}}>
+          <TouchableOpacity
+            onPress={() => setVisible(!visible)}
+            activeOpacity={0.6}
+            style={Styles.CLOSEBTN}>
+            <EntypoIcon title="cross" size={25} IconColor={COLORS.WHITE} />
+          </TouchableOpacity>
+          <View style={Styles.bottomNavigationView}>
+            <View style={Styles.MAPBOX}>
+              {Locations && (
+                <MapView
+                  style={StyleSheet.absoluteFill}
+                  initialRegion={{
+                    latitude: Locations.latitude,
+                    longitude: Locations.longitude,
+                    latitudeDelta: LATITUDE_DELTA,
+                    longitudeDelta: LONGITUDE_DELTA,
+                  }}
+                  showsUserLocation={true}
+                  provider="google">
+                  <Marker
+                    coordinate={{
+                      latitude: Locations.latitude,
+                      longitude: Locations.longitude,
+                    }}
+                    // title={address}
+                  />
+                </MapView>
+              )}
+            </View>
+          </View>
+        </View>
+      </BottomSheet>
     </SafeAreaView>
   );
 }
@@ -130,70 +209,120 @@ export default function OrderHistoryLive({navigation}) {
 const Styles = StyleSheet.create({
   CONTAINERMAIN: {
     flex: 1,
-    backgroundColor: COLORS.WHITE,
   },
-  CONTAINERMAINBOX: {
-    height: heightPixel(150),
+  QTEXT: {
+    color: COLORS.BLACK,
+    fontSize: fontPixel(20),
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    fontWeight: '500',
+    letterSpacing: 0.4,
+  },
+
+  MAINCONTAINERMAIN: {
+    backgroundColor: COLORS.WHITE,
     marginHorizontal: 10,
-    marginVertical: 4,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    borderColor: COLORS.GRAYDARK,
+    borderRadius: 15,
+  },
+  MAINBOX: {
+    marginVertical: 3,
+    marginHorizontal: 15,
+    paddingVertical: heightPixel(10),
   },
   IMAGESTYLES: {
-    height: heightPixel(115),
-    width: widthPixel(100),
-    borderRadius: 10,
+    height: heightPixel(60),
+    width: widthPixel(60),
   },
-  TITLESTYLES: {
+  PRODUCTTEXT: {
     color: COLORS.BLACK,
-    fontSize: fontPixel(19),
-    fontWeight: '500',
+    paddingLeft: widthPixel(10),
   },
-  SUBTITLESTYLES: {
-    fontSize: fontPixel(12),
-    fontWeight: '500',
-    //   width: widthPixel(100),
-  },
-  CONTAINERMAINBOXPLUS: {
+  QTEXTBOX: {
     flexDirection: 'row',
-    width: widthPixel(100),
-    alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 13,
+    flex: 1,
+    paddingLeft: widthPixel(20),
   },
-  DCREAMENTBOTTONINCREAMENT: {
-    paddingVertical: 3,
-    width: widthPixel(33),
+  QTEXTNAME: {
+    color: COLORS.BLACK,
+    fontSize: fontPixel(18),
+    fontWeight: '500',
+    letterSpacing: 0.3,
+    width: widthPixel(200),
+  },
+  QSUBTITEL: {
+    color: COLORS.GRAYDARK,
+    fontSize: fontPixel(14),
+    letterSpacing: 0.3,
+    paddingTop: heightPixel(5),
+  },
+  QPRICES: {
+    color: COLORS.BLACK,
+    fontSize: fontPixel(18),
+    fontWeight: '500',
+    letterSpacing: 0.3,
+  },
+  QBOXBOT: {
+    height: heightPixel(100),
+    marginTop: 5,
+    marginHorizontal: 10,
+    borderRadius: 15,
     backgroundColor: COLORS.WHITE,
-    borderRadius: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  TOTALBOXSTY: {
+    backgroundColor: COLORS.WHITE,
+    borderTopWidth: 0.5,
+    borderColor: COLORS.GRAYDARK,
+    marginHorizontal: 15,
+  },
+  SUBBOX: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // paddingHorizontal: 15,
+    top: heightPixel(10),
+    paddingVertical: 3,
+  },
+  TOTALTITLES: {
+    color: COLORS.BLACK,
+    fontWeight: '500',
+    fontSize: fontPixel(18),
+  },
+  HANDLINGTITLE: {color: COLORS.GRAYDARK, fontSize: fontPixel(17)},
+  DELIVERYTITLE: {
+    color: COLORS.GRAYDARK,
+    fontSize: fontPixel(17),
+    paddingRight: 10,
+    textDecorationLine: 'line-through',
+  },
+  FREEPRICES: {
+    color: COLORS.GREEN,
+    fontSize: fontPixel(17),
+  },
+  bottomNavigationView: {
+    backgroundColor: COLORS.WHITE,
+    height: heightPixel(700),
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  CLOSEBTN: {
+    backgroundColor: COLORS.BLACK,
+    height: heightPixel(50),
+    width: widthPixel(50),
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.BLACK,
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginBottom: 10,
   },
-  TOTALITEMTITLE: {color: COLORS.BLACK, fontSize: fontPixel(18)},
-  STYLESPCS: {
-    color: COLORS.BLACK,
-    fontSize: fontPixel(12),
-    fontWeight: '500',
-  },
-  KGSTYLES: {
-    color: COLORS.BLACK,
-    fontSize: fontPixel(12),
-    fontWeight: '500',
-    width: widthPixel(90),
-    top: 4,
-  },
-  ADDTOCARTBOTTON: {
-    backgroundColor: COLORS.PURPLE,
-    width: widthPixel(65),
-    paddingVertical: 6,
+  MAPBOX: {
+    marginTop: 10,
+    height: heightPixel(600),
+    backgroundColor: COLORS.GREEN,
+    elevation: 9,
     borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 25,
+    overflow: 'hidden',
+    marginHorizontal: 10,
   },
 });

@@ -99,7 +99,7 @@ export default function FruitsVegetables({navigation, route}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(res => {
-        console.log('Freshness Response QQQQQQQQQ----->>>', res?.data?.result);
+        // console.log('Freshness Response QQQQQQQQQ----->>>', res?.data?.result);
 
         setFreshnes_Cat(res?.data?.result);
       })
@@ -174,6 +174,13 @@ export default function FruitsVegetables({navigation, route}) {
         title={'Fresh & Healthy'}
         onPress={() => navigation.goBack()}
         onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
+        UIBACK={
+          <IonIcon
+            title="arrow-back-outline"
+            size={30}
+            IconColor={COLORS.WHITE}
+          />
+        }
       />
       <ScrollView showsVerticalScrollIndicator={false}>
         <Image source={bannerIcon} style={Styles.bannerImage} />

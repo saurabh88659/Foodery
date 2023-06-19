@@ -18,6 +18,7 @@ import {
   MaterialIconsIcon,
   SimpleToast,
   bannerIcon,
+  cartemptyIcon,
 } from '../utils/Const';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
@@ -42,6 +43,7 @@ import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
 import {fetchApiData} from '../Redux/ReducerSlice/cartapiSlice';
+import Lottie from 'lottie-react-native';
 
 export default function CartScreen({navigation}) {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
@@ -49,6 +51,10 @@ export default function CartScreen({navigation}) {
   const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const dispatch = useDispatch();
+
+  const addressCurrent = useSelector(
+    state => state.AddressLSlice.currentAddress,
+  );
 
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
   const totalQuantity = useSelector(
@@ -87,7 +93,7 @@ export default function CartScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('_Order_Might_Missed=========', response.data.categoryData);
+        // console.log('_Order_Might_Missed=========', response.data.categoryData);
         setOrder_Might_Missed(response.data.categoryData);
       })
       .catch(error => {
@@ -128,313 +134,343 @@ export default function CartScreen({navigation}) {
         title={'Shopping Cart'}
         onPress={() => navigation.goBack()}
       />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        scrollEventThrottle={16}
-        contentContainerStyle={{paddingBottom: 15}}>
-        <View style={Styles.LOCATIONMAINBOX}>
-          <View style={Styles.SUBTITLELOCATIONS}>
-            <IonIcon
-              title="ios-location-sharp"
-              size={23}
-              IconColor={COLORS.BLACK}
-            />
-            <Text numberOfLines={1} style={Styles.SUBTITLELOCATIONS2}>
-              Current Locations Current
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
-            activeOpacity={0.6}
-            style={{flexDirection: 'row', alignItems: 'center'}}>
-            <MaterialIconsIcon
-              title="keyboard-arrow-down"
-              size={25}
-              IconColor={COLORS.BLACK}
-              IconStyle={{right: widthPixel(7)}}
-            />
-            <Text style={Styles.SUBTITLELOCATIONS3}>Change Address</Text>
-          </TouchableOpacity>
-        </View>
-        <FlatList
-          keyExtractor={(item, index) => index.toString()}
+      {productDataByRe?.length !== 0 ? (
+        <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: 5}}
-          data={productDataByRe}
-          renderItem={({item, index}) => (
-            <View style={Styles.MAINCARD}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
-                <Image
-                  source={{uri: item?.productImage}}
-                  style={Styles.IMAGESTYLES}
-                />
-                <View style={{paddingLeft: widthPixel(20)}}>
-                  <Text style={Styles.MAINTITEL}>{item?.productName}</Text>
-                  <Text
-                    style={Styles.DISPRICE}>{`Rs.${item?.discountPrice}`}</Text>
-                  <Text
-                    style={Styles.PRICES}>{`Rs.${item?.productPrice}`}</Text>
-                </View>
-              </View>
-              <View>
-                <View style={Styles.CONBOXRIGHT}>
-                  <Text style={Styles.SAVEPRICES}>Rs. 100 saved</Text>
-                  <TouchableOpacity
-                    onPress={() => removeItemFromCart(item)}
-                    activeOpacity={0.6}>
-                    <MaterialCommunityIconsTwo
-                      title="delete"
-                      size={25}
-                      IconColor={COLORS.BLACK}
-                      IconStyle={{right: widthPixel(7)}}
-                    />
-                  </TouchableOpacity>
-                </View>
-                <View style={Styles.CONTAINERMAINBOXPLUS}>
-                  <TouchableOpacity
-                    onPress={() => decreaseQuantity(item)}
-                    activeOpacity={0.6}
-                    style={Styles.DCREAMENTBOTTONINCREAMENT}>
-                    <Text style={Styles.TOTALITEMTITLE}>-</Text>
-                  </TouchableOpacity>
-                  <Text style={Styles.TOTALITEMTITLE}>{item?.quantity}</Text>
-                  <TouchableOpacity
-                    onPress={() => increaseQuantity(item)}
-                    activeOpacity={0.6}
-                    style={Styles.DCREAMENTBOTTONINCREAMENT}>
-                    <Text style={Styles.TOTALITEMTITLE}>+</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+          scrollEventThrottle={16}
+          contentContainerStyle={{paddingBottom: 15}}>
+          <View style={Styles.LOCATIONMAINBOX}>
+            <View style={Styles.SUBTITLELOCATIONS}>
+              <IonIcon
+                title="ios-location-sharp"
+                size={23}
+                IconColor={COLORS.BLACK}
+              />
+              <Text numberOfLines={1} style={Styles.SUBTITLELOCATIONS2}>
+                {/* Current Locations Current
+                 */}
+                {addressCurrent}
+              </Text>
             </View>
-          )}
-        />
-        <View
-          style={{
-            marginVertical: 8,
-          }}>
-          <Text style={Styles.MIGHTSTYLESTITLE}>You Might Have Missed</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+              activeOpacity={0.6}
+              style={{flexDirection: 'row', alignItems: 'center'}}>
+              <MaterialIconsIcon
+                title="keyboard-arrow-down"
+                size={25}
+                IconColor={COLORS.BLACK}
+                IconStyle={{right: widthPixel(7)}}
+              />
+              <Text style={Styles.SUBTITLELOCATIONS3}>Change Address</Text>
+            </TouchableOpacity>
+          </View>
+
           <FlatList
             keyExtractor={(item, index) => index.toString()}
-            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={{paddingBottom: 5}}
-            horizontal
-            data={order_Might_Missed}
+            data={productDataByRe}
             renderItem={({item, index}) => (
-              <View key={index}>
-                <Productinfo
-                  key={index}
-                  HeartUI={
-                    <View>
-                      {wishlist.some(value => value?._id == item?._id) ? (
-                        <TouchableOpacity
-                          onPress={() => removeItemFromWishlist(item)}
-                          style={[Styles.CONTAINERHEART]}>
-                          <FontAwesomeIcon
-                            title={'heart'}
-                            size={20}
-                            IconColor={COLORS.BROWN}
-                          />
-                        </TouchableOpacity>
-                      ) : (
-                        <TouchableOpacity
-                          onPress={() => addtoWishlist(item)}
-                          style={[Styles.CONTAINERHEART]}>
-                          <FontAwesomeIcon
-                            title={'heart-o'}
-                            size={20}
-                            IconColor={COLORS.GRAYDARK}
-                          />
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  }
-                  Productimage={{uri: item?.productImage}}
-                  ProductName={item?.productName}
-                  ProductSubName={item?.productUnit}
-                  discountPrice={item?.discountPrice}
-                  ProductPrice={item?.productPrice}
-                  UIBotton={
-                    <View>
-                      {productDataByRe.map((value, index) => (
-                        <View key={value?._id}>
-                          {value?._id == item?._id ? (
-                            <View style={Styles.INCREAMENTBOTTONMAIN}>
-                              <TouchableOpacity
-                                onPress={() => decreaseQuantity(value)}>
-                                <Text style={Styles.DCREAMENTTITLE}>-</Text>
-                              </TouchableOpacity>
-                              <Text style={Styles.ITEMTITEL}>
-                                {value.quantity}
-                              </Text>
-                              <TouchableOpacity
-                                onPress={() => increaseQuantity(value)}>
-                                <Text style={Styles.INCREAMENTTITLE}>+</Text>
-                              </TouchableOpacity>
-                            </View>
-                          ) : null}
-                        </View>
-                      ))}
-                      {productDataByRe.some(
-                        value => value._id == item._id,
-                      ) ? null : (
-                        <TouchableOpacity
-                          onPress={() => addItemToCart(item)}
-                          activeOpacity={0.5}
-                          style={Styles.ADDBOTTONSTYL}>
-                          <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  }
-                />
+              <View style={Styles.MAINCARD}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <Image
+                    source={{uri: item?.productImage}}
+                    style={Styles.IMAGESTYLES}
+                  />
+                  <View style={{paddingLeft: widthPixel(20)}}>
+                    <Text numberOfLines={1} style={Styles.MAINTITEL}>
+                      {item?.productName}
+                    </Text>
+                    <Text
+                      style={
+                        Styles.DISPRICE
+                      }>{`Rs.${item?.discountPrice}`}</Text>
+                    <Text
+                      style={Styles.PRICES}>{`Rs.${item?.productPrice}`}</Text>
+                  </View>
+                </View>
+                <View>
+                  <View style={Styles.CONBOXRIGHT}>
+                    <Text style={Styles.SAVEPRICES}>Rs. 100 saved</Text>
+                    <TouchableOpacity
+                      onPress={() => removeItemFromCart(item)}
+                      activeOpacity={0.6}>
+                      <MaterialCommunityIconsTwo
+                        title="delete"
+                        size={25}
+                        IconColor={COLORS.BLACK}
+                        IconStyle={{right: widthPixel(7)}}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  <View style={Styles.CONTAINERMAINBOXPLUS}>
+                    <TouchableOpacity
+                      onPress={() => decreaseQuantity(item)}
+                      activeOpacity={0.6}
+                      style={Styles.DCREAMENTBOTTONINCREAMENT}>
+                      <Text style={Styles.TOTALITEMTITLE}>-</Text>
+                    </TouchableOpacity>
+                    <Text style={Styles.TOTALITEMTITLE}>{item?.quantity}</Text>
+                    <TouchableOpacity
+                      onPress={() => increaseQuantity(item)}
+                      activeOpacity={0.6}
+                      style={Styles.DCREAMENTBOTTONINCREAMENT}>
+                      <Text style={Styles.TOTALITEMTITLE}>+</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             )}
           />
-        </View>
-        <View style={Styles.TOTALBOXSTY}>
-          <View style={Styles.SUBBOX}>
-            <Text style={Styles.TOTALTITLES}>Item Total</Text>
-            <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
-              {`Rs.${totalprice}`}
-            </Text>
-          </View>
-
-          <View style={[Styles.SUBBOX, {marginTop: 5}]}>
-            <Text style={Styles.HANDLINGTITLE}>
-              Handling Charges
-              <Text style={{color: COLORS.GREEN}}> (Rs.10 Saved)</Text>
-            </Text>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={Styles.DELIVERYTITLE}>Rs.15</Text>
-              <Text style={Styles.FREEPRICES}>Rs.5</Text>
-            </View>
-          </View>
-
           <View
-            style={[
-              Styles.SUBBOX,
-              {
-                borderBottomWidth: 0.2,
-                color: COLORS.LIGHTGREEN,
-                paddingVertical: 5,
-              },
-            ]}>
-            <Text style={Styles.HANDLINGTITLE}>
-              Delivery Free{' '}
-              <Text style={{color: COLORS.GREEN}}>(Rs.36 Saved)</Text>
-            </Text>
-            <View style={{flexDirection: 'row'}}>
-              <Text style={Styles.DELIVERYTITLE}>Rs.18</Text>
-              <Text style={Styles.FREEPRICES}>Rs.8</Text>
-            </View>
-          </View>
-
-          <View
-            style={[
-              Styles.SUBBOX,
-              {alignItems: 'center', marginTop: 5, paddingVertical: 7},
-            ]}>
-            <Text style={Styles.TOTALTITLES}>To pay</Text>
-            <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
-              {`Rs.${totalprice}`}
-            </Text>
-          </View>
-          <View style={Styles.SAVETHISORDERTITLE}>
-            <IonIcon
-              title="ios-checkmark-circle"
-              size={20}
-              IconColor={COLORS.GREEN}
-              IconStyle={{}}
-            />
-            <Text style={{color: COLORS.GREEN}}>
-              {' '}
-              <Text style={{fontSize: fontPixel(16), fontWeight: '500'}}>
-                Rs 91
-              </Text>{' '}
-              saved on this order
-            </Text>
-          </View>
-        </View>
-        <FlatList
-          keyExtractor={(item, index) => index.toString()}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{paddingBottom: 5, marginHorizontal: 10}}
-          horizontal
-          data={[1, 2, 3, 4]}
-          renderItem={({item, index}) => (
-            <View key={index} style={[Styles.DELIVERYBOX_FOOTER]}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <MaterialCommunityIconsTwo
-                  title="bell-ring"
-                  size={30}
-                  IconColor={COLORS.BLACK}
-                  IconStyle={{}}
-                />
-                <View>
-                  <Text style={Styles.DELTITLE}>No Contact Delivery</Text>
-                  <Text numberOfLines={3} style={Styles.DELSUBTITLE}>
-                    Delivery Partner will leave your order at your door
-                  </Text>
+            style={{
+              marginVertical: 8,
+            }}>
+            <Text style={Styles.MIGHTSTYLESTITLE}>You Might Have Missed</Text>
+            <FlatList
+              keyExtractor={(item, index) => index.toString()}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{paddingBottom: 5}}
+              horizontal
+              data={order_Might_Missed}
+              renderItem={({item, index}) => (
+                <View key={index}>
+                  <Productinfo
+                    key={index}
+                    HeartUI={
+                      <View>
+                        {wishlist.some(value => value?._id == item?._id) ? (
+                          <TouchableOpacity
+                            onPress={() => removeItemFromWishlist(item)}
+                            style={[Styles.CONTAINERHEART]}>
+                            <FontAwesomeIcon
+                              title={'heart'}
+                              size={20}
+                              IconColor={COLORS.BROWN}
+                            />
+                          </TouchableOpacity>
+                        ) : (
+                          <TouchableOpacity
+                            onPress={() => addtoWishlist(item)}
+                            style={[Styles.CONTAINERHEART]}>
+                            <FontAwesomeIcon
+                              title={'heart-o'}
+                              size={20}
+                              IconColor={COLORS.GRAYDARK}
+                            />
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    }
+                    Productimage={{uri: item?.productImage}}
+                    ProductName={item?.productName}
+                    ProductSubName={item?.productUnit}
+                    discountPrice={item?.discountPrice}
+                    ProductPrice={item?.productPrice}
+                    UIBotton={
+                      <View>
+                        {productDataByRe.map((value, index) => (
+                          <View key={value?._id}>
+                            {value?._id == item?._id ? (
+                              <View style={Styles.INCREAMENTBOTTONMAIN}>
+                                <TouchableOpacity
+                                  onPress={() => decreaseQuantity(value)}>
+                                  <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                                </TouchableOpacity>
+                                <Text style={Styles.ITEMTITEL}>
+                                  {value.quantity}
+                                </Text>
+                                <TouchableOpacity
+                                  onPress={() => increaseQuantity(value)}>
+                                  <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                                </TouchableOpacity>
+                              </View>
+                            ) : null}
+                          </View>
+                        ))}
+                        {productDataByRe.some(
+                          value => value._id == item._id,
+                        ) ? null : (
+                          <TouchableOpacity
+                            onPress={() => addItemToCart(item)}
+                            activeOpacity={0.5}
+                            style={Styles.ADDBOTTONSTYL}>
+                            <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    }
+                  />
                 </View>
+              )}
+            />
+          </View>
+
+          <View style={Styles.TOTALBOXSTY}>
+            <View style={Styles.SUBBOX}>
+              <Text style={Styles.TOTALTITLES}>Item Total</Text>
+              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
+                {`Rs.${totalprice}`}
+              </Text>
+            </View>
+
+            <View style={[Styles.SUBBOX, {marginTop: 5}]}>
+              <Text style={Styles.HANDLINGTITLE}>
+                Handling Charges
+                <Text style={{color: COLORS.GREEN}}> (Rs.10 Saved)</Text>
+              </Text>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={Styles.DELIVERYTITLE}>Rs.15</Text>
+                <Text style={Styles.FREEPRICES}>Rs.5</Text>
               </View>
             </View>
-          )}
-        />
-        <View
-          style={[
-            Styles.DELIVERYBOX_FOOTER,
-            {
-              backgroundColor: COLORS.WHITE,
-              marginTop: 5,
-              borderColor: COLORS.GRAYDARK,
-              elevation: 4,
-              marginHorizontal: 15,
-              borderWidth: 0,
-            },
-          ]}>
-          <View>
+
             <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text style={Styles.DELTITLE}>Order For Someone else</Text>
-              <Text style={[Styles.DELTITLE, {color: COLORS.GREEN}]}>ADD</Text>
+              style={[
+                Styles.SUBBOX,
+                {
+                  borderBottomWidth: 0.2,
+                  color: COLORS.LIGHTGREEN,
+                  paddingVertical: 5,
+                },
+              ]}>
+              <Text style={Styles.HANDLINGTITLE}>
+                Delivery Free{' '}
+                <Text style={{color: COLORS.GREEN}}>(Rs.36 Saved)</Text>
+              </Text>
+              <View style={{flexDirection: 'row'}}>
+                <Text style={Styles.DELIVERYTITLE}>Rs.18</Text>
+                <Text style={Styles.FREEPRICES}>Rs.8</Text>
+              </View>
             </View>
-            <Text numberOfLines={3} style={Styles.FOOTERTITLE2}>
-              Add a message to be sent as an SMS with your Gift
-            </Text>
+
+            <View
+              style={[
+                Styles.SUBBOX,
+                {alignItems: 'center', marginTop: 5, paddingVertical: 7},
+              ]}>
+              <Text style={Styles.TOTALTITLES}>To pay</Text>
+              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
+                {`Rs.${totalprice}`}
+              </Text>
+            </View>
+            <View style={Styles.SAVETHISORDERTITLE}>
+              <IonIcon
+                title="ios-checkmark-circle"
+                size={20}
+                IconColor={COLORS.GREEN}
+                IconStyle={{}}
+              />
+              <Text style={{color: COLORS.GREEN}}>
+                {' '}
+                <Text style={{fontSize: fontPixel(16), fontWeight: '500'}}>
+                  Rs 91
+                </Text>{' '}
+                saved on this order
+              </Text>
+            </View>
           </View>
-        </View>
-        <View
-          style={[
-            Styles.DELIVERYBOX_FOOTER,
-            {
-              backgroundColor: COLORS.WHITE,
-              marginTop: 5,
-              borderColor: COLORS.GRAYDARK,
-              elevation: 4,
-              marginHorizontal: 15,
-              borderWidth: 0,
-            },
-          ]}>
-          <View>
-            <Text style={Styles.DELTITLE}>Cancellation Policy</Text>
-            <Text numberOfLines={3} style={Styles.FOOTERTITLE2}>
-              Order Cannot be Cancelled once packed for delivery. in case of
-              unexpected delays, a refund will be provider.if applicable
-            </Text>
-          </View>
-        </View>
-        <View style={{marginVertical: 15}}>
-          <Button
-            title={'Choose address at next step    ▶'}
-            onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+          <FlatList
+            keyExtractor={(item, index) => index.toString()}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{paddingBottom: 5, marginHorizontal: 10}}
+            horizontal
+            data={[1, 2, 3, 4]}
+            renderItem={({item, index}) => (
+              <View key={index} style={[Styles.DELIVERYBOX_FOOTER]}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <MaterialCommunityIconsTwo
+                    title="bell-ring"
+                    size={30}
+                    IconColor={COLORS.BLACK}
+                    IconStyle={{}}
+                  />
+                  <View>
+                    <Text style={Styles.DELTITLE}>No Contact Delivery</Text>
+                    <Text numberOfLines={3} style={Styles.DELSUBTITLE}>
+                      Delivery Partner will leave your order at your door
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
           />
+          <View
+            style={[
+              Styles.DELIVERYBOX_FOOTER,
+              {
+                backgroundColor: COLORS.WHITE,
+                marginTop: 5,
+                borderColor: COLORS.GRAYDARK,
+                elevation: 4,
+                marginHorizontal: 15,
+                borderWidth: 0,
+              },
+            ]}>
+            <View>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text style={Styles.DELTITLE}>Order For Someone else</Text>
+                <Text style={[Styles.DELTITLE, {color: COLORS.GREEN}]}>
+                  ADD
+                </Text>
+              </View>
+              <Text numberOfLines={3} style={Styles.FOOTERTITLE2}>
+                Add a message to be sent as an SMS with your Gift
+              </Text>
+            </View>
+          </View>
+          <View
+            style={[
+              Styles.DELIVERYBOX_FOOTER,
+              {
+                backgroundColor: COLORS.WHITE,
+                marginTop: 5,
+                borderColor: COLORS.GRAYDARK,
+                elevation: 4,
+                marginHorizontal: 15,
+                borderWidth: 0,
+              },
+            ]}>
+            <View>
+              <Text style={Styles.DELTITLE}>Cancellation Policy</Text>
+              <Text numberOfLines={3} style={Styles.FOOTERTITLE2}>
+                Order Cannot be Cancelled once packed for delivery. in case of
+                unexpected delays, a refund will be provider.if applicable
+              </Text>
+            </View>
+          </View>
+          <View style={{marginVertical: 15}}>
+            <Button
+              title={'Choose address at next step    ▶'}
+              onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+            />
+          </View>
+        </ScrollView>
+      ) : (
+        <View style={Styles.EMPTYBOXMAIN}>
+          <Lottie
+            source={cartemptyIcon}
+            autoPlay
+            loop={true}
+            style={{height: heightPixel(300)}}
+          />
+          <Text style={Styles.EMPRTYTITLEONE}>Your cart is empty</Text>
+          <Text style={Styles.EMPTYTITLETWO}>
+            You have no items in your shopping cart. Let's go buy something!
+          </Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(Routes.TAB_HOME)}
+            style={Styles.shopbutton}>
+            <Text style={Styles.ShopText}>Shop Now</Text>
+          </TouchableOpacity>
         </View>
-      </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -507,6 +543,7 @@ const Styles = StyleSheet.create({
     color: COLORS.BLACK,
     fontWeight: '500',
     paddingBottom: 20,
+    width: widthPixel(150),
   },
   DISPRICE: {
     color: COLORS.GRAYDARK,
@@ -647,4 +684,33 @@ const Styles = StyleSheet.create({
     paddingVertical: 4,
   },
   CONTAINERHEART: {alignItems: 'flex-end', margin: 5},
+  EMPTYBOXMAIN: {alignItems: 'center', justifyContent: 'center', flex: 1},
+  EMPRTYTITLEONE: {
+    color: COLORS.GRAYDARK,
+    fontSize: fontPixel(23),
+    fontWeight: '500',
+  },
+  EMPTYTITLETWO: {
+    color: COLORS.GRAYDARK,
+    fontSize: fontPixel(17),
+    fontWeight: '400',
+    textAlign: 'center',
+    paddingTop: 5,
+    marginHorizontal: '12%',
+    letterSpacing: 0.5,
+  },
+  shopbutton: {
+    backgroundColor: COLORS.DarkGreen2,
+    marginVertical: 20,
+    paddingVertical: 10,
+    width: widthPixel(120),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 4,
+  },
+  ShopText: {
+    color: COLORS.WHITE,
+    fontWeight: '500',
+    fontSize: fontPixel(16),
+  },
 });

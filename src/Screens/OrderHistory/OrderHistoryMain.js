@@ -6,6 +6,7 @@ import Routes from '../../Navigation/Routes';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import OrderHistoryLive from './OrderHistoryLive';
 import OrderHistory from './OrderHistory';
+import {IonIcon} from '../../utils/Const';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -21,6 +22,13 @@ export default function OrderHistoryMain({navigation}) {
         title={'Order History'}
         onPress={() => navigation.goBack()}
         onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
+        UIBACK={
+          <IonIcon
+            title="arrow-back-outline"
+            size={30}
+            IconColor={COLORS.WHITE}
+          />
+        }
       />
       <Tab.Navigator
         screenOptions={{

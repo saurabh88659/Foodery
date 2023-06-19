@@ -122,19 +122,16 @@ export default function ProfileScreen({navigation}) {
         .then(res => {
           // console.log('Profile image--------->>', res.data);
           // console.log('Profile only response data--------->>', res);
-
-          // SimpleToast({title: res.data.message, isLong: true});
+          SimpleToast({title: res?.data?.message, isLong: true});
           setState({...state, profileImg: null});
           setState({
             ...state,
             isLoading: false,
           });
-
-          // SimpleToast({title: res.data.message, isLong: true});
         })
         .catch(error => {
           console.log('error in catch Profile image ', error?.response?.data);
-          SimpleToast({title: error?.response?.data, isLong: true});
+          SimpleToast({title: error?.response?.data?.message, isLong: true});
           setState({...state, profileImg: null});
           setState({
             ...state,

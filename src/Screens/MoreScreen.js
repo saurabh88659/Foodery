@@ -40,7 +40,8 @@ export default function MoreScreen({navigation}) {
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <View style={Styles.MainBOx}>
         <View style={Styles.HEADERBOX}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(Routes.HOME_SCREEN)}>
             <EntypoIcon title="cross" size={35} IconColor={COLORS.GRAYDARK} />
           </TouchableOpacity>
           <Text style={Styles.HEADERTITLE}>Good Morning Akila!</Text>

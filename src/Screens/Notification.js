@@ -10,7 +10,7 @@ import React from 'react';
 import MyHeader from '../Components/MyHeader';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
-import {EntypoIcon} from '../utils/Const';
+import {EntypoIcon, IonIcon} from '../utils/Const';
 
 export default function Notification({navigation}) {
   const SRTNOW = [
@@ -66,7 +66,17 @@ export default function Notification({navigation}) {
   ];
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
-      <MyHeader title={'Notification'} onPress={() => navigation.goBack()} />
+      <MyHeader
+        title={'Notification'}
+        onPress={() => navigation.goBack()}
+        UIBACK={
+          <IonIcon
+            title="arrow-back-outline"
+            size={30}
+            IconColor={COLORS.WHITE}
+          />
+        }
+      />
 
       <FlatList
         keyExtractor={(item, index) => index.toString()}

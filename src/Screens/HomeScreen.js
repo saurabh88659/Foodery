@@ -76,7 +76,6 @@ export default function HomeScreen({navigation}) {
   const translateYNumber = useRef();
   const scrollY = useRef(new Animated.Value(0));
   const scrollYClamped = diffClamp(scrollY.current, 0, headerHeight);
-  const [heart, setHeart] = useState(true);
   const [collapsed, setCollapsed] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -119,29 +118,6 @@ export default function HomeScreen({navigation}) {
       useNativeDriver: true,
     },
   );
-
-  const Orderagain = [
-    {
-      _id: 1,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 2,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 3,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 4,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 5,
-      Nmae: 'ravi rai',
-    },
-  ];
 
   const clickHandler = () => {
     setModalVisible(!modalVisible);
@@ -189,7 +165,6 @@ export default function HomeScreen({navigation}) {
 
   const _First_Banner = async () => {
     const token = await _getStorage('token');
-    // console.log('token=========', token);
     axios
       .get(BASE_URL + `/User/getAllBanner`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -206,7 +181,6 @@ export default function HomeScreen({navigation}) {
 
   const _all_Category = async () => {
     const token = await _getStorage('token');
-    console.log(token);
     axios
       .get(BASE_URL + `/User/getAllcategorylist`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -227,10 +201,10 @@ export default function HomeScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log(
-          '_ExSubCategory Category Two Response----->>>',
-          response?.data?.getAll,
-        );
+        // console.log(
+        //   '_ExSubCategory Category Two Response----->>>',
+        //   response?.data?.getAll,
+        // );
         setEx_category_Two(response?.data?.getAll);
       })
       .catch(error => {
@@ -245,7 +219,7 @@ export default function HomeScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(res => {
-        console.log('Freshness Response----->>>', res?.data?.result);
+        // console.log('Freshness Response----->>>', res?.data?.result);
         setFreshnes_Cat(res?.data?.result);
       })
       .catch(error => {
@@ -271,14 +245,13 @@ export default function HomeScreen({navigation}) {
 
   const _Order_Again = async () => {
     const token = await _getStorage('token');
-
     axios
       .get(BASE_URL + `/getOrderAgain`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('hey=========', response.data.orderAgain);
-        setOrder_Again(response.data.orderAgain);
+        // console.log('hey=========', response.data.orderAgain);
+        setOrder_Again(response?.data?.orderAgain);
       })
       .catch(error => {
         console.log('order again catch Error', error);
@@ -363,7 +336,6 @@ export default function HomeScreen({navigation}) {
                   keyExtractor={(item, index) => index.toString()}
                   showsHorizontalScrollIndicator={false}
                   // contentContainerStyle={{paddingBottom: 5}}
-                  // horizontal
                   numColumns={4}
                   // data={showModal?all_Category:}
                   data={all_Category.slice(0, 4)}
@@ -478,20 +450,20 @@ export default function HomeScreen({navigation}) {
               {order_Again?.length !== 0 ? (
                 <View style={Styles.SubTitleheader}>
                   <Text style={Styles.titlemain}>Order Again</Text>
-                  {/* {order_Again.some(item => ( */}
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate(Routes.PRODUCT_ITEM)}
-                    // onPress={toggleExpanded}
-                    activeOpacity={0.6}
-                    style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Text style={Styles.titleview}>View all</Text>
-                    <MaterialIconsIcon
-                      title={'keyboard-arrow-right'}
-                      size={22}
-                      IconColor={COLORS.GRAYDARK}
-                    />
-                  </TouchableOpacity>
-                  {/* ))} */}
+                  {order_Again.some(item => (
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate(Routes.PRODUCT_ITEM)}
+                      // onPress={toggleExpanded}
+                      activeOpacity={0.6}
+                      style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <Text style={Styles.titleview}>View all</Text>
+                      <MaterialIconsIcon
+                        title={'keyboard-arrow-right'}
+                        size={22}
+                        IconColor={COLORS.GRAYDARK}
+                      />
+                    </TouchableOpacity>
+                  ))}
                 </View>
               ) : null}
             </View>

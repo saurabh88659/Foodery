@@ -24,11 +24,12 @@ const MyHeader = props => {
           alignItems: 'center',
         }}>
         <TouchableOpacity activeOpacity={0.6} onPress={props.onPress}>
-          <IonIcon
+          {/* <IonIcon
             title="arrow-back-outline"
             size={30}
             IconColor={COLORS.WHITE}
-          />
+          /> */}
+          {props.UIBACK}
         </TouchableOpacity>
         <Text
           style={{

@@ -6,7 +6,7 @@ export const useDoubleBackPressExit = () => {
   if (Platform.OS === 'ios') return;
   const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
     if (currentCount === 1) {
-      // BackHandler.exitApp();
+      BackHandler.exitApp();
       subscription.remove();
       return true;
     }

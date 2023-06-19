@@ -12,10 +12,7 @@ export const fetchApiData = createAsyncThunk(
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(
-        'hey---------------------------------------kkkkkkkkkkkkkkkkkk',
-        response.data?.result?.cart,
-      );
+
       //   return response?.data?.cart?;
     } catch (error) {
       throw new Error('Error fetching API data');

@@ -9,6 +9,7 @@ import Profilereducer from './Reducers/Profilereducer';
 import counterSlice from '../Redux/Store/counterSlice';
 import CartReducerSlice from '../Redux/ReducerSlice/CartReducerSlice';
 import WishlistReducerSlice from '../Redux/ReducerSlice/WishlistReducerSlice';
+import AddressLSlice from '../Redux/ReducerSlice/AddressLSlice';
 
 const rootReducer = combineReducers({
   reducer,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   counterSlice,
   CartReducerSlice,
   WishlistReducerSlice,
+  AddressLSlice,
 });
 
 export default rootReducer;
