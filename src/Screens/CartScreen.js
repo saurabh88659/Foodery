@@ -8,7 +8,7 @@ import {
   FlatList,
   ScrollView,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import MyHeader from '../Components/MyHeader';
 import {
   BASE_URL,
@@ -20,13 +20,13 @@ import {
   bannerIcon,
   cartemptyIcon,
 } from '../utils/Const';
-import {COLORS} from '../utils/Colors';
-import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
+import { COLORS } from '../utils/Colors';
+import { fontPixel, heightPixel, widthPixel } from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 // import GlobelStyles from '../utils/GlobelStyles';a
 import Button from '../Components/Button';
 import Routes from '../Navigation/Routes';
-import {useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import {
   addToCart,
   decrementQuantity,
@@ -34,18 +34,18 @@ import {
   incrementQuantity,
   removeFromCart,
 } from '../Redux/ReducerSlice/CartReducerSlice';
-import {useDispatch} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   addToWishlist,
   removeFromWishlist,
 } from '../Redux/ReducerSlice/WishlistReducerSlice';
-import {_getStorage} from '../utils/Storage';
+import { _getStorage } from '../utils/Storage';
 import axios from 'axios';
-import {useIsFocused} from '@react-navigation/native';
-import {fetchApiData} from '../Redux/ReducerSlice/cartapiSlice';
+import { useIsFocused } from '@react-navigation/native';
+import { fetchApiData } from '../Redux/ReducerSlice/cartapiSlice';
 import Lottie from 'lottie-react-native';
 
-export default function CartScreen({navigation}) {
+export default function CartScreen({ navigation }) {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
   const IsFocused = useIsFocused();
   const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
@@ -90,7 +90,7 @@ export default function CartScreen({navigation}) {
 
     axios
       .get(BASE_URL + `/getAllshowCarts`, {
-        headers: {Authorization: `Bearer ${token}`},
+        headers: { Authorization: `Bearer ${token}` },
       })
       .then(response => {
         // console.log('_Order_Might_Missed=========', response.data.categoryData);
@@ -119,13 +119,37 @@ export default function CartScreen({navigation}) {
   const addtoWishlist = value => {
     if (value) {
       dispatch(addToWishlist(value));
-      SimpleToast({title: 'added to the wishlist.', isLong: true});
+      SimpleToast({ title: 'added to the wishlist.', isLong: true });
     }
   };
   const removeItemFromWishlist = value => {
     dispatch(removeFromWishlist(value));
-    SimpleToast({title: 'removed from the wishlist.', isLong: true});
+    SimpleToast({ title: 'removed from the wishlist.', isLong: true });
   };
+
+
+  const _Cart_Data_Post = async () => {
+    const token = await _getStorage('token')
+    console.log('response cart data post--------------------->>>>>')
+
+    const objData = {
+      orderedProducts: productDataByRe,
+      totalAmount: totalprice,
+      delieveryAddress: addressCurrent,
+    }
+
+      .post(BASE_URL + `/addOrder`, objData, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then(response => {
+        console.log('response cart data post--------------------->>>>>', response.data)
+      })
+      .catch(error => {
+        console.log('catch cart error', error)
+      })
+  }
+
+
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -138,7 +162,7 @@ export default function CartScreen({navigation}) {
         <ScrollView
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
-          contentContainerStyle={{paddingBottom: 15}}>
+          contentContainerStyle={{ paddingBottom: 15 }}>
           <View style={Styles.LOCATIONMAINBOX}>
             <View style={Styles.SUBTITLELOCATIONS}>
               <IonIcon
@@ -155,12 +179,12 @@ export default function CartScreen({navigation}) {
             <TouchableOpacity
               onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
               activeOpacity={0.6}
-              style={{flexDirection: 'row', alignItems: 'center'}}>
+              style={{ flexDirection: 'row', alignItems: 'center' }}>
               <MaterialIconsIcon
                 title="keyboard-arrow-down"
                 size={25}
                 IconColor={COLORS.BLACK}
-                IconStyle={{right: widthPixel(7)}}
+                IconStyle={{ right: widthPixel(7) }}
               />
               <Text style={Styles.SUBTITLELOCATIONS3}>Change Address</Text>
             </TouchableOpacity>
@@ -169,9 +193,9 @@ export default function CartScreen({navigation}) {
           <FlatList
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 5}}
+            contentContainerStyle={{ paddingBottom: 5 }}
             data={productDataByRe}
-            renderItem={({item, index}) => (
+            renderItem={({ item, index }) => (
               <View style={Styles.MAINCARD}>
                 <View
                   style={{
@@ -179,10 +203,10 @@ export default function CartScreen({navigation}) {
                     alignItems: 'center',
                   }}>
                   <Image
-                    source={{uri: item?.productImage}}
+                    source={{ uri: item?.productImage }}
                     style={Styles.IMAGESTYLES}
                   />
-                  <View style={{paddingLeft: widthPixel(20)}}>
+                  <View style={{ paddingLeft: widthPixel(20) }}>
                     <Text numberOfLines={1} style={Styles.MAINTITEL}>
                       {item?.productName}
                     </Text>
@@ -204,7 +228,7 @@ export default function CartScreen({navigation}) {
                         title="delete"
                         size={25}
                         IconColor={COLORS.BLACK}
-                        IconStyle={{right: widthPixel(7)}}
+                        IconStyle={{ right: widthPixel(7) }}
                       />
                     </TouchableOpacity>
                   </View>
@@ -235,10 +259,10 @@ export default function CartScreen({navigation}) {
             <FlatList
               keyExtractor={(item, index) => index.toString()}
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{paddingBottom: 5}}
+              contentContainerStyle={{ paddingBottom: 5 }}
               horizontal
               data={order_Might_Missed}
-              renderItem={({item, index}) => (
+              renderItem={({ item, index }) => (
                 <View key={index}>
                   <Productinfo
                     key={index}
@@ -267,7 +291,7 @@ export default function CartScreen({navigation}) {
                         )}
                       </View>
                     }
-                    Productimage={{uri: item?.productImage}}
+                    Productimage={{ uri: item?.productImage }}
                     ProductName={item?.productName}
                     ProductSubName={item?.productUnit}
                     discountPrice={item?.discountPrice}
@@ -314,17 +338,17 @@ export default function CartScreen({navigation}) {
           <View style={Styles.TOTALBOXSTY}>
             <View style={Styles.SUBBOX}>
               <Text style={Styles.TOTALTITLES}>Item Total</Text>
-              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
+              <Text style={[Styles.TOTALTITLES, { fontSize: fontPixel(20) }]}>
                 {`Rs.${totalprice}`}
               </Text>
             </View>
 
-            <View style={[Styles.SUBBOX, {marginTop: 5}]}>
+            <View style={[Styles.SUBBOX, { marginTop: 5 }]}>
               <Text style={Styles.HANDLINGTITLE}>
                 Handling Charges
-                <Text style={{color: COLORS.GREEN}}> (Rs.10 Saved)</Text>
+                <Text style={{ color: COLORS.GREEN }}> (Rs.10 Saved)</Text>
               </Text>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <Text style={Styles.DELIVERYTITLE}>Rs.15</Text>
                 <Text style={Styles.FREEPRICES}>Rs.5</Text>
               </View>
@@ -341,9 +365,9 @@ export default function CartScreen({navigation}) {
               ]}>
               <Text style={Styles.HANDLINGTITLE}>
                 Delivery Free{' '}
-                <Text style={{color: COLORS.GREEN}}>(Rs.36 Saved)</Text>
+                <Text style={{ color: COLORS.GREEN }}>(Rs.36 Saved)</Text>
               </Text>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{ flexDirection: 'row' }}>
                 <Text style={Styles.DELIVERYTITLE}>Rs.18</Text>
                 <Text style={Styles.FREEPRICES}>Rs.8</Text>
               </View>
@@ -352,10 +376,10 @@ export default function CartScreen({navigation}) {
             <View
               style={[
                 Styles.SUBBOX,
-                {alignItems: 'center', marginTop: 5, paddingVertical: 7},
+                { alignItems: 'center', marginTop: 5, paddingVertical: 7 },
               ]}>
               <Text style={Styles.TOTALTITLES}>To pay</Text>
-              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
+              <Text style={[Styles.TOTALTITLES, { fontSize: fontPixel(20) }]}>
                 {`Rs.${totalprice}`}
               </Text>
             </View>
@@ -366,9 +390,9 @@ export default function CartScreen({navigation}) {
                 IconColor={COLORS.GREEN}
                 IconStyle={{}}
               />
-              <Text style={{color: COLORS.GREEN}}>
+              <Text style={{ color: COLORS.GREEN }}>
                 {' '}
-                <Text style={{fontSize: fontPixel(16), fontWeight: '500'}}>
+                <Text style={{ fontSize: fontPixel(16), fontWeight: '500' }}>
                   Rs 91
                 </Text>{' '}
                 saved on this order
@@ -378,12 +402,12 @@ export default function CartScreen({navigation}) {
           <FlatList
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 5, marginHorizontal: 10}}
+            contentContainerStyle={{ paddingBottom: 5, marginHorizontal: 10 }}
             horizontal
             data={[1, 2, 3, 4]}
-            renderItem={({item, index}) => (
+            renderItem={({ item, index }) => (
               <View key={index} style={[Styles.DELIVERYBOX_FOOTER]}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <MaterialCommunityIconsTwo
                     title="bell-ring"
                     size={30}
@@ -414,9 +438,9 @@ export default function CartScreen({navigation}) {
             ]}>
             <View>
               <View
-                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text style={Styles.DELTITLE}>Order For Someone else</Text>
-                <Text style={[Styles.DELTITLE, {color: COLORS.GREEN}]}>
+                <Text style={[Styles.DELTITLE, { color: COLORS.GREEN }]}>
                   ADD
                 </Text>
               </View>
@@ -445,10 +469,11 @@ export default function CartScreen({navigation}) {
               </Text>
             </View>
           </View>
-          <View style={{marginVertical: 15}}>
+          <View style={{ marginVertical: 15 }}>
             <Button
               title={'Choose address at next step    ▶'}
-              onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+              // onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+              onPress={_Cart_Data_Post}
             />
           </View>
         </ScrollView>
@@ -458,7 +483,7 @@ export default function CartScreen({navigation}) {
             source={cartemptyIcon}
             autoPlay
             loop={true}
-            style={{height: heightPixel(300)}}
+            style={{ height: heightPixel(300) }}
           />
           <Text style={Styles.EMPRTYTITLEONE}>Your cart is empty</Text>
           <Text style={Styles.EMPTYTITLETWO}>
@@ -537,7 +562,7 @@ const Styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.BLACK,
   },
-  TOTALITEMTITLE: {color: COLORS.BLACK, fontSize: fontPixel(18)},
+  TOTALITEMTITLE: { color: COLORS.BLACK, fontSize: fontPixel(18) },
   MAINTITEL: {
     fontSize: fontPixel(18),
     color: COLORS.BLACK,
@@ -574,7 +599,7 @@ const Styles = StyleSheet.create({
     //   paddingVertical: 7,
     letterSpacing: 0.5,
   },
-  TOTALBOXSTY: {height: heightPixel(200), backgroundColor: COLORS.LIGHT_WHITE},
+  TOTALBOXSTY: { height: heightPixel(200), backgroundColor: COLORS.LIGHT_WHITE },
   SUBBOX: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -586,7 +611,7 @@ const Styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: fontPixel(18),
   },
-  HANDLINGTITLE: {color: COLORS.GRAYDARK, fontSize: fontPixel(17)},
+  HANDLINGTITLE: { color: COLORS.GRAYDARK, fontSize: fontPixel(17) },
   DELIVERYTITLE: {
     color: COLORS.GRAYDARK,
     fontSize: fontPixel(17),
@@ -683,8 +708,8 @@ const Styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 4,
   },
-  CONTAINERHEART: {alignItems: 'flex-end', margin: 5},
-  EMPTYBOXMAIN: {alignItems: 'center', justifyContent: 'center', flex: 1},
+  CONTAINERHEART: { alignItems: 'flex-end', margin: 5 },
+  EMPTYBOXMAIN: { alignItems: 'center', justifyContent: 'center', flex: 1 },
   EMPRTYTITLEONE: {
     color: COLORS.GRAYDARK,
     fontSize: fontPixel(23),

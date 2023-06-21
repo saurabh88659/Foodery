@@ -1,4 +1,4 @@
-import {Alert, Platform, PermissionsAndroid, Linking} from 'react-native';
+import { Alert, Platform, PermissionsAndroid, Linking } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 
 const checkLocationEnabled = async () => {
@@ -9,7 +9,7 @@ const checkLocationEnabled = async () => {
     if (granted === PermissionsAndroid.RESULTS.DENIED) {
       // Location permission denied, show alert message
       Alert.alert('Location Disabled', 'Please enable location to proceed.', [
-        {text: 'OK', onPress: () => handleLocationDisabled()},
+        { text: 'OK', onPress: () => handleLocationDisabled() },
       ]);
       return;
     }
@@ -23,8 +23,8 @@ const checkLocationEnabled = async () => {
     error => {
       // Location is disabled, show alert message
       Alert.alert('Location Disabled', 'Please enable location to proceed.', [
-        {text: 'Cancel', style: 'cancel'},
-        {text: 'Settings', onPress: () => openLocationSettings()},
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Settings', onPress: () => openLocationSettings() },
       ]);
     },
     // {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
@@ -44,4 +44,4 @@ const openLocationSettings = () => {
   }
 };
 
-export {checkLocationEnabled};
+export { checkLocationEnabled };

@@ -7,25 +7,25 @@ import {
   View,
   TouchableOpacity,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {COLORS} from '../utils/Colors';
-import {fontPixel, heightPixel} from '../Components/Dimensions';
+import React, { useEffect, useState } from 'react';
+import { COLORS } from '../utils/Colors';
+import { fontPixel, heightPixel } from '../Components/Dimensions';
 import Geolocation from '@react-native-community/geolocation';
-import {updateGeolocation} from '../Redux/Action/locationAction';
-import {useDispatch, useSelector} from 'react-redux';
-import {BASE_URL, MAP_API_KEY} from '../utils/Const';
+import { updateGeolocation } from '../Redux/Action/locationAction';
+import { useDispatch, useSelector } from 'react-redux';
+import { BASE_URL, MAP_API_KEY } from '../utils/Const';
 import Geocoder from 'react-native-geocoding';
-import {useIsFocused} from '@react-navigation/native';
+import { useIsFocused } from '@react-navigation/native';
 import Routes from '../Navigation/Routes';
-import {_getStorage} from '../utils/Storage';
+import { _getStorage } from '../utils/Storage';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {checkInternetConnection} from '../utils/Handler/InternetInfo';
+import { checkInternetConnection } from '../utils/Handler/InternetInfo';
 import Lottie from 'lottie-react-native';
 import RNExitApp from 'react-native-exit-app';
-import {fetchData} from '../Redux/RootsagaEpic';
+import { fetchData } from '../Redux/RootsagaEpic';
 
-export default function SpalshScreen({navigation}) {
+export default function SpalshScreen({ navigation }) {
   const IsFocused = useIsFocused();
   const dispatch = useDispatch();
   const [hasInternet, setHasInternet] = useState(false);
@@ -44,7 +44,7 @@ export default function SpalshScreen({navigation}) {
   const getCurrentPosition = () => {
     Geolocation.getCurrentPosition(
       position => {
-        const {latitude, longitude} = position.coords;
+        const { latitude, longitude } = position.coords;
         dispatch(updateGeolocation(latitude, longitude));
       },
       error => console.log('error locations', error), // handle error if needed
@@ -167,7 +167,7 @@ export default function SpalshScreen({navigation}) {
           source={require('../Assets/Logo/splashbackgoundimage.png')}
           style={Styles.CONAINERBACKGROUND}>
           <Text style={Styles.TEXTSTYL}>
-            Welcome to {`\n`} <Text style={{fontWeight: '800'}}>Grocery</Text>{' '}
+            Welcome to {`\n`} <Text style={{ fontWeight: '800' }}>Grocery</Text>{' '}
             shopping
           </Text>
         </ImageBackground>
@@ -184,9 +184,9 @@ export default function SpalshScreen({navigation}) {
               source={require('../Assets/Lottiejson/39620-404-network.json')}
               autoPlay
               loop={true}
-              style={{height: heightPixel(400), marginVertical: -30}}
+              style={{ height: heightPixel(400), marginVertical: -30 }}
             />
-            <View style={{alignItems: 'center'}}>
+            <View style={{ alignItems: 'center' }}>
               <Text
                 style={{
                   color: COLORS.BLACK,
@@ -239,5 +239,5 @@ const Styles = StyleSheet.create({
     color: COLORS.WHITE,
     textAlign: 'center',
   },
-  CONAINERBACKGROUND: {flex: 1, alignItems: 'center', justifyContent: 'center'},
+  CONAINERBACKGROUND: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

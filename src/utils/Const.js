@@ -10,10 +10,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Octicons from 'react-native-vector-icons/Octicons';
 import Toast from 'react-native-simple-toast';
 // import Toast from 'react-native-toast-message';
-import {MMKV} from 'react-native-mmkv';
-import {Dimensions} from 'react-native';
+import { MMKV } from 'react-native-mmkv';
+import { Dimensions } from 'react-native';
 
-const {height, width} = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
 
 // DESCRIBING SOME STATIC IMAGE
 
@@ -39,7 +39,7 @@ const TermsCondition = require('../Assets/Logo/TermsCondition.jpg');
 const PrivacyPolicyIcon = require('../Assets/Logo/PrivacyPolicy.jpg');
 const cartemptyIcon = require('../Assets/Lottiejson/112087-empty.json');
 
-const BASE_URL = 'http://192.168.68.109:8000/api'; //  Server URL  Localhost
+const BASE_URL = 'http://192.168.1.8:8000/api'; //  Server URL  Localhost
 
 // AIzaSyChkQstsYAs6SgA0d4UIIBnhXfK_wf0iV4?
 const MAP_API_KEY = 'AIzaSyChkQstsYAs6SgA0d4UIIBnhXfK_wf0iV4'; // Map key here
@@ -53,7 +53,7 @@ const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
 // DESCRIBING REACT NATIVE VECTOR ICONS FOR FUTURE USE
 
-const IonIcon = ({title, size, IconColor, IconStyle}) => (
+const IonIcon = ({ title, size, IconColor, IconStyle }) => (
   <Ionicons
     name={title}
     size={size}
@@ -61,7 +61,7 @@ const IonIcon = ({title, size, IconColor, IconStyle}) => (
     style={IconStyle || {}}
   />
 );
-const FoundationIcon = ({title, size, IconColor, IconStyle}) => (
+const FoundationIcon = ({ title, size, IconColor, IconStyle }) => (
   <Foundation
     name={title}
     size={size}
@@ -70,7 +70,7 @@ const FoundationIcon = ({title, size, IconColor, IconStyle}) => (
   />
 );
 
-const FontAwesomeIcon = ({title, size, IconColor, IconStyle}) => (
+const FontAwesomeIcon = ({ title, size, IconColor, IconStyle }) => (
   <FontAwesome
     name={title}
     size={size}
@@ -78,7 +78,7 @@ const FontAwesomeIcon = ({title, size, IconColor, IconStyle}) => (
     style={IconStyle || {}}
   />
 );
-const EvilIconsIcon = ({title, size, IconColor, IconStyle}) => (
+const EvilIconsIcon = ({ title, size, IconColor, IconStyle }) => (
   <EvilIcons
     name={title}
     size={size}
@@ -86,7 +86,7 @@ const EvilIconsIcon = ({title, size, IconColor, IconStyle}) => (
     style={IconStyle || {}}
   />
 );
-const FontAwesome5Icon = ({title, size, IconColor, IconStyle}) => (
+const FontAwesome5Icon = ({ title, size, IconColor, IconStyle }) => (
   <FontAwesome5
     name={title}
     size={size}
@@ -95,10 +95,10 @@ const FontAwesome5Icon = ({title, size, IconColor, IconStyle}) => (
   />
 );
 
-const EntypoIcon = ({title, size, IconColor, IconStyle}) => (
+const EntypoIcon = ({ title, size, IconColor, IconStyle }) => (
   <Entypo name={title} size={size} color={IconColor} style={IconStyle || {}} />
 );
-const MaterialIconsIcon = ({title, size, IconColor, IconStyle}) => (
+const MaterialIconsIcon = ({ title, size, IconColor, IconStyle }) => (
   <MaterialIcons
     name={title}
     size={size}
@@ -107,7 +107,7 @@ const MaterialIconsIcon = ({title, size, IconColor, IconStyle}) => (
   />
 );
 
-const MaterialCommunityIconsTwo = ({title, size, IconColor, IconStyle}) => (
+const MaterialCommunityIconsTwo = ({ title, size, IconColor, IconStyle }) => (
   <MaterialCommunityIcons
     name={title}
     size={size}
@@ -116,7 +116,7 @@ const MaterialCommunityIconsTwo = ({title, size, IconColor, IconStyle}) => (
   />
 );
 
-const SimpleLineIconsIcon = ({title, size, IconColor, IconStyle}) => (
+const SimpleLineIconsIcon = ({ title, size, IconColor, IconStyle }) => (
   <SimpleLineIcons
     name={title}
     size={size}
@@ -124,7 +124,7 @@ const SimpleLineIconsIcon = ({title, size, IconColor, IconStyle}) => (
     style={IconStyle || {}}
   />
 );
-const OcticonsIcon = ({title, size, IconColor, IconStyle}) => (
+const OcticonsIcon = ({ title, size, IconColor, IconStyle }) => (
   <Octicons
     name={title}
     size={size}
@@ -135,7 +135,7 @@ const OcticonsIcon = ({title, size, IconColor, IconStyle}) => (
 
 //👇👇👇 DESCRIBING TOAST COMPONENT 👇👇👇
 
-const SimpleToast = ({title, isLong}) => {
+const SimpleToast = ({ title, isLong }) => {
   isLong ? Toast.show(title, Toast.LONG) : Toast.show(title, Toast.SHORT);
 };
 
