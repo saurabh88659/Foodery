@@ -149,6 +149,8 @@ const Styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
+    // backgroundColor: COLORS.BLACK,
+    // opacity: 0.6,
   },
   headerTitle: {
     paddingLeft: '4%',

@@ -8,7 +8,6 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
-  SafeAreaViewComponent,
 } from 'react-native';
 import React, {useState, useEffect, createRef} from 'react';
 import MyHeader from '../Components/MyHeader';
@@ -23,7 +22,6 @@ import {
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 import AddTocart from '../Components/AddTocart';
-// import {addToCart} from '../Redux/action';
 import ActionSheet from 'react-native-actions-sheet';
 import Collapsible from 'react-native-collapsible';
 
@@ -70,11 +68,6 @@ export default function SubCategories({navigation, route}) {
   // const [iscartdata, setIscartdata] = useState('');
   const [similar_Product, setSimilar_Product] = useState([]);
 
-  // const [state, setState] = useState({
-  //   cartquantity: null,
-  //   isLoading: false,
-  // });
-
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
   };
@@ -84,23 +77,11 @@ export default function SubCategories({navigation, route}) {
   };
 
   useEffect(() => {
-    setCartitem(cartData.length);
-    if (cartData && cartData.length) {
-      cartData.forEach(element => {
-        // if(element.itemname===item)
-      });
-    }
-  }, [cartData]);
-
-  useEffect(() => {
     if (IsFocused) {
       _ProductItem();
       _ProductItemById();
-      // setStatusFilter();
       setStatusFilter(status);
       _get_quantity_item();
-      // calculateTotalPrice();
-      // getTotal();
       _Wishlist_get_data();
       _Cart_get_data();
       _Similar_Product();
@@ -216,54 +197,6 @@ export default function SubCategories({navigation, route}) {
     state => state.CartReducerSlice.discountTotalPrice,
   );
 
-  // const _addTocart = async item => {
-  //   // console.log('DDDDDDDDDDDDDDD------', item);
-  //   const token = await _getStorage('token');
-  //   axios
-  //     .put(
-  //       BASE_URL + `/addToCart`,
-  //       {productId: item?._id},
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       },
-  //     )
-  //     .then(response => {
-  //       console.log(
-  //         'add to cart-------->>>>>>',
-  //         response?.data?.result[0].quantity,
-  //       );
-  //       setIscartdata(response?.data?.result[0].quantity);
-
-  //       setState({...state, cartquantity: null});
-  //     })
-  //     .catch(error => {
-  //       console.log('catch error', error?.response?.data);
-  //       setState({...state, cartquantity: null});
-  //     });
-  // };
-
-  // const _ReduceTocart = async item => {
-  //   const token = await _getStorage('token');
-  //   axios
-  //     .put(
-  //       BASE_URL + `/reduceItemFromCart`,
-  //       {productId: item?._id},
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       },
-  //     )
-  //     .then(response => {
-  //       console.log('add to cart-------->>>>>>', response?.data);
-  //     })
-  //     .catch(error => {
-  //       console.log('catch error', error?.response?.data);
-  //     });
-  // };
-
   const _get_quantity_item = async () => {
     const token = await _getStorage('token');
     axios
@@ -280,18 +213,6 @@ export default function SubCategories({navigation, route}) {
         console.log('Get quantity catch error', error);
       });
   };
-
-  // const getTotal = () => {
-  //   let totalQuantity = 0;
-  //   let totalPrice = 0;
-  //   cartdata.forEach(item => {
-  //     totalQuantity += item?.quantity;
-  //     totalPrice += item?.productPrice * item?.quantity;
-  //   });
-  //   setTotal_Price(totalPrice);
-  //   seTtotal_quantity(totalQuantity);
-  //   return totalPrice, totalQuantity;
-  // };
 
   const _Wishlist_get_data = async () => {
     const token = await _getStorage('token');

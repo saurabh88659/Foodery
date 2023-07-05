@@ -40,10 +40,9 @@ export default function ProfileScreen({navigation}) {
   const [isProfile, setIsProfile] = useState('');
   const dispatch = useDispatch();
 
-  const profiledata = useSelector(state => state);
+  const profiledata = useSelector(state => state.ProfileSlice);
 
-  console.log('profiledata---------', profiledata);
-  // const [selectedImage, setSelectedImage] = useState(null);
+  // console.log('profiledata---------', profiledata);
 
   const [state, setState] = useState({
     profileImg: null,
@@ -145,6 +144,10 @@ export default function ProfileScreen({navigation}) {
         });
     }
   };
+
+  const addressCurrent = useSelector(
+    state => state.AddressLSlice.currentAddress,
+  );
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

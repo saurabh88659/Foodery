@@ -66,6 +66,7 @@ export default function OrderHistoryLive() {
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <ScrollView contentContainerStyle={{paddingBottom: 25}}>
         <Text style={Styles.QTEXT}>Order Summary</Text>
+
         <View style={Styles.MAINCONTAINERMAIN}>
           {SRTDATA.map((value, index) => (
             <View key={index} style={Styles.MAINBOX}>
@@ -86,6 +87,7 @@ export default function OrderHistoryLive() {
               </View>
             </View>
           ))}
+
           <View style={Styles.TOTALBOXSTY}>
             <View style={Styles.SUBBOX}>
               <Text style={Styles.TOTALTITLES}>Item Total</Text>

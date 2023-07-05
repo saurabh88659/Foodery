@@ -150,7 +150,7 @@ export default function SearchBar({navigation}) {
         </Pressable>
         <TextInput
           placeholderTextColor={COLORS.GRAY}
-          placeholder="Serch for you fovourites"
+          placeholder="Search for you fovourites"
           style={Styles.inputStyles}
           value={searchText}
           onChangeText={handleSearch}

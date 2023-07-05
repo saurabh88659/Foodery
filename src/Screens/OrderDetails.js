@@ -1,147 +1,68 @@
-// import {
-//   View,
-//   Text,
-//   SafeAreaView,
-//   StatusBar,
-//   StyleSheet,
-//   TouchableOpacity,
-//   Image,
-//   FlatList,
-// } from 'react-native';
-// import React, {useEffect, useState} from 'react';
-// import MyHeader from '../Components/MyHeader';
-// import Routes from '../Navigation/Routes';
-// import {COLORS} from '../utils/Colors';
-// import {_getStorage} from '../utils/Storage';
-// import {IonIcon} from '../utils/Const';
-
-// export default function OrderDetails({navigation}) {
-//   return (
-//     <SafeAreaView style={Styles.CONTAINERMAIN}>
-//       <StatusBar
-//         hidden={false}
-//         backgroundColor={COLORS.GREEN}
-//         translucent={true}
-//       />
-//       <MyHeader
-//         title={'Order Details'}
-//         onPress={() => navigation.goBack()}
-//         onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
-//         UIBACK={
-//           <IonIcon
-//             title="arrow-back-outline"
-//             size={30}
-//             IconColor={COLORS.WHITE}
-//           />
-//         }
-//       />
-
-//       <View>
-
-//       </View>
-//     </SafeAreaView>
-//   );
-// }
-
-// const Styles = StyleSheet.create({
-//   CONTAINERMAIN: {
-//     flex: 1,
-//     backgroundColor: COLORS.WHITE,
-//   },
-// });
-
-// import {View, Text, Button} from 'react-native';
-// import React, {useRef, useState} from 'react';
-// import {WebView} from 'react-native-webview';
-// import WebViewHeader from '../Components/WebViewHeader';
-
-// export default function OrderDetails({navigation}) {
-//   const webviewRef = useRef(null);
-//   const [currentUrl, setCurrentUrl] = useState('');
-//   const [showWebView, setShowWebView] = useState(false);
-
-//   const openWebView = () => {
-//     setShowWebView(true);
-//   };
-
-//   const handleWebViewNavigationStateChange = newNavState => {
-//     setCurrentUrl(newNavState.url);
-//   };
-
-//   const handleGoBack = () => {
-//     navigation.goBack();
-//   };
-
-//   return (
-//     <View style={{flex: 1, marginVertical: 100}}>
-//       {showWebView && (
-//         <View style={{flex: 1}}>
-//           <WebViewHeader title={currentUrl} goBack={handleGoBack} />
-//           <WebView
-//             ref={webviewRef}
-//             source={{
-//               uri: 'https://www.npmjs.com/package/@react-native-community/cli-platform-android',
-//             }}
-//             // onNavigationStateChange={handleWebViewNavigationStateChange}
-//             style={{flex: 1}}
-//           />
-//         </View>
-//       )}
-//       {!showWebView && <Button title="Open WebView" onPress={openWebView} />}
-//     </View>
-//   );
-// }
-
 import {
   View,
   Text,
-  StyleSheet,
   SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
   Image,
   ScrollView,
-  TouchableOpacity,
-  StatusBar,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
+import MyHeader from '../Components/MyHeader';
+import Routes from '../Navigation/Routes';
+import {COLORS} from '../utils/Colors';
+import {_getStorage} from '../utils/Storage';
 import Lottie from 'lottie-react-native';
+import {
+  BASE_URL,
+  EntypoIcon,
+  IonIcon,
+  LATITUDE_DELTA,
+  LONGITUDE_DELTA,
+} from '../utils/Const';
+import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
+import axios from 'axios';
 import {BottomSheet} from 'react-native-btr';
 import {useSelector} from 'react-redux';
 import MapView, {Marker} from 'react-native-maps';
-import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
-import {
-  COLORS,
-  LATITUDE_DELTA,
-  LONGITUDE_DELTA,
-  EntypoIcon,
-} from '../utils/Colors';
-import MyHeader from '../Components/MyHeader';
-import {IonIcon} from '../utils/Const';
-import Routes from '../Navigation/Routes';
+import moment from 'moment';
+import OrderDetailsShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/OrderDetailsShimmerPlaceHolder';
 
-export default function OrderDetails({navigation}) {
+export default function OrderDetails({navigation, route}) {
+  const OrderHistoryData = route.params;
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [isorderdetails, setIsOrderDetails] = useState('');
+  const [isloading, setIsloading] = useState(false);
+
   const [visible, setVisible] = useState(false);
   const toggleBottomNavigationView = () => {
     setVisible(!visible);
   };
   const Locations = useSelector(state => state.locationReducer);
+  useEffect(() => {
+    _Order_Details();
+  }, []);
 
-  const SRTDATA = [
-    {
-      name: 'ravi rai',
-    },
-    {
-      name: 'ravi rai',
-    },
-    {
-      name: 'ravi rai',
-    },
-    {
-      name: 'ravi rai',
-    },
-    {
-      name: 'ravi rai',
-    },
-  ];
+  const _Order_Details = async () => {
+    const token = await _getStorage('token');
+    console.log(token);
+    setIsloading(true);
+    axios
+      .get(BASE_URL + `/User/getOneOrderData/${OrderHistoryData?._id}`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(response => {
+        console.log('order data- Details---------->>', response?.data.result);
+        setOrderDetails(response?.data?.result?.orderedProducts);
+        setIsOrderDetails(response?.data?.result);
+        setIsloading(false);
+      })
+      .catch(error => {
+        console.log('catch error order data Details ------>>>', error);
+        setIsloading(false);
+      });
+  };
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -162,107 +83,159 @@ export default function OrderDetails({navigation}) {
           />
         }
       />
-      <ScrollView contentContainerStyle={{paddingBottom: 25}}>
-        <Text style={Styles.QTEXT}>Order Summary</Text>
-        <View style={Styles.MAINCONTAINERMAIN}>
-          {SRTDATA.map((value, index) => (
-            <View key={index} style={Styles.MAINBOX}>
-              <View style={{flexDirection: 'row'}}>
-                <Image
-                  source={require('../Assets/Logo/Laysicone.jpg')}
-                  style={Styles.IMAGESTYLES}
-                />
-                <View style={Styles.QTEXTBOX}>
-                  <View>
-                    <Text numberOfLines={1} style={Styles.QTEXTNAME}>
-                      Mango Alphonso
+      {isloading ? (
+        <OrderDetailsShimmerPlaceHolder />
+      ) : (
+        <ScrollView contentContainerStyle={{paddingBottom: 25}}>
+          {OrderHistoryData?.orderStatus === 'Processing' ? (
+            <TouchableOpacity
+              onPress={toggleBottomNavigationView}
+              activeOpacity={0.4}
+              style={Styles.QBOXBOT}>
+              <Lottie
+                source={require('../Assets/Lottiejson/58352-delivery-boy.json')}
+                autoPlay
+                loop={true}
+                style={{height: heightPixel(90)}}
+              />
+              <View style={{width: widthPixel(200)}}>
+                <Text style={{fontSize: fontPixel(15), color: COLORS.BLACK}}>
+                  Your Delivery Partner will be assigned soon
+                </Text>
+                <Text
+                  style={{
+                    fontSize: fontPixel(15),
+                    color: COLORS.BLACK,
+                    paddingTop: 5,
+                  }}>
+                  +91 7739*******980
+                </Text>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View style={Styles.addressBox}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                  }}>
+                  <Image
+                    source={require('../Assets/Logo/delivery-man.png')}
+                    style={Styles.imageicon}
+                  />
+                  <View style={{paddingLeft: widthPixel(10)}}>
+                    <Text
+                      style={
+                        Styles.textorderid
+                      }>{`Order Id: ${isorderdetails?.orderId}`}</Text>
+                    <Text style={[Styles.textorderid]}>
+                      {moment(isorderdetails?.delieveredAt).format(
+                        'MMMM Do YYYY',
+                      )}
                     </Text>
-                    <Text style={Styles.QSUBTITEL}>Mango Alphonso</Text>
                   </View>
-                  <Text style={Styles.QPRICES}>Rs. 567</Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: COLORS.WHITE,
+                    paddingHorizontal: 10,
+                    borderRadius: 15,
+                  }}>
+                  <Text
+                    style={[
+                      Styles.textorderid,
+                      {
+                        color:
+                          OrderHistoryData?.orderStatus === 'Order Placed'
+                            ? 'red'
+                            : OrderHistoryData?.orderStatus === 'Delivered'
+                            ? '#0EC01d'
+                            : OrderHistoryData?.orderStatus === 'Order Packed'
+                            ? '#938'
+                            : '#F1C114',
+                      },
+                    ]}>
+                    {OrderHistoryData?.orderStatus}
+                  </Text>
                 </View>
               </View>
-            </View>
-          ))}
-          <View style={Styles.TOTALBOXSTY}>
-            <View style={Styles.SUBBOX}>
-              <Text style={Styles.TOTALTITLES}>Item Total</Text>
-              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
-                {`Rs.${'100'}`}
-              </Text>
-            </View>
-
-            <View style={[Styles.SUBBOX]}>
-              <Text style={Styles.HANDLINGTITLE}>
-                Handling Charges
-                <Text style={{color: COLORS.GREEN}}> (Rs.10 Saved)</Text>
-              </Text>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={Styles.DELIVERYTITLE}>Rs.15</Text>
-                <Text style={Styles.FREEPRICES}>Rs.5</Text>
+              <View style={{}}>
+                <Text style={[Styles.textorderid, {fontWeight: '900'}]}>
+                  {isorderdetails?.user?.name}
+                </Text>
+                <Text style={[Styles.textorderid]}>
+                  B-728 iTHUM TOWER, Block A, Industrial Area, Sector 62, Noida,
+                  Uttar Pradesh 201309, India B-728 iTHUM TOWER, Block A,
+                  Industrial Area, Sector 62, Noida, Uttar Pradesh 201309, India
+                </Text>
               </View>
             </View>
+          )}
 
+          <View style={{marginHorizontal: 15}}>
             <View
-              style={[
-                Styles.SUBBOX,
-                {
-                  borderBottomWidth: 0.2,
-                  color: COLORS.LIGHTGREEN,
-                  paddingVertical: 5,
-                },
-              ]}>
-              <Text style={Styles.HANDLINGTITLE}>
-                Delivery Free{' '}
-                <Text style={{color: COLORS.GREEN}}>(Rs.36 Saved)</Text>
-              </Text>
-              <View style={{flexDirection: 'row'}}>
-                <Text style={Styles.DELIVERYTITLE}>Rs.18</Text>
-                <Text style={Styles.FREEPRICES}>Rs.8</Text>
-              </View>
-            </View>
-
-            <View
-              style={[
-                Styles.SUBBOX,
-                {
-                  alignItems: 'center',
-                  paddingVertical: 15,
-                  top: heightPixel(2),
-                },
-              ]}>
-              <Text style={Styles.TOTALTITLES}>To pay</Text>
-              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
-                {`Rs.${'100'}`}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <TouchableOpacity
-          onPress={toggleBottomNavigationView}
-          activeOpacity={0.5}
-          style={Styles.QBOXBOT}>
-          <Lottie
-            source={require('../Assets/Lottiejson/58352-delivery-boy.json')}
-            autoPlay
-            loop={true}
-            style={{height: heightPixel(90)}}
-          />
-          <View style={{width: widthPixel(200)}}>
-            <Text style={{fontSize: fontPixel(15), color: COLORS.BLACK}}>
-              Your Delivery Partner will be assigned soon
-            </Text>
-            <Text
               style={{
-                fontSize: fontPixel(15),
-                color: COLORS.BLACK,
-                paddingTop: 5,
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
               }}>
-              +91 7739*******980
-            </Text>
+              <Image
+                source={require('../Assets/Logo/food-donation.png')}
+                style={{height: 20, width: 20}}
+              />
+              <Text
+                style={[
+                  Styles.textorderid,
+                  {fontWeight: '900', paddingLeft: 5},
+                ]}>
+                Item Details
+              </Text>
+            </View>
+            <View style={Styles.MAINCONTAINERMAIN}>
+              {orderDetails.map((item, index) => (
+                <View key={index} style={Styles.MAINBOX}>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Image
+                      source={{uri: item?.productId?.productImage}}
+                      style={Styles.IMAGESTYLES}
+                    />
+                    <View style={Styles.QTEXTBOX}>
+                      <View>
+                        <Text numberOfLines={1} style={Styles.QTEXTNAME}>
+                          {item?.productId?.productName}
+                        </Text>
+                        <Text
+                          style={
+                            Styles.QSUBTITEL
+                          }>{`Pack:${item?.productId?.productUnit}`}</Text>
+                        <Text
+                          style={
+                            Styles.QSUBTITEL
+                          }>{`Pack:${item?.productId?.productUnit}`}</Text>
+                        <Text
+                          style={
+                            Styles.QSUBTITEL
+                          }>{`Qty: ${item?.quantity} Pack`}</Text>
+                      </View>
+                      <Text
+                        style={
+                          Styles.QPRICES
+                        }>{`Total: ₹${item?.productId?.productPrice}`}</Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
           </View>
-        </TouchableOpacity>
-      </ScrollView>
+        </ScrollView>
+      )}
 
       <BottomSheet
         visible={visible}
@@ -308,29 +281,41 @@ export default function OrderDetails({navigation}) {
 const Styles = StyleSheet.create({
   CONTAINERMAIN: {
     flex: 1,
+    backgroundColor: COLORS.WHITE,
   },
-  QTEXT: {
+  addressBox: {
+    backgroundColor: COLORS.LIGHTGREEN,
+    // height: heightPixel(100),
+    marginHorizontal: 10,
+    marginVertical: 10,
+    elevation: 10,
+    borderRadius: 4,
+    paddingHorizontal: 15,
+  },
+  imageicon: {
+    height: heightPixel(50),
+    width: widthPixel(50),
+  },
+  textorderid: {
     color: COLORS.BLACK,
-    fontSize: fontPixel(20),
-    paddingHorizontal: 10,
-    paddingVertical: 10,
+    fontSize: 13,
     fontWeight: '500',
-    letterSpacing: 0.4,
+    paddingVertical: 5,
   },
-
   MAINCONTAINERMAIN: {
     backgroundColor: COLORS.WHITE,
-    marginHorizontal: 10,
+    // marginHorizontal: 10,
     borderRadius: 15,
   },
   MAINBOX: {
     marginVertical: 3,
-    marginHorizontal: 15,
+    // marginHorizontal: 15,
     paddingVertical: heightPixel(10),
   },
   IMAGESTYLES: {
     height: heightPixel(60),
     width: widthPixel(60),
+    resizeMode: 'contain',
   },
   PRODUCTTEXT: {
     color: COLORS.BLACK,
@@ -361,44 +346,6 @@ const Styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.3,
   },
-  QBOXBOT: {
-    height: heightPixel(100),
-    marginTop: 5,
-    marginHorizontal: 10,
-    borderRadius: 15,
-    backgroundColor: COLORS.WHITE,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  TOTALBOXSTY: {
-    backgroundColor: COLORS.WHITE,
-    borderTopWidth: 0.5,
-    borderColor: COLORS.GRAYDARK,
-    marginHorizontal: 15,
-  },
-  SUBBOX: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    // paddingHorizontal: 15,
-    top: heightPixel(10),
-    paddingVertical: 3,
-  },
-  TOTALTITLES: {
-    color: COLORS.BLACK,
-    fontWeight: '500',
-    fontSize: fontPixel(18),
-  },
-  HANDLINGTITLE: {color: COLORS.GRAYDARK, fontSize: fontPixel(17)},
-  DELIVERYTITLE: {
-    color: COLORS.GRAYDARK,
-    fontSize: fontPixel(17),
-    paddingRight: 10,
-    textDecorationLine: 'line-through',
-  },
-  FREEPRICES: {
-    color: COLORS.GREEN,
-    fontSize: fontPixel(17),
-  },
   bottomNavigationView: {
     backgroundColor: COLORS.WHITE,
     height: heightPixel(700),
@@ -423,5 +370,16 @@ const Styles = StyleSheet.create({
     borderRadius: 4,
     overflow: 'hidden',
     marginHorizontal: 10,
+  },
+  QBOXBOT: {
+    height: heightPixel(100),
+    marginTop: 5,
+    marginHorizontal: 10,
+    borderRadius: 15,
+    backgroundColor: COLORS.WHITE,
+    flexDirection: 'row',
+    alignItems: 'center',
+    elevation: 10,
+    marginVertical: 10,
   },
 });

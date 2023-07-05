@@ -65,6 +65,7 @@ export default function CartScreen({navigation}) {
   });
   const [paidmess, setPaidmess] = useState('');
   const [statusId, setStatusId] = useState('');
+  const [isProfile, setIsProfile] = useState('');
 
   const webviewRef = useRef(null);
   const [currentUrl, setCurrentUrl] = useState('');
@@ -104,6 +105,7 @@ export default function CartScreen({navigation}) {
   useEffect(() => {
     if (IsFocused) {
       _Order_Might_Missed();
+      _Handle_Profile();
     }
   }, [IsFocused]);
 
@@ -148,6 +150,21 @@ export default function CartScreen({navigation}) {
   const removeItemFromWishlist = value => {
     dispatch(removeFromWishlist(value));
     SimpleToast({title: 'removed from the wishlist.', isLong: true});
+  };
+
+  const _Handle_Profile = async () => {
+    const token = await _getStorage('token');
+    axios
+      .get(BASE_URL + `/User/getProfile`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(response => {
+        setIsProfile(response?.data?.result);
+        // console.log('------------------', response?.data?.result);
+      })
+      .catch(error => {
+        console.log('Profile Catch Error', error);
+      });
   };
 
   const _Handle_Cart_Data = async () => {
@@ -217,9 +234,9 @@ export default function CartScreen({navigation}) {
       OrderAmount: totalprice,
       ProductData: {PaymentReason: "''", ItemId: "''", AppName: 'fooderyApp'},
       CustomerData: {
-        MobileNo: '7739688360',
-        Email: 'dablugupta7739@gmail.com',
-        CustomerId: '648beac299f3ad5d8b4059b5',
+        MobileNo: isProfile?.phone,
+        Email: isProfile?.email,
+        CustomerId: isProfile?._id,
       },
     };
 

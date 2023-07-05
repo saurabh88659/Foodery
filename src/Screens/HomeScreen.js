@@ -1044,17 +1044,19 @@ const Styles = StyleSheet.create({
   INCREAMENTBOTTONMAIN: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: widthPixel(60),
+    width: widthPixel(70),
     backgroundColor: COLORS.PURPLE,
     alignItems: 'center',
     paddingHorizontal: 7,
     borderRadius: 4,
     top: -5,
+    paddingVertical: 2,
   },
   DCREAMENTTITLE: {
     color: COLORS.WHITE,
-    fontSize: 14,
-    paddingVertical: 4,
+    fontSize: 15,
+    // paddingVertical: 4,
+    paddingHorizontal: 5,
   },
   ITEMTITEL: {
     color: COLORS.WHITE,
@@ -1064,14 +1066,14 @@ const Styles = StyleSheet.create({
   },
   INCREAMENTTITLE: {
     color: COLORS.WHITE,
-    fontSize: 14,
-    paddingVertical: 4,
+    fontSize: 15,
+    paddingHorizontal: 5,
   },
   ADDBOTTONSTYL: {
     borderWidth: 1,
     borderColor: COLORS.PURPLE,
     paddingVertical: 4,
-    width: widthPixel(60),
+    width: widthPixel(70),
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 4,
@@ -1080,7 +1082,9 @@ const Styles = StyleSheet.create({
   BOTTONTEXTSTYL: {
     color: COLORS.PURPLE,
     fontWeight: '500',
-    fontSize: fontPixel(13),
+    fontSize: fontPixel(15),
+    paddingVertical: 1,
+    paddingHorizontal: 4,
   },
   SWIPERCONTANINER: {
     alignItems: 'center',

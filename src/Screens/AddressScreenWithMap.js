@@ -31,27 +31,39 @@ export default function AddressScreenWithMap({navigation}) {
 
   const Locations = useSelector(state => state.locationReducer);
   const [text, setText] = React.useState('');
-  const [adrtext, setAdrtext] = React.useState('');
-  console.log(Locations, 'Locations');
-
+  const [adrtext, setAdrtext] = React.useState(1);
   const addressCurrent = useSelector(
     state => state.AddressLSlice.currentAddress,
   );
+  const [placeholderText, setPlaceholderText] =
+    React.useState('Complete address');
 
   const adrSRT = [
     {
-      Name: 'HOME',
+      Name: 'Home',
       _id: 1,
+      lablename: 'Complete address',
     },
     {
-      Name: 'OFFICE',
+      Name: 'Office',
       _id: 2,
+      lablename: 'Office/Building Name',
     },
     {
-      Name: 'OTHER',
-      _id: 2,
+      Name: 'Other',
+      _id: 3,
+      lablename: 'Complete address',
+    },
+    {
+      Name: 'Hotel',
+      _id: 4,
+      lablename: 'Complete address',
     },
   ];
+
+  const handleTextChange = text => {
+    setPlaceholderText(text);
+  };
 
   return (
     <KeyboardAvoidingView style={{flex: 1}} behavior="padding">
@@ -63,7 +75,7 @@ export default function AddressScreenWithMap({navigation}) {
         <View style={Styles.MAPBOX}>
           {Locations && (
             <MapView
-              style={StyleSheet.absoluteFill}
+              style={StyleSheet?.absoluteFill}
               initialRegion={{
                 latitude: Locations.latitude,
                 longitude: Locations.longitude,
@@ -92,11 +104,17 @@ export default function AddressScreenWithMap({navigation}) {
                 IconColor={COLORS.GREEN}
               />
             </View>
-            <Text style={Styles.SUBTITLELOCATIONS}>
-              {/* Ravi rai noida kickr tech Ravi rai noida kickr tech Ravi rai noida
-               */}
-              {addressCurrent}
-            </Text>
+            <View>
+              {/* <Text
+                style={[
+                  Styles.SUBTITLELOCATIONS,
+                  {fontSize: fontPixel(19), fontWeight: '500'},
+                ]}>
+                {block}
+              </Text> */}
+
+              <Text style={Styles.SUBTITLELOCATIONS}>{addressCurrent}</Text>
+            </View>
           </View>
           <View style={{marginVertical: '2%'}}>
             <Button
@@ -134,14 +152,66 @@ export default function AddressScreenWithMap({navigation}) {
                 <Text style={Styles.SUBTITLELOCATIONS}>{addressCurrent}</Text>
               </View>
               <View style={{marginTop: 20}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                    marginHorizontal: 10,
+                    marginVertical: 10,
+                  }}>
+                  {adrSRT.map((value, index) => (
+                    <TouchableOpacity
+                      onPress={() => {
+                        setAdrtext(value?._id),
+                          handleTextChange(value?.lablename);
+                      }}
+                      key={index}
+                      style={[
+                        Styles.addressbox,
+                        {
+                          backgroundColor:
+                            adrtext === value?._id
+                              ? COLORS.GREEN
+                              : COLORS.WHITE,
+                        },
+                      ]}>
+                      <Text
+                        style={{
+                          color:
+                            adrtext === value?._id
+                              ? COLORS.WHITE
+                              : COLORS.GREEN,
+                          letterSpacing: 0.6,
+                          fontSize: 13,
+                        }}>
+                        {value?.Name}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+                <Text
+                  style={{
+                    color: COLORS.GRAYDARK,
+                    paddingHorizontal: 15,
+                    fontSize: 13,
+                    paddingVertical: 10,
+                  }}>
+                  Enter complete address
+                </Text>
                 <TextInput
-                  label="Flat /Building /Street"
+                  // label="Flat /Building /Street"
+                  label={placeholderText}
                   value={text}
                   textColor={COLORS.BLACK}
                   activeOutlineColor={COLORS.BLACK}
                   mode="outlined"
                   onChangeText={text => setText(text)}
-                  style={{marginHorizontal: 10}}
+                  style={{
+                    marginHorizontal: 10,
+                    fontSize: 14,
+                    color: COLORS.GRAYDARK,
+                    height: heightPixel(50),
+                  }}
                   outlineStyle={{
                     borderWidth: 1,
                     borderColor: COLORS.GREEN,
@@ -149,13 +219,56 @@ export default function AddressScreenWithMap({navigation}) {
                   }}
                 />
                 <TextInput
-                  label="Your Name"
+                  label="Floor (optional)"
                   value={text}
                   textColor={COLORS.BLACK}
                   activeOutlineColor={COLORS.BLACK}
                   mode="outlined"
                   onChangeText={text => setText(text)}
-                  style={{marginHorizontal: 10, marginVertical: '5%'}}
+                  style={{
+                    marginHorizontal: 10,
+                    marginVertical: '2%',
+                    fontSize: 14,
+                    height: heightPixel(50),
+                  }}
+                  outlineStyle={{
+                    borderWidth: 1,
+                    borderColor: COLORS.GREEN,
+                    borderRadius: 10,
+                  }}
+                />
+
+                <TextInput
+                  label="Nearby landmark (optional)"
+                  value={text}
+                  textColor={COLORS.BLACK}
+                  activeOutlineColor={COLORS.BLACK}
+                  mode="outlined"
+                  onChangeText={text => setText(text)}
+                  style={{
+                    marginHorizontal: 10,
+                    marginVertical: '2%',
+                    fontSize: 14,
+                    height: heightPixel(50),
+                  }}
+                  outlineStyle={{
+                    borderWidth: 1,
+                    borderColor: COLORS.GREEN,
+                    borderRadius: 10,
+                  }}
+                />
+                <TextInput
+                  label="Receiver's Name*"
+                  value={text}
+                  textColor={COLORS.BLACK}
+                  activeOutlineColor={COLORS.BLACK}
+                  mode="outlined"
+                  onChangeText={text => setText(text)}
+                  style={{
+                    marginHorizontal: 10,
+                    fontSize: 14,
+                    height: heightPixel(50),
+                  }}
                   outlineStyle={{
                     borderWidth: 1,
                     borderColor: COLORS.GREEN,
@@ -163,29 +276,7 @@ export default function AddressScreenWithMap({navigation}) {
                   }}
                 />
               </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'flex-start',
-                  marginHorizontal: 10,
-                }}>
-                {adrSRT.map((value, index) => (
-                  <TouchableOpacity
-                    onPress={() => setAdrtext(value._id)}
-                    key={index}
-                    style={[
-                      Styles.addressbox,
-                      {
-                        backgroundColor:
-                          value.id == adrtext ? COLORS.BLUE : COLORS.BLACK,
-                      },
-                    ]}>
-                    <Text style={{color: COLORS.WHITE, fontWeight: '500'}}>
-                      {value.Name}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+
               <View style={{marginTop: 20, top: -10}}>
                 <Button title={'Save address'} />
               </View>
@@ -231,8 +322,8 @@ const Styles = StyleSheet.create({
   BOXLOACTIONS: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: '5%',
-    marginHorizontal: 10,
+    marginTop: '3%',
+    marginHorizontal: widthPixel(10),
   },
   ICONEBOXLOACTIONS: {
     height: heightPixel(70),
@@ -263,7 +354,7 @@ const Styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 4,
     width: widthPixel(60),
-    backgroundColor: COLORS.GREEN,
+    // backgroundColor: COLORS.GREEN,
     alignItems: 'center',
     borderColor: COLORS.GREEN,
     borderRadius: 7,

@@ -57,13 +57,13 @@ export default function AddressScreen({navigation}) {
         onPress={() => navigation.goBack()}
       />
       <TouchableOpacity
-        // onPress={() => navigation.navigate('AddressScreenWithMap')}
-        onPress={handleSetCurrentAddress}
+        onPress={() => navigation.navigate('AddressScreenWithMap')}
+        // onPress={handleSetCurrentAddress}
         activeOpacity={0.6}
         style={Styles.BOX}>
         <OcticonsIcon title={'plus'} size={22} IconColor={COLORS.BLUE} />
         <Text style={{color: COLORS.BLUE, paddingLeft: 10, fontWeight: '800'}}>
-          Address
+          Add new address
         </Text>
       </TouchableOpacity>
       <View style={{}}>
