@@ -29,16 +29,20 @@ import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
-// import {useDispatch, useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 // import actionProfile from '../Redux/Action/actionProfile';
 import ImagePicker from 'react-native-image-crop-picker';
 import ProfileshimmerPlaceHolder from '../Components/ShimmerPlaceHolder/ProfileshimmerPlaceHolder';
+import {setProfileData} from '../Redux/ReducerSlice/ProfileSlice';
 
 export default function ProfileScreen({navigation}) {
   const IsFocused = useIsFocused();
   const [isProfile, setIsProfile] = useState('');
-  // const dispatch = useDispatch();
-  // const profiledata = useSelector(state => state.Profilereducer);
+  const dispatch = useDispatch();
+
+  const profiledata = useSelector(state => state);
+
+  console.log('profiledata---------', profiledata);
   // const [selectedImage, setSelectedImage] = useState(null);
 
   const [state, setState] = useState({
@@ -63,7 +67,8 @@ export default function ProfileScreen({navigation}) {
       .then(response => {
         // console.log('Profile Response', response.data.result);
         setIsProfile(response?.data?.result);
-        // dispatch(actionProfile(response.data));
+        dispatch(setProfileData(response?.data));
+
         setIsLoading(false);
       })
       .catch(error => {

@@ -7,8 +7,10 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
+  Linking,
+  ActivityIndicator,
 } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {
   BASE_URL,
@@ -20,13 +22,13 @@ import {
   bannerIcon,
   cartemptyIcon,
 } from '../utils/Const';
-import { COLORS } from '../utils/Colors';
-import { fontPixel, heightPixel, widthPixel } from '../Components/Dimensions';
+import {COLORS} from '../utils/Colors';
+import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
 // import GlobelStyles from '../utils/GlobelStyles';a
 import Button from '../Components/Button';
 import Routes from '../Navigation/Routes';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 import {
   addToCart,
   decrementQuantity,
@@ -34,27 +36,47 @@ import {
   incrementQuantity,
   removeFromCart,
 } from '../Redux/ReducerSlice/CartReducerSlice';
-import { useDispatch } from 'react-redux';
+import {useDispatch} from 'react-redux';
 import {
   addToWishlist,
   removeFromWishlist,
 } from '../Redux/ReducerSlice/WishlistReducerSlice';
-import { _getStorage } from '../utils/Storage';
+import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
-import { useIsFocused } from '@react-navigation/native';
-import { fetchApiData } from '../Redux/ReducerSlice/cartapiSlice';
+import {useIsFocused} from '@react-navigation/native';
+import {fetchApiData} from '../Redux/ReducerSlice/cartapiSlice';
 import Lottie from 'lottie-react-native';
+import MyModalinfo from '../Components/MyModalinfo';
+import {WebView} from 'react-native-webview';
+import WebViewHeader from '../Components/WebViewHeader';
+import MyHeaderNo2 from '../Components/MyHeaderNo2';
 
-export default function CartScreen({ navigation }) {
+export default function CartScreen({navigation}) {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
   const IsFocused = useIsFocused();
   const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const dispatch = useDispatch();
+  const [orderKey, setOrderKey] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  // const [payLoading, setPayLoading] = useState(true);
+  const [state, setState] = useState({
+    isLoading: false,
+  });
+  const [paidmess, setPaidmess] = useState('');
+  const [statusId, setStatusId] = useState('');
+
+  const webviewRef = useRef(null);
+  const [currentUrl, setCurrentUrl] = useState('');
+  const [showWebView, setShowWebView] = useState(false);
+
+  // console.log('orderKey------>>', orderKey);
 
   const addressCurrent = useSelector(
     state => state.AddressLSlice.currentAddress,
   );
+
+  console.log('addressCurrent--------DG-', addressCurrent);
 
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
   const totalQuantity = useSelector(
@@ -90,7 +112,7 @@ export default function CartScreen({ navigation }) {
 
     axios
       .get(BASE_URL + `/getAllshowCarts`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
         // console.log('_Order_Might_Missed=========', response.data.categoryData);
@@ -100,6 +122,7 @@ export default function CartScreen({ navigation }) {
         console.log('_Order_Might_Missed catch Error', error);
       });
   };
+
   const increaseQuantity = item => {
     dispatch(incrementQuantity(item));
   };
@@ -119,37 +142,167 @@ export default function CartScreen({ navigation }) {
   const addtoWishlist = value => {
     if (value) {
       dispatch(addToWishlist(value));
-      SimpleToast({ title: 'added to the wishlist.', isLong: true });
+      SimpleToast({title: 'added to the wishlist.', isLong: true});
     }
   };
   const removeItemFromWishlist = value => {
     dispatch(removeFromWishlist(value));
-    SimpleToast({ title: 'removed from the wishlist.', isLong: true });
+    SimpleToast({title: 'removed from the wishlist.', isLong: true});
   };
 
-
-  const _Cart_Data_Post = async () => {
-    const token = await _getStorage('token')
-    console.log('response cart data post--------------------->>>>>')
-
-    const objData = {
-      orderedProducts: productDataByRe,
-      totalAmount: totalprice,
-      delieveryAddress: addressCurrent,
+  const _Handle_Cart_Data = async () => {
+    const token = await _getStorage('token');
+    console.log(token);
+    let arr = [];
+    {
+      productDataByRe.map((item, index) => {
+        arr.push({productId: item._id, quantity: item.quantity});
+      });
     }
 
-      .post(BASE_URL + `/addOrder`, objData, {
-        headers: { Authorization: `Bearer ${token}` },
+    const objcartdata = {
+      orderedProducts: arr,
+      totalAmount: totalprice,
+      delieveryAddress: {
+        address: 'abc',
+        city: 'abc',
+        state: 'abc',
+        pin: '201310',
+      },
+    };
+
+    const statusobj = {
+      paymentId: orderKey,
+      _id: statusId,
+      paid: true,
+      status: 'Successful',
+    };
+
+    axios
+      .post(BASE_URL + `/addOrder`, objcartdata, {
+        headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('response cart data post--------------------->>>>>', response.data)
+        console.log('Response api ------------->>>>', response?.data);
+        setStatusId(response?.data?.result?._id);
+
+        axios
+          .put(BASE_URL + `/updatePaymentStatus`, statusobj, {
+            headers: {Authorization: `Bearer ${token}`},
+          })
+          .then(res => {
+            console.log('status----------paid', res.data);
+          })
+          .catch(error => {
+            console.log('status catch error', error);
+          });
       })
       .catch(error => {
-        console.log('catch cart error', error)
+        console.log(
+          'add to cart data catch error',
+          error.response.data.message,
+        );
+      });
+  };
+
+  const _Payment_Handle = async () => {
+    const token = await _getStorage('token');
+    setState({
+      ...state,
+      isLoading: true,
+    });
+
+    const dataPayment = {
+      RedirectUrl: '',
+      OrderAmount: totalprice,
+      ProductData: {PaymentReason: "''", ItemId: "''", AppName: 'fooderyApp'},
+      CustomerData: {
+        MobileNo: '7739688360',
+        Email: 'dablugupta7739@gmail.com',
+        CustomerId: '648beac299f3ad5d8b4059b5',
+      },
+    };
+
+    axios
+      .post(BASE_URL + `/payG/createOrder`, dataPayment, {
+        headers: {Authorization: `Bearer ${token}`},
       })
-  }
+      .then(response => {
+        console.log(
+          'Response api payment API ------------->>>>',
+          response.data,
+        );
 
+        if (response?.data?.message === 'Payment Url Generated') {
+          const paymentLink = response?.data?.paymnetProcessUrl;
 
+          setOrderKey(response?.data?.orderKeyId);
+          Linking?.openURL(paymentLink);
+          setModalVisible(true);
+          setState({
+            ...state,
+            isLoading: false,
+          });
+        }
+      })
+      .catch(error => {
+        console.log(
+          'Payment  API catch error ',
+          error?.response?.data?.message,
+        );
+        setState({
+          ...state,
+          isLoading: false,
+        });
+      });
+  };
+
+  const _Payment_Check_Handle = async () => {
+    const token = await _getStorage('token');
+    setState({
+      ...state,
+      isLoading: true,
+    });
+    axios
+      .get(BASE_URL + `/payG/orderDetail/${orderKey}`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(res => {
+        console.log(
+          'Response api _Payment_Check_Handle ------------->>>>',
+          res?.data,
+        );
+        setPaidmess(res?.data?.OrderPaymentStatusText);
+        if (res?.data?.OrderPaymentStatusText == 'Pending') {
+          setModalVisible(true);
+        } else if (res?.data?.OrderPaymentStatusText == 'Paid') {
+          setModalVisible(false);
+          _Handle_Cart_Data();
+        }
+      })
+      .catch(error => {
+        setState({
+          ...state,
+          isLoading: false,
+        });
+        console.log(
+          'Payment  API _Payment_Check_Handle catch error ',
+          error?.response?.data?.message,
+        );
+      });
+  };
+
+  const openWebView = () => {
+    setShowWebView(true);
+  };
+
+  const handleWebViewNavigationStateChange = newNavState => {
+    setCurrentUrl(newNavState.url);
+  };
+
+  const handleGoBack = () => {
+    navigation.goBack();
+  };
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -162,7 +315,7 @@ export default function CartScreen({ navigation }) {
         <ScrollView
           showsVerticalScrollIndicator={false}
           scrollEventThrottle={16}
-          contentContainerStyle={{ paddingBottom: 15 }}>
+          contentContainerStyle={{paddingBottom: 15}}>
           <View style={Styles.LOCATIONMAINBOX}>
             <View style={Styles.SUBTITLELOCATIONS}>
               <IonIcon
@@ -179,12 +332,12 @@ export default function CartScreen({ navigation }) {
             <TouchableOpacity
               onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
               activeOpacity={0.6}
-              style={{ flexDirection: 'row', alignItems: 'center' }}>
+              style={{flexDirection: 'row', alignItems: 'center'}}>
               <MaterialIconsIcon
                 title="keyboard-arrow-down"
                 size={25}
                 IconColor={COLORS.BLACK}
-                IconStyle={{ right: widthPixel(7) }}
+                IconStyle={{right: widthPixel(7)}}
               />
               <Text style={Styles.SUBTITLELOCATIONS3}>Change Address</Text>
             </TouchableOpacity>
@@ -193,9 +346,9 @@ export default function CartScreen({ navigation }) {
           <FlatList
             keyExtractor={(item, index) => index.toString()}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 5 }}
+            contentContainerStyle={{paddingBottom: 5}}
             data={productDataByRe}
-            renderItem={({ item, index }) => (
+            renderItem={({item, index}) => (
               <View style={Styles.MAINCARD}>
                 <View
                   style={{
@@ -203,10 +356,10 @@ export default function CartScreen({ navigation }) {
                     alignItems: 'center',
                   }}>
                   <Image
-                    source={{ uri: item?.productImage }}
+                    source={{uri: item?.productImage}}
                     style={Styles.IMAGESTYLES}
                   />
-                  <View style={{ paddingLeft: widthPixel(20) }}>
+                  <View style={{paddingLeft: widthPixel(20)}}>
                     <Text numberOfLines={1} style={Styles.MAINTITEL}>
                       {item?.productName}
                     </Text>
@@ -228,7 +381,7 @@ export default function CartScreen({ navigation }) {
                         title="delete"
                         size={25}
                         IconColor={COLORS.BLACK}
-                        IconStyle={{ right: widthPixel(7) }}
+                        IconStyle={{right: widthPixel(7)}}
                       />
                     </TouchableOpacity>
                   </View>
@@ -259,10 +412,10 @@ export default function CartScreen({ navigation }) {
             <FlatList
               keyExtractor={(item, index) => index.toString()}
               showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingBottom: 5 }}
+              contentContainerStyle={{paddingBottom: 5}}
               horizontal
               data={order_Might_Missed}
-              renderItem={({ item, index }) => (
+              renderItem={({item, index}) => (
                 <View key={index}>
                   <Productinfo
                     key={index}
@@ -291,7 +444,7 @@ export default function CartScreen({ navigation }) {
                         )}
                       </View>
                     }
-                    Productimage={{ uri: item?.productImage }}
+                    Productimage={{uri: item?.productImage}}
                     ProductName={item?.productName}
                     ProductSubName={item?.productUnit}
                     discountPrice={item?.discountPrice}
@@ -338,17 +491,17 @@ export default function CartScreen({ navigation }) {
           <View style={Styles.TOTALBOXSTY}>
             <View style={Styles.SUBBOX}>
               <Text style={Styles.TOTALTITLES}>Item Total</Text>
-              <Text style={[Styles.TOTALTITLES, { fontSize: fontPixel(20) }]}>
+              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
                 {`Rs.${totalprice}`}
               </Text>
             </View>
 
-            <View style={[Styles.SUBBOX, { marginTop: 5 }]}>
+            <View style={[Styles.SUBBOX, {marginTop: 5}]}>
               <Text style={Styles.HANDLINGTITLE}>
                 Handling Charges
-                <Text style={{ color: COLORS.GREEN }}> (Rs.10 Saved)</Text>
+                <Text style={{color: COLORS.GREEN}}> (Rs.10 Saved)</Text>
               </Text>
-              <View style={{ flexDirection: 'row' }}>
+              <View style={{flexDirection: 'row'}}>
                 <Text style={Styles.DELIVERYTITLE}>Rs.15</Text>
                 <Text style={Styles.FREEPRICES}>Rs.5</Text>
               </View>
@@ -365,9 +518,9 @@ export default function CartScreen({ navigation }) {
               ]}>
               <Text style={Styles.HANDLINGTITLE}>
                 Delivery Free{' '}
-                <Text style={{ color: COLORS.GREEN }}>(Rs.36 Saved)</Text>
+                <Text style={{color: COLORS.GREEN}}>(Rs.36 Saved)</Text>
               </Text>
-              <View style={{ flexDirection: 'row' }}>
+              <View style={{flexDirection: 'row'}}>
                 <Text style={Styles.DELIVERYTITLE}>Rs.18</Text>
                 <Text style={Styles.FREEPRICES}>Rs.8</Text>
               </View>
@@ -376,10 +529,10 @@ export default function CartScreen({ navigation }) {
             <View
               style={[
                 Styles.SUBBOX,
-                { alignItems: 'center', marginTop: 5, paddingVertical: 7 },
+                {alignItems: 'center', marginTop: 5, paddingVertical: 7},
               ]}>
               <Text style={Styles.TOTALTITLES}>To pay</Text>
-              <Text style={[Styles.TOTALTITLES, { fontSize: fontPixel(20) }]}>
+              <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
                 {`Rs.${totalprice}`}
               </Text>
             </View>
@@ -390,9 +543,9 @@ export default function CartScreen({ navigation }) {
                 IconColor={COLORS.GREEN}
                 IconStyle={{}}
               />
-              <Text style={{ color: COLORS.GREEN }}>
+              <Text style={{color: COLORS.GREEN}}>
                 {' '}
-                <Text style={{ fontSize: fontPixel(16), fontWeight: '500' }}>
+                <Text style={{fontSize: fontPixel(16), fontWeight: '500'}}>
                   Rs 91
                 </Text>{' '}
                 saved on this order
@@ -402,12 +555,12 @@ export default function CartScreen({ navigation }) {
           <FlatList
             keyExtractor={(item, index) => index.toString()}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 5, marginHorizontal: 10 }}
+            contentContainerStyle={{paddingBottom: 5, marginHorizontal: 10}}
             horizontal
             data={[1, 2, 3, 4]}
-            renderItem={({ item, index }) => (
+            renderItem={({item, index}) => (
               <View key={index} style={[Styles.DELIVERYBOX_FOOTER]}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <MaterialCommunityIconsTwo
                     title="bell-ring"
                     size={30}
@@ -438,9 +591,9 @@ export default function CartScreen({ navigation }) {
             ]}>
             <View>
               <View
-                style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <Text style={Styles.DELTITLE}>Order For Someone else</Text>
-                <Text style={[Styles.DELTITLE, { color: COLORS.GREEN }]}>
+                <Text style={[Styles.DELTITLE, {color: COLORS.GREEN}]}>
                   ADD
                 </Text>
               </View>
@@ -469,12 +622,69 @@ export default function CartScreen({ navigation }) {
               </Text>
             </View>
           </View>
-          <View style={{ marginVertical: 15 }}>
+          <View style={{marginVertical: 15}}>
             <Button
-              title={'Choose address at next step    ▶'}
-              // onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
-              onPress={_Cart_Data_Post}
+              title={'Choose address at next step   ▶'}
+              onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+              // onPress={_Handle_Cart_Data}
+              // onPress={_Payment_Handle}
             />
+
+            {/* <Button
+              title={
+                state.isLoading ? (
+                  <View style={Styles.activStylesIndicator}>
+                    <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                    <Text style={Styles.activeStylesTitleIndicator}>
+                      Payment Proceed
+                    </Text>
+                  </View>
+                ) : (
+                  'Payment Proceed'
+                )
+              }
+              // onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+              // onPress={_Handle_Cart_Data}
+              onPress={_Payment_Handle}
+            /> */}
+
+            {/* {!showWebView && ( */}
+            <Button
+              title={
+                state.isLoading ? (
+                  <View style={Styles.activStylesIndicator}>
+                    <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                    <Text style={Styles.activeStylesTitleIndicator}>
+                      Payment Proceed
+                    </Text>
+                  </View>
+                ) : (
+                  'Payment Proceed'
+                )
+              }
+              // onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+              // onPress={_Handle_Cart_Data}
+              onPress={_Payment_Handle}
+            />
+            {/* )} */}
+
+            {/* {showWebView && (  */}
+            {/* <View style={{flex: 1}}> */}
+            {/* <WebViewHeader title={currentUrl} goBack={handleGoBack} /> */}
+            {/* <MyHeaderNo2
+                  title={'Paymnet'}
+                  onPress={() => navigation.goBack()}
+                />
+                <WebView
+                  ref={webviewRef}
+                  source={{
+                    uri: 'https://www.npmjs.com/package/@react-native-community/cli-platform-android',
+                  }}
+                  onNavigationStateChange={handleWebViewNavigationStateChange}
+                  style={{flex: 1, backgroundColor: 'red'}}
+                /> */}
+            {/* </View> */}
+            {/* )} */}
           </View>
         </ScrollView>
       ) : (
@@ -483,7 +693,7 @@ export default function CartScreen({ navigation }) {
             source={cartemptyIcon}
             autoPlay
             loop={true}
-            style={{ height: heightPixel(300) }}
+            style={{height: heightPixel(300)}}
           />
           <Text style={Styles.EMPRTYTITLEONE}>Your cart is empty</Text>
           <Text style={Styles.EMPTYTITLETWO}>
@@ -496,6 +706,19 @@ export default function CartScreen({ navigation }) {
           </TouchableOpacity>
         </View>
       )}
+
+      <MyModalinfo
+        type={'payment_check'}
+        _YES={() => setModalVisible(!modalVisible)}
+        _PayUI={
+          <View>
+            <ActivityIndicator size="large" color={COLORS.LIGHTGREEN} />
+          </View>
+        }
+        _NO={_Payment_Check_Handle}
+        isModal={modalVisible}
+        _Visible={() => setModalVisible(!modalVisible)}
+      />
     </SafeAreaView>
   );
 }
@@ -562,7 +785,7 @@ const Styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.BLACK,
   },
-  TOTALITEMTITLE: { color: COLORS.BLACK, fontSize: fontPixel(18) },
+  TOTALITEMTITLE: {color: COLORS.BLACK, fontSize: fontPixel(18)},
   MAINTITEL: {
     fontSize: fontPixel(18),
     color: COLORS.BLACK,
@@ -599,7 +822,7 @@ const Styles = StyleSheet.create({
     //   paddingVertical: 7,
     letterSpacing: 0.5,
   },
-  TOTALBOXSTY: { height: heightPixel(200), backgroundColor: COLORS.LIGHT_WHITE },
+  TOTALBOXSTY: {height: heightPixel(200), backgroundColor: COLORS.LIGHT_WHITE},
   SUBBOX: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -611,7 +834,7 @@ const Styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: fontPixel(18),
   },
-  HANDLINGTITLE: { color: COLORS.GRAYDARK, fontSize: fontPixel(17) },
+  HANDLINGTITLE: {color: COLORS.GRAYDARK, fontSize: fontPixel(17)},
   DELIVERYTITLE: {
     color: COLORS.GRAYDARK,
     fontSize: fontPixel(17),
@@ -708,8 +931,8 @@ const Styles = StyleSheet.create({
     fontSize: 14,
     paddingVertical: 4,
   },
-  CONTAINERHEART: { alignItems: 'flex-end', margin: 5 },
-  EMPTYBOXMAIN: { alignItems: 'center', justifyContent: 'center', flex: 1 },
+  CONTAINERHEART: {alignItems: 'flex-end', margin: 5},
+  EMPTYBOXMAIN: {alignItems: 'center', justifyContent: 'center', flex: 1},
   EMPRTYTITLEONE: {
     color: COLORS.GRAYDARK,
     fontSize: fontPixel(23),
@@ -737,5 +960,15 @@ const Styles = StyleSheet.create({
     color: COLORS.WHITE,
     fontWeight: '500',
     fontSize: fontPixel(16),
+  },
+  activStylesIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeStylesTitleIndicator: {
+    color: COLORS.WHITE,
+    fontSize: fontPixel(15),
+    paddingLeft: 5,
   },
 });

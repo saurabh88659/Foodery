@@ -60,4 +60,6 @@ export default {
   ABOUT_US: 'AboutUs',
   TERMS_CONDITION: 'TermsCondition',
   PRIVACY_POLICY: 'PrivacyPolicy',
+  ORDER_HISTORY: 'OrderHistory',
+  ORDER_DETAILS: 'OrderDetails',
 };

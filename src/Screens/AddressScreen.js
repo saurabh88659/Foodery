@@ -23,11 +23,10 @@ export default function AddressScreen({navigation}) {
   const addressCurrent = useSelector(
     state => state.AddressLSlice.currentAddress,
   );
-
   console.log('addressCurrent==============>>>>>', addressCurrent);
 
   useEffect(() => {
-    // geoCoding();
+    geoCoding();
   }, []);
 
   const handleSetCurrentAddress = () => {
@@ -58,8 +57,8 @@ export default function AddressScreen({navigation}) {
         onPress={() => navigation.goBack()}
       />
       <TouchableOpacity
-        onPress={() => navigation.navigate('AddressScreenWithMap')}
-        // onPress={handleSetCurrentAddress}
+        // onPress={() => navigation.navigate('AddressScreenWithMap')}
+        onPress={handleSetCurrentAddress}
         activeOpacity={0.6}
         style={Styles.BOX}>
         <OcticonsIcon title={'plus'} size={22} IconColor={COLORS.BLUE} />

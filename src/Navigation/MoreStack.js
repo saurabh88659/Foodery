@@ -6,6 +6,9 @@ import AboutUs from '../Screens/AboutUs';
 import TermsCondition from '../Screens/TermsCondition';
 import PrivacyPolicy from '../Screens/PrivacyPolicy';
 import OrderHistoryMain from '../Screens/OrderHistory/OrderHistoryMain';
+import OrderHistory from '../Screens/OrderHistory';
+import OrderDetails from '../Screens/OrderDetails';
+import Routes from './Routes';
 
 const Stack = createNativeStackNavigator();
 function MoreStack() {
@@ -39,6 +42,16 @@ function MoreStack() {
       <Stack.Screen
         name="PrivacyPolicy"
         component={PrivacyPolicy}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name={Routes.ORDER_HISTORY}
+        component={OrderHistory}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name={Routes.ORDER_DETAILS}
+        component={OrderDetails}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

@@ -38,7 +38,9 @@ const getTabBarVisibility = route => {
     routeName === 'Notification' ||
     routeName === 'OrderHistory' ||
     routeName === 'NutsDryFruits' ||
-    routeName === 'OrderHistoryMain'
+    routeName === 'OrderHistoryMain' ||
+    routeName === 'OrderHistoryMain' ||
+    routeName === 'OrderDetails'
   ) {
     return 'none';
   }

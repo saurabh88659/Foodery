@@ -28,6 +28,7 @@ export default function MyModalinfo({
   _YES,
   _NO,
   _Ui,
+  _PayUI,
 }) {
   const UI = data => {
     switch (data) {
@@ -228,6 +229,76 @@ export default function MyModalinfo({
                     fontWeight: '500',
                   }}>
                   NO
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        );
+
+      case 'payment_check':
+        return (
+          <View
+            style={{
+              backgroundColor: COLORS.WHITE,
+              paddingVertical: 30,
+              borderRadius: 10,
+            }}>
+            <View>{_PayUI}</View>
+            <Text
+              style={{
+                color: COLORS.BLACK,
+                alignSelf: 'center',
+                fontSize: fontPixel(18),
+                fontWeight: '500',
+              }}>
+              payment_check
+            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-evenly',
+                paddingVertical: '5%',
+                top: '5%',
+              }}>
+              <TouchableOpacity
+                activeOpacity={0.6}
+                onPress={_YES}
+                style={{
+                  paddingVertical: 9,
+                  backgroundColor: COLORS.GREEN,
+                  width: widthPixel(100),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                }}>
+                <Text
+                  style={{
+                    color: COLORS.WHITE,
+                    fontSize: fontPixel(18),
+                    fontWeight: '500',
+                  }}>
+                  Cancel
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={_NO}
+                activeOpacity={0.6}
+                style={{
+                  paddingVertical: 9,
+                  borderWidth: 1,
+                  borderColor: COLORS.GREEN,
+                  width: widthPixel(100),
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                }}>
+                <Text
+                  style={{
+                    color: COLORS.GREEN,
+                    fontSize: fontPixel(18),
+                    fontWeight: '500',
+                  }}>
+                  Conform
                 </Text>
               </TouchableOpacity>
             </View>
