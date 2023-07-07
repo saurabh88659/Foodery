@@ -9,7 +9,7 @@ import {
 import React, {createRef} from 'react';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import {COLORS} from '../utils/Colors';
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Button from '../Components/Button';
 import {
@@ -17,20 +17,89 @@ import {
   IonIcon,
   LATITUDE_DELTA,
   LONGITUDE_DELTA,
+  SimpleToast,
 } from '../utils/Const';
 import {TextInput} from 'react-native-paper';
 import MapView, {Marker} from 'react-native-maps';
 // import Geocoder from 'react-native-geocoding';
 import {BottomSheet} from 'react-native-btr';
+import {setAnimalAddress} from '../Redux/ReducerSlice/AddressLSlice';
 
 export default function AddressScreenWithMap({navigation}) {
   const [visible, setVisible] = React.useState(false);
+  const [completeAddress, setCompleteAddress] = React.useState('');
+  const [completeAddressError, setCompleteAddressError] = React.useState('');
+  const [isFloor, setIsFloor] = React.useState('');
+  const [isFloorError, setIsFloorError] = React.useState('');
+  const [isNearby, setIsnearby] = React.useState('');
+  const [isNearbyError, setIsnearbyError] = React.useState('');
+  const [isReceiveName, setIsReceiveName] = React.useState('');
+
+  const [state, setState] = React.useState({
+    isLoading: false,
+  });
+
+  const dispatch = useDispatch();
+
+  const _Complete_validateAddress = () => {
+    const namePattern = /^[a-zA-Z0-9\s,]+$/;
+    if (!namePattern.test(completeAddress)) {
+      setCompleteAddressError('Please enter your complete address');
+      return false;
+    } else {
+      setCompleteAddressError('');
+      return true;
+    }
+  };
+
+  // const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
+  // console.log('newAddress-------------------', newAddress);
+
+  const validateFloorName = () => {
+    const namePattern = /^[a-zA-Z0-9]+$/;
+    if (!namePattern.test(isFloor)) {
+      setIsFloorError('Please enter your Floor');
+      return false;
+    } else {
+      setIsFloorError('');
+      return true;
+    }
+  };
+  const validateNearBy = () => {
+    const namePattern = /^[a-zA-Z0-9\s,]+$/;
+    if (!namePattern.test(isNearby)) {
+      setIsnearbyError('Please enter your Nearby');
+      return false;
+    } else {
+      setIsnearbyError('');
+      return true;
+    }
+  };
+
+  const _Is_Address_Validation_handle_Submit = () => {
+    const _Is_Address_Complete = _Complete_validateAddress(completeAddress);
+    const _is_Floor_Name = validateFloorName(isFloor);
+    const _is_Near_by = validateNearBy(isNearby);
+
+    if (_Is_Address_Complete && _is_Floor_Name && _is_Near_by) {
+      SimpleToast({title: 'Address update successfully', isLong: true});
+      setVisible(!visible);
+      dispatch(
+        setAnimalAddress({
+          compleAddress: completeAddress,
+          floor: isFloor,
+          nearby: isNearby,
+          namer: isReceiveName,
+        }),
+      );
+    }
+  };
+
   const toggleBottomNavigationView = () => {
     setVisible(!visible);
   };
 
   const Locations = useSelector(state => state.locationReducer);
-  const [text, setText] = React.useState('');
   const [adrtext, setAdrtext] = React.useState(1);
   const addressCurrent = useSelector(
     state => state.AddressLSlice.currentAddress,
@@ -201,11 +270,11 @@ export default function AddressScreenWithMap({navigation}) {
                 <TextInput
                   // label="Flat /Building /Street"
                   label={placeholderText}
-                  value={text}
+                  value={completeAddress}
                   textColor={COLORS.BLACK}
                   activeOutlineColor={COLORS.BLACK}
                   mode="outlined"
-                  onChangeText={text => setText(text)}
+                  onChangeText={text => setCompleteAddress(text)}
                   style={{
                     marginHorizontal: 10,
                     fontSize: 14,
@@ -214,37 +283,23 @@ export default function AddressScreenWithMap({navigation}) {
                   }}
                   outlineStyle={{
                     borderWidth: 1,
-                    borderColor: COLORS.GREEN,
-                    borderRadius: 10,
-                  }}
-                />
-                <TextInput
-                  label="Floor (optional)"
-                  value={text}
-                  textColor={COLORS.BLACK}
-                  activeOutlineColor={COLORS.BLACK}
-                  mode="outlined"
-                  onChangeText={text => setText(text)}
-                  style={{
-                    marginHorizontal: 10,
-                    marginVertical: '2%',
-                    fontSize: 14,
-                    height: heightPixel(50),
-                  }}
-                  outlineStyle={{
-                    borderWidth: 1,
-                    borderColor: COLORS.GREEN,
+                    borderColor: completeAddressError
+                      ? COLORS.BROWN
+                      : COLORS.GREEN,
                     borderRadius: 10,
                   }}
                 />
 
+                {completeAddressError ? (
+                  <Text style={Styles.ERRORTEXT}>{completeAddressError}</Text>
+                ) : null}
                 <TextInput
-                  label="Nearby landmark (optional)"
-                  value={text}
+                  label="Floor"
+                  value={isFloor}
                   textColor={COLORS.BLACK}
                   activeOutlineColor={COLORS.BLACK}
                   mode="outlined"
-                  onChangeText={text => setText(text)}
+                  onChangeText={text => setIsFloor(text)}
                   style={{
                     marginHorizontal: 10,
                     marginVertical: '2%',
@@ -253,17 +308,43 @@ export default function AddressScreenWithMap({navigation}) {
                   }}
                   outlineStyle={{
                     borderWidth: 1,
-                    borderColor: COLORS.GREEN,
+                    borderColor: isFloorError ? COLORS.BROWN : COLORS.GREEN,
                     borderRadius: 10,
                   }}
                 />
+
+                {isFloorError ? (
+                  <Text style={Styles.ERRORTEXT}>{isFloorError}</Text>
+                ) : null}
                 <TextInput
-                  label="Receiver's Name*"
-                  value={text}
+                  label="Nearby landmark"
+                  value={isNearby}
                   textColor={COLORS.BLACK}
                   activeOutlineColor={COLORS.BLACK}
                   mode="outlined"
-                  onChangeText={text => setText(text)}
+                  onChangeText={text => setIsnearby(text)}
+                  style={{
+                    marginHorizontal: 10,
+                    marginVertical: '2%',
+                    fontSize: 14,
+                    height: heightPixel(50),
+                  }}
+                  outlineStyle={{
+                    borderWidth: 1,
+                    borderColor: isNearbyError ? COLORS.BROWN : COLORS.GREEN,
+                    borderRadius: 10,
+                  }}
+                />
+                {isNearbyError ? (
+                  <Text style={Styles.ERRORTEXT}>{isNearbyError}</Text>
+                ) : null}
+                <TextInput
+                  label="Receiver's Name* (optional)"
+                  value={isReceiveName}
+                  textColor={COLORS.BLACK}
+                  activeOutlineColor={COLORS.BLACK}
+                  mode="outlined"
+                  onChangeText={text => setIsReceiveName(text)}
                   style={{
                     marginHorizontal: 10,
                     fontSize: 14,
@@ -278,7 +359,22 @@ export default function AddressScreenWithMap({navigation}) {
               </View>
 
               <View style={{marginTop: 20, top: -10}}>
-                <Button title={'Save address'} />
+                <Button
+                  // title={'Save address'}
+                  title={
+                    state.isLoading ? (
+                      <View style={Styles.activStylesIndicator}>
+                        <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                        <Text style={Styles.activeStylesTitleIndicator}>
+                          Save address
+                        </Text>
+                      </View>
+                    ) : (
+                      'Save address'
+                    )
+                  }
+                  onPress={_Is_Address_Validation_handle_Submit}
+                />
               </View>
             </View>
           </View>
@@ -359,5 +455,21 @@ const Styles = StyleSheet.create({
     borderColor: COLORS.GREEN,
     borderRadius: 7,
     marginHorizontal: 5,
+  },
+  ERRORTEXT: {
+    color: 'red',
+    marginTop: 5,
+    marginHorizontal: 15,
+    fontSize: fontPixel(13),
+  },
+  activStylesIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeStylesTitleIndicator: {
+    color: COLORS.WHITE,
+    fontSize: fontPixel(15),
+    paddingLeft: 5,
   },
 });

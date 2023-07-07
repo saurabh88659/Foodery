@@ -28,6 +28,9 @@ import OrderhistoryShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/Ord
 export default function OrderHistory({navigation}) {
   const [orderData, setOrderData] = useState([]);
   const [isloading, setIsloading] = useState(false);
+  const [notfound, setNotfound] = useState('');
+
+  console.log('notfound----------', notfound);
 
   useEffect(() => {
     _Order_History();
@@ -42,12 +45,16 @@ export default function OrderHistory({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        // console.log('order data----------->>', response?.data?.result);
+        console.log('order data----------->>', response?.data.message);
+
         setOrderData(response?.data?.result);
         setIsloading(false);
       })
       .catch(error => {
         setIsloading(false);
+        if (error?.response?.data.message == 'Data Not Founded') {
+          setNotfound(error?.response?.data.message);
+        }
         console.log(
           'catch error order data ------',
           error.response.data.message,
@@ -74,7 +81,17 @@ export default function OrderHistory({navigation}) {
           />
         }
       />
-      {isloading ? (
+
+      {notfound ? (
+        <View style={{justifyContent: 'center', flex: 1, alignItems: 'center'}}>
+          <Text
+            style={{
+              color: COLORS.GRAYDARK,
+            }}>
+            {notfound}
+          </Text>
+        </View>
+      ) : isloading ? (
         <OrderhistoryShimmerPlaceHolder />
       ) : (
         <View>

@@ -10,6 +10,7 @@ const AddressLSlice = createSlice({
     setCurrentAddress: (state, action) => {
       state.currentAddress = action.payload;
     },
+
     setAnimalAddress: (state, action) => {
       state.animalAddress = action.payload;
     },

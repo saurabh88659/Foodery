@@ -67,10 +67,6 @@ export default function CartScreen({navigation}) {
   const [statusId, setStatusId] = useState('');
   const [isProfile, setIsProfile] = useState('');
 
-  const webviewRef = useRef(null);
-  const [currentUrl, setCurrentUrl] = useState('');
-  const [showWebView, setShowWebView] = useState(false);
-
   // console.log('orderKey------>>', orderKey);
 
   const addressCurrent = useSelector(
@@ -80,9 +76,11 @@ export default function CartScreen({navigation}) {
   console.log('addressCurrent--------DG-', addressCurrent);
 
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
+
   const totalQuantity = useSelector(
     state => state.CartReducerSlice.totalQuantity,
   );
+
   const totaldisPrice = useSelector(
     state => state.CartReducerSlice.discountTotalPrice,
   );
@@ -167,12 +165,16 @@ export default function CartScreen({navigation}) {
       });
   };
 
+  const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
+
+  console.log('newAddress', newAddress);
+
   const _Handle_Cart_Data = async () => {
     const token = await _getStorage('token');
     console.log(token);
     let arr = [];
     {
-      productDataByRe.map((item, index) => {
+      productDataByRe.map(item => {
         arr.push({productId: item._id, quantity: item.quantity});
       });
     }
@@ -180,11 +182,12 @@ export default function CartScreen({navigation}) {
     const objcartdata = {
       orderedProducts: arr,
       totalAmount: totalprice,
+
       delieveryAddress: {
-        address: 'abc',
-        city: 'abc',
-        state: 'abc',
-        pin: '201310',
+        completeAddress: newAddress?.compleAddress,
+        floor: newAddress?.floor,
+        nearby_landmark: newAddress?.nearby,
+        receiverName: newAddress?.namer || '',
       },
     };
 
@@ -224,6 +227,8 @@ export default function CartScreen({navigation}) {
 
   const _Payment_Handle = async () => {
     const token = await _getStorage('token');
+
+    console.log(token);
     setState({
       ...state,
       isLoading: true,
@@ -309,6 +314,10 @@ export default function CartScreen({navigation}) {
       });
   };
 
+  const webviewRef = useRef(null);
+  const [currentUrl, setCurrentUrl] = useState('');
+  const [showWebView, setShowWebView] = useState(false);
+
   const openWebView = () => {
     setShowWebView(true);
   };
@@ -318,7 +327,7 @@ export default function CartScreen({navigation}) {
   };
 
   const handleGoBack = () => {
-    navigation.goBack();
+    setShowWebView(!showWebView);
   };
 
   return (
@@ -639,13 +648,34 @@ export default function CartScreen({navigation}) {
               </Text>
             </View>
           </View>
+
           <View style={{marginVertical: 15}}>
-            <Button
-              title={'Choose address at next step   ▶'}
-              onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
-              // onPress={_Handle_Cart_Data}
-              // onPress={_Payment_Handle}
-            />
+            {newAddress.compleAddress &&
+            newAddress?.floor &&
+            newAddress?.nearby ? (
+              <Button
+                title={
+                  state.isLoading ? (
+                    <View style={Styles.activStylesIndicator}>
+                      <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                      <Text style={Styles.activeStylesTitleIndicator}>
+                        Payment Proceed
+                      </Text>
+                    </View>
+                  ) : (
+                    'Payment Proceed'
+                  )
+                }
+                // onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+                // onPress={_Handle_Cart_Data}
+                onPress={_Payment_Handle}
+              />
+            ) : (
+              <Button
+                title={'Choose address at next step   ▶'}
+                onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
+              />
+            )}
 
             {/* <Button
               title={
@@ -666,31 +696,19 @@ export default function CartScreen({navigation}) {
             /> */}
 
             {/* {!showWebView && ( */}
-            <Button
-              title={
-                state.isLoading ? (
-                  <View style={Styles.activStylesIndicator}>
-                    <ActivityIndicator color={COLORS.LIGHTGREEN} />
-                    <Text style={Styles.activeStylesTitleIndicator}>
-                      Payment Proceed
-                    </Text>
-                  </View>
-                ) : (
-                  'Payment Proceed'
-                )
-              }
-              // onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
-              // onPress={_Handle_Cart_Data}
-              onPress={_Payment_Handle}
-            />
+
             {/* )} */}
 
-            {/* {showWebView && (  */}
-            {/* <View style={{flex: 1}}> */}
-            {/* <WebViewHeader title={currentUrl} goBack={handleGoBack} /> */}
-            {/* <MyHeaderNo2
+            {/* {!showWebView && (
+              <Button title="Open WebView" onPress={openWebView} />
+            )}
+
+            {showWebView && (
+              <View style={{marginVertical: 100}}>
+                <WebViewHeader title={currentUrl} goBack={handleGoBack} />
+                <MyHeaderNo2
                   title={'Paymnet'}
-                  onPress={() => navigation.goBack()}
+                  onPress={() => setShowWebView(!showWebView)}
                 />
                 <WebView
                   ref={webviewRef}
@@ -699,9 +717,9 @@ export default function CartScreen({navigation}) {
                   }}
                   onNavigationStateChange={handleWebViewNavigationStateChange}
                   style={{flex: 1, backgroundColor: 'red'}}
-                /> */}
-            {/* </View> */}
-            {/* )} */}
+                />
+              </View>
+            )} */}
           </View>
         </ScrollView>
       ) : (

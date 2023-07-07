@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel} from '../Components/Dimensions';
@@ -14,16 +14,22 @@ import {RadioButton} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {setCurrentAddress} from '../Redux/ReducerSlice/AddressLSlice';
 import Geocoder from 'react-native-geocoding';
+import Button from '../Components/Button';
+
+import {WebView} from 'react-native-webview';
 
 export default function AddressScreen({navigation}) {
-  const [checked, setChecked] = React.useState('first');
+  const [checked, setChecked] = React.useState('');
+
   const dispatch = useDispatch();
   const [newAddress, setNewAddress] = useState('');
+  const [selectedValue, setSelectedValue] = useState('');
+
   const Locations = useSelector(state => state.locationReducer);
   const addressCurrent = useSelector(
     state => state.AddressLSlice.currentAddress,
   );
-  console.log('addressCurrent==============>>>>>', addressCurrent);
+  console.log('addressCurrent==============>>>>>', checked);
 
   useEffect(() => {
     geoCoding();
@@ -50,6 +56,18 @@ export default function AddressScreen({navigation}) {
     });
   };
 
+  const handleRadioChange = value => {
+    setSelectedValue(value);
+  };
+
+  console.log('selectedValue---------', selectedValue);
+
+  const [showWebView, setShowWebView] = useState(false);
+
+  const handleButtonPress = () => {
+    setShowWebView(true);
+  };
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <MyHeaderNo2
@@ -71,12 +89,12 @@ export default function AddressScreen({navigation}) {
           style={{
             flexDirection: 'row',
             alignItems: 'center',
-            marginHorizontal: 10,
+            marginHorizontal: 15,
           }}>
           <RadioButton
             value="first"
             status={checked === 'first' ? 'checked' : 'unchecked'}
-            onPress={() => setChecked('first')}
+            onPress={() => setChecked(addressCurrent)}
           />
           <Text
             style={{
@@ -85,11 +103,11 @@ export default function AddressScreen({navigation}) {
               paddingHorizontal: 5,
               textAlign: 'left',
             }}>
-            Noida sector 62 Noida sector 62Noida sector sector 62Noida sector
+            {addressCurrent}
           </Text>
         </View>
 
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -110,7 +128,7 @@ export default function AddressScreen({navigation}) {
             }}>
             Noida sector 62 Noida sector 62Noida sector sector 62Noida sector
           </Text>
-        </View>
+        </View> */}
       </View>
     </SafeAreaView>
   );
