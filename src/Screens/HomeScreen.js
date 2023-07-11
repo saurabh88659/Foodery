@@ -250,8 +250,8 @@ export default function HomeScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        // console.log('hey=========', response.data.orderAgain);
-        setOrder_Again(response?.data?.orderAgain);
+        console.log('hey=========', response?.data?.result);
+        setOrder_Again(response?.data?.result);
       })
       .catch(error => {
         console.log('order again catch Error', error);
@@ -502,17 +502,17 @@ export default function HomeScreen({navigation}) {
                         )}
                       </View>
                     }
-                    Productimage={{uri: item?.productImage}}
-                    ProductName={item?.productName}
-                    ProductSubName={item?.productUnit}
-                    discountPrice={item?.discountPrice}
-                    ProductPrice={item?.productPrice}
+                    Productimage={{uri: item?.productId?.productImage}}
+                    ProductName={item?.productId?.productName}
+                    ProductSubName={item?.productId?.productUnit}
+                    discountPrice={item?.productId?.discountPrice}
+                    ProductPrice={item?.productId?.productPrice}
                     UIBotton={
                       <View>
                         <View>
                           {cartdata.map((value, index) => (
                             <View key={value?._id}>
-                              {value?._id == item?._id ? (
+                              {value?._id == item?.productId?._id ? (
                                 <View style={Styles.INCREAMENTBOTTONMAIN}>
                                   <TouchableOpacity
                                     onPress={() => decreaseQuantity(value)}>
@@ -532,7 +532,7 @@ export default function HomeScreen({navigation}) {
                             </View>
                           ))}
                           {cartdata.some(
-                            value => value?._id == item?._id,
+                            value => value?._id == item?.productId?._id,
                           ) ? null : (
                             <TouchableOpacity
                               onPress={() => addItemToCart(item)}
@@ -1109,7 +1109,7 @@ const Styles = StyleSheet.create({
   },
   MODALPRODUCTBOXMAIN: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     flexWrap: 'wrap',
     alignItems: 'center',
   },

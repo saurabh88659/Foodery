@@ -50,6 +50,9 @@ export default function FruitsVegetables({navigation, route}) {
   const [collapsed, setCollapsed] = useState(true);
   const [freshness_Cat, setFreshnes_Cat] = useState([]);
   const dispatch = useDispatch();
+  const [_Simailr, set_Simailr] = useState([]);
+
+  const similar_Product = route.params;
 
   const toggleBottomNavigationView = value => {
     actionSheetRef?.current?.setModalVisible(true);
@@ -77,6 +80,25 @@ export default function FruitsVegetables({navigation, route}) {
     },
   ];
 
+  const _Simailar_Product = async () => {
+    const token = await _getStorage('token');
+    axios
+      .get(
+        BASE_URL +
+          `/User/getSimmilarProductByCatId/${similar_Product.fruitItem.categoryId}`,
+        {
+          headers: {Authorization: `Bearer ${token}`},
+        },
+      )
+      .then(response => {
+        console.log('_Simailar_Product', response.data.result);
+        set_Simailr(response.data.result);
+      })
+      .catch(error => {
+        console.log('_Simailar_Product catch error', error);
+      });
+  };
+
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
   };
@@ -85,6 +107,7 @@ export default function FruitsVegetables({navigation, route}) {
     ModalDataPass();
     if (IsFocused) {
       _FreshnessCategory();
+      _Simailar_Product();
       if (freshnes_ByID_Cat._id) {
         _FreshnessCategoryBYIdDetails();
       }
@@ -366,7 +389,7 @@ export default function FruitsVegetables({navigation, route}) {
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{paddingBottom: 5}}
                 horizontal
-                data={SRTDATANEW}
+                data={_Simailr}
                 renderItem={({item, index}) => (
                   <View key={index}>
                     <Productinfo
@@ -396,11 +419,11 @@ export default function FruitsVegetables({navigation, route}) {
                           )}
                         </View>
                       }
-                      Productimage={require('../Assets/Logo/mangoicon.png')}
-                      ProductName={'Mango Alphonso'}
-                      ProductSubName={'6 Pcs (Approx 1.2Kg - 1.4Kg)'}
-                      discountPrice={'Rs.80'}
-                      ProductPrice={'Rs.70'}
+                      Productimage={{uri: item?.productImage}}
+                      ProductName={item?.productName}
+                      ProductSubName={item?.productUnit}
+                      discountPrice={item?.discountPrice}
+                      ProductPrice={item?.productPrice}
                       UIBotton={
                         <View>
                           {cartdata.map((value, index) => (
