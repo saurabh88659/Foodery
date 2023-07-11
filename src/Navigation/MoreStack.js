@@ -10,6 +10,7 @@ import OrderHistory from '../Screens/OrderHistory';
 import OrderDetails from '../Screens/OrderDetails';
 import Routes from './Routes';
 import OrderHistoryLive from '../Screens/OrderHistory/OrderHistoryLive';
+import YourOrder from '../Screens/YourOrder';
 
 const Stack = createNativeStackNavigator();
 function MoreStack() {
@@ -58,6 +59,11 @@ function MoreStack() {
       <Stack.Screen
         name="OrderHistoryLive"
         component={OrderHistoryLive}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name={Routes.YOUR_ORDER}
+        component={YourOrder}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

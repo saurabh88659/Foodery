@@ -62,4 +62,5 @@ export default {
   PRIVACY_POLICY: 'PrivacyPolicy',
   ORDER_HISTORY: 'OrderHistory',
   ORDER_DETAILS: 'OrderDetails',
+  YOUR_ORDER: 'YourOrder',
 };

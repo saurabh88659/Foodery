@@ -49,6 +49,7 @@ import Lottie from 'lottie-react-native';
 import MyModalinfo from '../Components/MyModalinfo';
 import {WebView} from 'react-native-webview';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
+import Toast from 'react-native-toast-message';
 
 export default function CartScreen({navigation}) {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
@@ -66,6 +67,8 @@ export default function CartScreen({navigation}) {
   const [paidmess, setPaidmess] = useState('');
   const [statusId, setStatusId] = useState('');
   const [isProfile, setIsProfile] = useState('');
+  const webviewRef = useRef(null);
+  const [showWebView, setShowWebView] = useState(false);
 
   // console.log('orderKey------>>', orderKey);
 
@@ -184,6 +187,7 @@ export default function CartScreen({navigation}) {
       orderedProducts: arr,
       totalAmount: totalprice,
       currentAddress: addressCurrent || '',
+      // currentAddress: 'noida sector 62',
       delieveryAddress: {
         completeAddress: newAddress?.compleAddress,
         floor: newAddress?.floor,
@@ -198,6 +202,8 @@ export default function CartScreen({navigation}) {
       paid: true,
       status: 'Successful',
     };
+    console.log('hey---------DGGGGGGGGGGGGGGGGGGGGGGG', statusobj);
+
     axios
       .post(BASE_URL + `/addOrder`, objcartdata, {
         headers: {Authorization: `Bearer ${token}`},
@@ -211,10 +217,10 @@ export default function CartScreen({navigation}) {
             headers: {Authorization: `Bearer ${token}`},
           })
           .then(res => {
-            console.log('status----------paid', res.data);
+            console.log('status----------paid', res?.data);
           })
           .catch(error => {
-            console.log('status catch error', error);
+            console.log('status catch error', error?.response?.data?.message);
           });
       })
       .catch(error => {
@@ -235,6 +241,7 @@ export default function CartScreen({navigation}) {
     });
 
     const dataPayment = {
+      // RedirectUrl: Routes.YOUR_ORDER,
       RedirectUrl: '',
       // OrderAmount: totalprice,
       OrderAmount: '1',
@@ -259,12 +266,16 @@ export default function CartScreen({navigation}) {
         if (response?.data?.message === 'Payment Url Generated') {
           setOrderKey(response?.data?.orderKeyId);
           setShowWebView(true);
+
           setLinkpay(response?.data);
-          setModalVisible(true);
+          // setModalVisible(true);
           setState({
             ...state,
             isLoading: false,
           });
+        } else {
+          _Payment_Check_Handle();
+          console.log('hey____-----------------------------------------------');
         }
       })
       .catch(error => {
@@ -296,10 +307,15 @@ export default function CartScreen({navigation}) {
         );
         setPaidmess(res?.data?.OrderPaymentStatusText);
         if (res?.data?.OrderPaymentStatusText == 'Pending') {
-          setModalVisible(true);
+          // setModalVisible(true);
         } else if (res?.data?.OrderPaymentStatusText == 'Paid') {
-          setModalVisible(false);
+          console.log(
+            'hey-------------------------------------LLLLLL',
+            res?.data,
+          );
+          // setModalVisible(false);
           _Handle_Cart_Data();
+          showToast();
         }
       })
       .catch(error => {
@@ -314,10 +330,6 @@ export default function CartScreen({navigation}) {
       });
   };
 
-  const webviewRef = useRef(null);
-  // const [currentUrl, setCurrentUrl] = useState('');
-  const [showWebView, setShowWebView] = useState(false);
-
   const openWebView = () => {
     _Payment_Handle();
   };
@@ -325,6 +337,30 @@ export default function CartScreen({navigation}) {
   const handleGoBack = () => {
     setShowWebView(!showWebView);
   };
+
+  const handleNavigationStateChange = navState => {
+    if (navState.url === linkpay.paymnetProcessUrl) {
+      navigation.navigate(Routes.YOUR_ORDER);
+    }
+  };
+
+  const showToast = () => {
+    Toast.show({
+      type: 'success',
+      text1: 'Payment Successful!✅',
+      // text2: 'This is some something 👋',
+    });
+  };
+
+  function LoadingIndicatorView() {
+    return (
+      <ActivityIndicator
+        color="#009b88"
+        size="large"
+        style={Styles.ActivityIndicatorStyle}
+      />
+    );
+  }
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -336,6 +372,9 @@ export default function CartScreen({navigation}) {
             source={{
               uri: linkpay.paymnetProcessUrl,
             }}
+            onNavigationStateChange={handleNavigationStateChange}
+            renderLoading={LoadingIndicatorView}
+            startInLoadingState={true}
             style={{flex: 1}}
           />
         </View>
@@ -692,6 +731,7 @@ export default function CartScreen({navigation}) {
                     // onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
                     onPress={openWebView}
                     // onPress={_Payment_Handle}
+                    // onPress={showToast}
                   />
                 ) : (
                   <Button
@@ -699,50 +739,6 @@ export default function CartScreen({navigation}) {
                     onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
                   />
                 )}
-
-                {/* <Button
-              title={
-                state.isLoading ? (
-                  <View style={Styles.activStylesIndicator}>
-                    <ActivityIndicator color={COLORS.LIGHTGREEN} />
-                    <Text style={Styles.activeStylesTitleIndicator}>
-                      Payment Proceed
-                    </Text>
-                  </View>
-                ) : (
-                  'Payment Proceed'
-                )
-              }
-              // onPress={() => navigation.navigate(Routes.ADDRESS_SCREEN)}
-              // onPress={_Handle_Cart_Data}
-              onPress={_Payment_Handle}
-            /> */}
-
-                {/* {!showWebView && ( */}
-
-                {/* )} */}
-
-                {/* {!showWebView && (
-              <Button title="Open WebView" onPress={openWebView} />
-            )}
-
-            {showWebView && (
-              <View style={{marginVertical: 100}}>
-                <WebViewHeader title={currentUrl} goBack={handleGoBack} />
-                <MyHeaderNo2
-                  title={'Paymnet'}
-                  onPress={() => setShowWebView(!showWebView)}
-                />
-                <WebView
-                  ref={webviewRef}
-                  source={{
-                    uri: 'https://www.npmjs.com/package/@react-native-community/cli-platform-android',
-                  }}
-                  onNavigationStateChange={handleWebViewNavigationStateChange}
-                  style={{flex: 1, backgroundColor: 'red'}}
-                />
-              </View>
-            )} */}
               </View>
             </ScrollView>
           ) : (
@@ -773,12 +769,13 @@ export default function CartScreen({navigation}) {
                 <ActivityIndicator size="large" color={COLORS.LIGHTGREEN} />
               </View>
             }
-            _NO={_Payment_Check_Handle}
+            // _NO={_Payment_Check_Handle}
             isModal={modalVisible}
             _Visible={() => setModalVisible(!modalVisible)}
           />
         </View>
       )}
+      <Toast />
     </SafeAreaView>
   );
 }
@@ -1030,5 +1027,9 @@ const Styles = StyleSheet.create({
     color: COLORS.WHITE,
     fontSize: fontPixel(15),
     paddingLeft: 5,
+  },
+  ActivityIndicatorStyle: {
+    flex: 1,
+    justifyContent: 'center',
   },
 });

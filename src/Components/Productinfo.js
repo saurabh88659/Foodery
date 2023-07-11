@@ -5,7 +5,16 @@ import {fontPixel, heightPixel, widthPixel} from './Dimensions';
 
 export default function Productinfo(props) {
   return (
-    <View key={props.index} style={[Styles.CONTAINERBOX, props.Styles]}>
+    <View
+      key={props.index}
+      style={[
+        Styles.CONTAINERBOX,
+        props.Styles,
+        // {
+        //   backgroundColor:
+        //     props.valu === 'yes' ? COLORS.WHITE : COLORS.GRAYDARK,
+        // },
+      ]}>
       <View>{props.HeartUI}</View>
       <TouchableOpacity onPress={props.onPress}>
         <View style={{alignItems: 'center'}}>

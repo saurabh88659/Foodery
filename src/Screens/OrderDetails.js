@@ -87,7 +87,7 @@ export default function OrderDetails({navigation, route}) {
         <OrderDetailsShimmerPlaceHolder />
       ) : (
         <ScrollView contentContainerStyle={{paddingBottom: 25}}>
-          {OrderHistoryData?.orderStatus === 'Processing' ? (
+          {OrderHistoryData?.orderStatus === 'processing' ? (
             <TouchableOpacity
               onPress={toggleBottomNavigationView}
               activeOpacity={0.4}

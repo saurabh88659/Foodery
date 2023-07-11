@@ -185,8 +185,9 @@ export default function OrderHistory({navigation}) {
                     flexDirection: 'row',
                     justifyContent: 'flex-start',
                     marginVertical: 15,
+                    alignItems: 'center',
                   }}>
-                  {item?.orderedProducts.map((value, index) => (
+                  {item?.orderedProducts?.slice(0, 5).map((value, index) => (
                     <View key={index} style={{paddingLeft: 8}}>
                       <Image
                         source={{uri: value?.productId?.productImage}}
@@ -194,6 +195,9 @@ export default function OrderHistory({navigation}) {
                       />
                     </View>
                   ))}
+                  <View style={{borderWidth: 1, paddingVertical: 10}}>
+                    <Text style={{color: COLORS.BLACK}}>hello</Text>
+                  </View>
                 </View>
               </TouchableOpacity>
             )}

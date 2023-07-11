@@ -191,6 +191,7 @@ export default function ProdcutsItem({navigation, route}) {
             <View style={Styles.CONTAINERBOXMAIN}>
               {productiItem.map((value, index) => (
                 <Productinfo
+                  data={value}
                   key={index}
                   HeartUI={
                     <View>
