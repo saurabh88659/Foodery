@@ -10,6 +10,7 @@ export default function Productinfo(props) {
       style={[
         Styles.CONTAINERBOX,
         props.Styles,
+
         // {
         //   backgroundColor:
         //     props.valu === 'yes' ? COLORS.WHITE : COLORS.GRAYDARK,
@@ -91,6 +92,13 @@ export default function Productinfo(props) {
           </View>
         </View>
       </TouchableOpacity>
+      {/* <View
+          style={{
+            backgroundColor: COLORS.grayWithOpacity,
+            // position: 'absolute',
+            height: heightPixel(195),
+            // position: 'relative',
+          }}></View> */}
     </View>
   );
 }
@@ -105,6 +113,8 @@ const Styles = StyleSheet.create({
     elevation: 10,
     borderRadius: 4,
     // paddingVertical: '2%',
+    // position: 'absolute',
+    // position: 'relative',
   },
   CONTAINERBOXMAIN: {
     flexDirection: 'row',

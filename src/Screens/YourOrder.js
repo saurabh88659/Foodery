@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Linking,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
@@ -19,50 +20,77 @@ import {
 } from '../utils/Const';
 import {COLORS} from '../utils/Colors';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
-import MapView, {Marker} from 'react-native-maps';
+// import MapView, {Marker} from 'react-native-maps';
 import {useSelector} from 'react-redux';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Lottie from 'lottie-react-native';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function YourOrder({navigation}) {
   const [visible, setVisible] = useState(false);
+  const [orderDetails, setOrderDetails] = useState([]);
+  const [orderdataOne, setOrderdataOne] = useState({});
+  const IsFocused = useIsFocused();
 
   const Locations = useSelector(state => state.locationReducer);
+  const cartdatapass = useSelector(state => state.CartDatapassSlices.cartdata);
+  console.log('cartdatapass---------->>>>>', orderdataOne);
 
-  const Srtdata = [
-    {name: 'nema'},
-    {name: 'nema'},
-
-    {name: 'nema'},
-
-    {name: 'nema'},
-
-    {name: 'nema'},
-  ];
   useEffect(() => {
     _Order_Details();
-  }, []);
+  }, [IsFocused]);
 
   const _Order_Details = async () => {
     const token = await _getStorage('token');
     console.log(token);
     // setIsloading(true);
+
     axios
-      .get(BASE_URL + `/User/getOneOrderData/${OrderHistoryData?._id}`, {
+      .get(BASE_URL + `/getPaymentData/${cartdatapass._id}`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('order data- Details---------->>', response?.data.result);
+        console.log('order data- Details---------->>', response?.data?.result);
         setOrderDetails(response?.data?.result?.orderedProducts);
-        setIsOrderDetails(response?.data?.result);
-        setIsloading(false);
+        setOrderdataOne(response?.data?.result);
+        // setIsloading(false);
       })
       .catch(error => {
-        console.log('catch error order data Details ------>>>', error);
-        setIsloading(false);
+        console.log(
+          'catch error order data Details ------>>>',
+          error.response.data.messsge,
+        );
+        // setIsloading(false);
       });
+  };
+
+  const Cancelled_Booking = async () => {
+    const token = await _getStorage('token');
+
+    console.log('orderdataOne?._id', orderdataOne?._id);
+    axios
+      .put(
+        BASE_URL + `/cancelBooking/${orderdataOne?._id}`,
+        {},
+
+        {
+          headers: {Authorization: `Bearer ${token}`},
+        },
+      )
+      .then(response => {
+        console.log('response cancelled booking', response?.data);
+      })
+      .catch(error => {
+        console.log('catch cancelled error------->>>>>>', error.response.data);
+      });
+  };
+
+  const makePhoneCall = () => {
+    const phoneNumber = '7827902351'; // Replace with the desired phone number
+
+    Linking.openURL(`tel:${phoneNumber}`);
   };
 
   return (
@@ -78,8 +106,10 @@ export default function YourOrder({navigation}) {
           />
         }
       />
-      <ScrollView>
-        <View style={Styles.bottomNavigationView}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{paddingBottom: 20}}>
+        {/* <View style={Styles.bottomNavigationView}>
           <View style={Styles.MAPBOX}>
             {Locations && (
               <MapView
@@ -103,7 +133,7 @@ export default function YourOrder({navigation}) {
               </MapView>
             )}
           </View>
-        </View>
+        </View> */}
         <View>
           <View activeOpacity={0.4} style={Styles.QBOXBOT}>
             <Lottie
@@ -138,7 +168,7 @@ export default function YourOrder({navigation}) {
               justifyContent: 'space-between',
               alignItems: 'center',
               paddingHorizontal: 10,
-              paddingVertical: 10,
+              // paddingVertical: 10,
             }}>
             <View
               style={{
@@ -148,7 +178,9 @@ export default function YourOrder({navigation}) {
               }}>
               <Image source={Yourordericonebox} style={Styles.iconeimage} />
               <View style={{paddingLeft: heightPixel(20)}}>
-                <Text style={Styles.TEXTONEQ}>Anupama Store</Text>
+                <Text style={Styles.TEXTONEQ}>
+                  {orderdataOne?.storeName} Store
+                </Text>
                 <Text
                   numberOfLines={2}
                   style={{
@@ -161,7 +193,7 @@ export default function YourOrder({navigation}) {
                 </Text>
               </View>
             </View>
-            <TouchableOpacity activeOpacity={0.6}>
+            <TouchableOpacity onPress={makePhoneCall} activeOpacity={0.6}>
               <Image
                 source={yourirdercallsicon}
                 style={{height: heightPixel(45), width: widthPixel(40)}}
@@ -169,9 +201,14 @@ export default function YourOrder({navigation}) {
             </TouchableOpacity>
           </View>
           <View style={Styles.MAINCONTAINERMAIN}>
-            {Srtdata.map((item, index) => (
+            {orderDetails.map((item, index) => (
               <View key={index} style={Styles.MAINBOX}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}>
                   <Image
                     source={{uri: item?.productId?.productImage}}
                     style={Styles.IMAGESTYLES}
@@ -203,7 +240,126 @@ export default function YourOrder({navigation}) {
               </View>
             ))}
           </View>
+          <View style={Styles.PRICEBOX}>
+            <View style={Styles.ROWBOX}>
+              <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                Item Total
+              </Text>
+              <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                {`Rs.${'322'}`}
+              </Text>
+            </View>
+            <View style={Styles.ROWBOX}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  Styles.ROWTEXT,
+                  {
+                    color: COLORS.GRAYDARK,
+                    fontSize: 15,
+                    fontWeight: 'normal',
+                  },
+                ]}>
+                Handling Charges{' '}
+                <Text style={{color: COLORS.GREEN, fontSize: 12}}>
+                  (Rs.24 Saved)
+                </Text>
+              </Text>
+              <Text
+                numberOfLines={1}
+                style={[
+                  Styles.ROWTEXT,
+                  {
+                    fontWeight: 'normal',
+                    fontSize: 14,
+                    // textDecorationLine: 'line-through',
+                  },
+                ]}>
+                Rs.15{' '}
+                <Text
+                  style={{
+                    color: COLORS.GREEN,
+                    fontWeight: 'normal',
+                    // textDecorationLine: 'line-through',
+                  }}>
+                  Rs.24
+                </Text>
+              </Text>
+            </View>
+            <View style={Styles.ROWBOX}>
+              <Text
+                numberOfLines={1}
+                style={[
+                  Styles.ROWTEXT,
+                  {
+                    color: COLORS.GRAYDARK,
+                    fontSize: 15,
+                    fontWeight: 'normal',
+                  },
+                ]}>
+                Delivery Free{' '}
+                <Text
+                  style={{
+                    color: COLORS.GREEN,
+                    fontSize: 12,
+                    fontWeight: 'normal',
+                  }}>
+                  (Rs.24 Saved)
+                </Text>
+              </Text>
+              <Text
+                numberOfLines={1}
+                style={[
+                  Styles.ROWTEXT,
+                  {
+                    fontWeight: 'normal',
+                    fontSize: 14,
+                  },
+                ]}>
+                Rs.35{' '}
+                <Text
+                  style={{
+                    color: COLORS.GREEN,
+                    fontWeight: 'normal',
+                  }}>
+                  Rs.0
+                </Text>
+              </Text>
+            </View>
+            <View style={Styles.ROWBOX}>
+              <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                To Pay
+              </Text>
+              <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                {`Rs.${'2555'}`}
+              </Text>
+            </View>
+          </View>
         </View>
+        {orderdataOne?.orderStatus === 'Order Placed' ? (
+          <TouchableOpacity
+            onPress={Cancelled_Booking}
+            activeOpacity={0.6}
+            style={{
+              marginTop: 20,
+              width: widthPixel(150),
+              height: heightPixel(50),
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: COLORS.GREEN,
+              borderRadius: 4,
+              alignSelf: 'center',
+            }}>
+            <Text
+              style={{
+                color: COLORS.WHITE,
+                fontWeight: '500',
+                letterSpacing: 0.6,
+              }}>
+              Cancel Booking
+            </Text>
+          </TouchableOpacity>
+        ) : null}
       </ScrollView>
     </SafeAreaView>
   );
@@ -250,7 +406,7 @@ const Styles = StyleSheet.create({
     letterSpacing: 0.3,
   },
   cartBox: {
-    height: heightPixel(300),
+    // height: heightPixel(300),
     marginHorizontal: 15,
     // borderWidth: 1,
     elevation: 10,
@@ -263,13 +419,17 @@ const Styles = StyleSheet.create({
   },
   MAINCONTAINERMAIN: {
     backgroundColor: COLORS.WHITE,
-    // marginHorizontal: 10,
+    marginHorizontal: 10,
     borderRadius: 15,
+    // paddingHorizontal: 20,
   },
   MAINBOX: {
     marginVertical: 3,
-    // marginHorizontal: 15,
+    // backgroundColor: 'red',
     paddingVertical: heightPixel(10),
+    // paddingHorizontal: 20,
+    // marginHorizontal: 20,
+    flexWrap: 'wrap',
   },
   IMAGESTYLES: {
     height: heightPixel(60),
@@ -304,5 +464,24 @@ const Styles = StyleSheet.create({
     fontSize: fontPixel(18),
     fontWeight: '500',
     letterSpacing: 0.3,
+  },
+  PRICEBOX: {
+    paddingHorizontal: 10,
+    backgroundColor: COLORS.WHITE,
+    elevation: 3,
+    borderRadius: 5,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderColor: COLORS.GRAYDARK,
+  },
+  ROWBOX: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    paddingVertical: 5,
+  },
+  ROWTEXT: {
+    color: COLORS.BLACK,
+    fontWeight: '500',
+    fontSize: fontPixel(17),
   },
 });

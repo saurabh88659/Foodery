@@ -10,6 +10,7 @@ import counterSlice from '../Redux/Store/counterSlice';
 import CartReducerSlice from '../Redux/ReducerSlice/CartReducerSlice';
 import WishlistReducerSlice from '../Redux/ReducerSlice/WishlistReducerSlice';
 import AddressLSlice from '../Redux/ReducerSlice/AddressLSlice';
+import CartDatapassSlices from '../Redux/ReducerSlice/CartDatapassSlices';
 
 const rootReducer = combineReducers({
   reducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   CartReducerSlice,
   WishlistReducerSlice,
   AddressLSlice,
+  CartDatapassSlices,
 });
 
 export default rootReducer;

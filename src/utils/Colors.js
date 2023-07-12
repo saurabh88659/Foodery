@@ -20,6 +20,6 @@ export const COLORS = {
   DarkPurple: '#3C1053',
   LIGHT_WHITE: '#f4f7fa',
   whiteWithOpacity: 'rgba(255, 255, 255, 0.5)',
-  grayWithOpacity: 'rgba(32, 32, 32, 0.6)',
+  grayWithOpacity: 'rgba(32, 32, 32, 0.3)',
   black08: 'rgba(0, 0, 0, 0.6)',
 };

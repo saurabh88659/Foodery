@@ -50,6 +50,7 @@ import MyModalinfo from '../Components/MyModalinfo';
 import {WebView} from 'react-native-webview';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import Toast from 'react-native-toast-message';
+import {setCartdata} from '../Redux/ReducerSlice/CartDatapassSlices';
 
 export default function CartScreen({navigation}) {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
@@ -70,7 +71,7 @@ export default function CartScreen({navigation}) {
   const webviewRef = useRef(null);
   const [showWebView, setShowWebView] = useState(false);
 
-  // console.log('orderKey------>>', orderKey);
+  console.log('orderKey------>>', orderKey);
 
   const addressCurrent = useSelector(
     state => state.AddressLSlice.currentAddress,
@@ -211,7 +212,7 @@ export default function CartScreen({navigation}) {
       .then(response => {
         console.log('Response api ------------->>>>', response?.data);
         setStatusId(response?.data?.result?._id);
-
+        dispatch(setCartdata(response?.data?.result));
         axios
           .put(BASE_URL + `/updatePaymentStatus`, statusobj, {
             headers: {Authorization: `Bearer ${token}`},
@@ -268,7 +269,7 @@ export default function CartScreen({navigation}) {
           setShowWebView(true);
 
           setLinkpay(response?.data);
-          // setModalVisible(true);
+          setModalVisible(true);
           setState({
             ...state,
             isLoading: false,
@@ -769,7 +770,7 @@ export default function CartScreen({navigation}) {
                 <ActivityIndicator size="large" color={COLORS.LIGHTGREEN} />
               </View>
             }
-            // _NO={_Payment_Check_Handle}
+            _NO={_Payment_Check_Handle}
             isModal={modalVisible}
             _Visible={() => setModalVisible(!modalVisible)}
           />

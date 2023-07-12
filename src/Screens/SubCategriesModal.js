@@ -143,14 +143,14 @@ const Styles = StyleSheet.create({
   backgroundImage: {
     height: heightPixel(200),
     justifyContent: 'center',
-    paddingHorizontal: 15,
   },
   headericon: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    // backgroundColor: COLORS.BLACK,
-    // opacity: 0.6,
+    backgroundColor: COLORS.grayWithOpacity,
+    height: heightPixel(200),
+    paddingHorizontal: 15,
   },
   headerTitle: {
     paddingLeft: '4%',

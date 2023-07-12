@@ -233,7 +233,127 @@ export default function OrderDetails({navigation, route}) {
                 </View>
               ))}
             </View>
+            <View style={Styles.PRICEBOX}>
+              <View style={Styles.ROWBOX}>
+                <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                  Item Total
+                </Text>
+                <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                  {`Rs.${OrderHistoryData?.totalAmount}`}
+                </Text>
+              </View>
+              <View style={Styles.ROWBOX}>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    Styles.ROWTEXT,
+                    {
+                      color: COLORS.GRAYDARK,
+                      fontSize: 15,
+                      fontWeight: 'normal',
+                    },
+                  ]}>
+                  Handling Charges{' '}
+                  <Text style={{color: COLORS.GREEN, fontSize: 12}}>
+                    (Rs.24 Saved)
+                  </Text>
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    Styles.ROWTEXT,
+                    {
+                      fontWeight: 'normal',
+                      fontSize: 14,
+                      // textDecorationLine: 'line-through',
+                    },
+                  ]}>
+                  Rs.15{' '}
+                  <Text
+                    style={{
+                      color: COLORS.GREEN,
+                      fontWeight: 'normal',
+                      // textDecorationLine: 'line-through',
+                    }}>
+                    Rs.24
+                  </Text>
+                </Text>
+              </View>
+              <View style={Styles.ROWBOX}>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    Styles.ROWTEXT,
+                    {
+                      color: COLORS.GRAYDARK,
+                      fontSize: 15,
+                      fontWeight: 'normal',
+                    },
+                  ]}>
+                  Delivery Free{' '}
+                  <Text
+                    style={{
+                      color: COLORS.GREEN,
+                      fontSize: 12,
+                      fontWeight: 'normal',
+                    }}>
+                    (Rs.24 Saved)
+                  </Text>
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    Styles.ROWTEXT,
+                    {
+                      fontWeight: 'normal',
+                      fontSize: 14,
+                    },
+                  ]}>
+                  Rs.35{' '}
+                  <Text
+                    style={{
+                      color: COLORS.GREEN,
+                      fontWeight: 'normal',
+                    }}>
+                    Rs.0
+                  </Text>
+                </Text>
+              </View>
+              <View style={Styles.ROWBOX}>
+                <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                  To Pay
+                </Text>
+                <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                  {`Rs.${OrderHistoryData?.totalAmount}`}
+                </Text>
+              </View>
+            </View>
           </View>
+          {OrderHistoryData?.orderStatus === 'Order Packed' ||
+          OrderHistoryData?.orderStatus === 'Delivered' ||
+          OrderHistoryData?.orderStatus === 'Cancelled' ? null : (
+            <TouchableOpacity
+              activeOpacity={0.6}
+              style={{
+                marginTop: 20,
+                width: widthPixel(150),
+                height: heightPixel(50),
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: COLORS.GREEN,
+                borderRadius: 4,
+                alignSelf: 'center',
+              }}>
+              <Text
+                style={{
+                  color: COLORS.WHITE,
+                  fontWeight: '500',
+                  letterSpacing: 0.6,
+                }}>
+                Cancel Booking
+              </Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
       )}
 
@@ -381,5 +501,22 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     elevation: 10,
     marginVertical: 10,
+  },
+  PRICEBOX: {
+    paddingHorizontal: 10,
+    backgroundColor: COLORS.WHITE,
+    elevation: 3,
+    borderRadius: 5,
+    paddingVertical: 10,
+  },
+  ROWBOX: {
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    paddingVertical: 5,
+  },
+  ROWTEXT: {
+    color: COLORS.BLACK,
+    fontWeight: '500',
+    fontSize: fontPixel(17),
   },
 });

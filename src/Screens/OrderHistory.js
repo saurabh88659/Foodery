@@ -40,12 +40,13 @@ export default function OrderHistory({navigation}) {
     const token = await _getStorage('token');
     setIsloading(true);
     console.log(token);
+
     axios
       .get(BASE_URL + `/User/getOrderData`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('order data----------->>', response?.data.message);
+        console.log('order data----------->>', response?.data);
 
         setOrderData(response?.data?.result);
         setIsloading(false);
@@ -187,17 +188,38 @@ export default function OrderHistory({navigation}) {
                     marginVertical: 15,
                     alignItems: 'center',
                   }}>
-                  {item?.orderedProducts?.slice(0, 5).map((value, index) => (
+                  {item?.orderedProducts?.slice(0, 6).map((value, index) => (
                     <View key={index} style={{paddingLeft: 8}}>
                       <Image
                         source={{uri: value?.productId?.productImage}}
-                        style={{height: 35, width: 35, resizeMode: 'contain'}}
+                        style={{
+                          height: 35,
+                          width: 35,
+                          resizeMode: 'contain',
+                        }}
                       />
                     </View>
                   ))}
-                  <View style={{borderWidth: 1, paddingVertical: 10}}>
-                    <Text style={{color: COLORS.BLACK}}>hello</Text>
-                  </View>
+                  {item?.orderedProducts?.length > 6 ? (
+                    <View
+                      style={{
+                        paddingVertical: 4,
+                        paddingHorizontal: 7,
+                        borderRadius: 4,
+                        marginLeft: widthPixel(20),
+                        borderColor: COLORS.GRAYDARK,
+                        alignItems: 'center',
+                        borderWidth: 0.5,
+                      }}>
+                      <Text
+                        style={{
+                          color: COLORS.GRAYDARK,
+                          fontSize: fontPixel(15),
+                        }}>
+                        {`+ ${item?.orderedProducts?.length - 6}`}
+                      </Text>
+                    </View>
+                  ) : null}
                 </View>
               </TouchableOpacity>
             )}
