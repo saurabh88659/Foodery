@@ -64,6 +64,7 @@ export default function CartScreen({navigation}) {
   const [state, setState] = useState({
     isLoading: false,
   });
+
   const [linkpay, setLinkpay] = useState('');
   const [paidmess, setPaidmess] = useState('');
   const [statusId, setStatusId] = useState('');
@@ -219,6 +220,7 @@ export default function CartScreen({navigation}) {
           })
           .then(res => {
             console.log('status----------paid', res?.data);
+            navigation.navigate(Routes.YOUR_ORDER);
           })
           .catch(error => {
             console.log('status catch error', error?.response?.data?.message);
@@ -373,7 +375,7 @@ export default function CartScreen({navigation}) {
             source={{
               uri: linkpay.paymnetProcessUrl,
             }}
-            onNavigationStateChange={handleNavigationStateChange}
+            // onNavigationStateChange={handleNavigationStateChange}
             renderLoading={LoadingIndicatorView}
             startInLoadingState={true}
             style={{flex: 1}}

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   Linking,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
@@ -27,69 +28,94 @@ import Lottie from 'lottie-react-native';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
+import OrderhistoryShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/OrderhistoryShimmerPlaceHolder';
+import {NetInfoCellularGeneration} from '@react-native-community/netinfo';
 
 export default function YourOrder({navigation}) {
   const [visible, setVisible] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
   const [orderdataOne, setOrderdataOne] = useState({});
+  const [catcherror, setcatcherror] = useState('');
   const IsFocused = useIsFocused();
+  const [isloading, setIsloading] = useState(false);
+
+  const [state, setState] = useState({
+    isLoading: false,
+  });
 
   const Locations = useSelector(state => state.locationReducer);
   const cartdatapass = useSelector(state => state.CartDatapassSlices.cartdata);
-  console.log('cartdatapass---------->>>>>', orderdataOne);
 
   useEffect(() => {
-    _Order_Details();
+    if (IsFocused) {
+      _Order_Details();
+    }
   }, [IsFocused]);
 
   const _Order_Details = async () => {
     const token = await _getStorage('token');
     console.log(token);
-    // setIsloading(true);
+    setIsloading(true);
 
     axios
       .get(BASE_URL + `/getPaymentData/${cartdatapass._id}`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('order data- Details---------->>', response?.data?.result);
+        console.log('order data- Details---------->>', response?.data);
         setOrderDetails(response?.data?.result?.orderedProducts);
         setOrderdataOne(response?.data?.result);
-        // setIsloading(false);
+        setIsloading(false);
       })
       .catch(error => {
         console.log(
           'catch error order data Details ------>>>',
-          error.response.data.messsge,
+          error?.response?.data?.message,
         );
-        // setIsloading(false);
+
+        setcatcherror(error?.response?.data?.message);
+
+        setIsloading(false);
       });
   };
 
   const Cancelled_Booking = async () => {
     const token = await _getStorage('token');
+    setState({
+      ...state,
+      isLoading: true,
+    });
 
-    console.log('orderdataOne?._id', orderdataOne?._id);
+    let obgdata = {
+      _id: orderdataOne?._id,
+      orderId: orderdataOne?.orderId,
+    };
+
     axios
-      .put(
-        BASE_URL + `/cancelBooking/${orderdataOne?._id}`,
-        {},
-
-        {
-          headers: {Authorization: `Bearer ${token}`},
-        },
-      )
+      .put(BASE_URL + `/cancelBooking`, obgdata, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
       .then(response => {
         console.log('response cancelled booking', response?.data);
+        setState({
+          ...state,
+          isLoading: false,
+        });
       })
       .catch(error => {
-        console.log('catch cancelled error------->>>>>>', error.response.data);
+        console.log(
+          'catch cancelled error------->>>>>>',
+          error?.response?.data,
+        );
+        setState({
+          ...state,
+          isLoading: false,
+        });
       });
   };
 
   const makePhoneCall = () => {
-    const phoneNumber = '7827902351'; // Replace with the desired phone number
-
+    const phoneNumber = orderdataOne?.storeNumber;
     Linking.openURL(`tel:${phoneNumber}`);
   };
 
@@ -106,10 +132,17 @@ export default function YourOrder({navigation}) {
           />
         }
       />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 20}}>
-        {/* <View style={Styles.bottomNavigationView}>
+      {isloading ? (
+        <OrderhistoryShimmerPlaceHolder />
+      ) : catcherror ? (
+        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+          <Text style={{color: COLORS.GRAYDARK}}>{catcherror}</Text>
+        </View>
+      ) : (
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{paddingBottom: 20}}>
+          {/* <View style={Styles.bottomNavigationView}>
           <View style={Styles.MAPBOX}>
             {Locations && (
               <MapView
@@ -134,233 +167,282 @@ export default function YourOrder({navigation}) {
             )}
           </View>
         </View> */}
-        <View>
-          <View activeOpacity={0.4} style={Styles.QBOXBOT}>
-            <Lottie
-              source={require('../Assets/Lottiejson/58352-delivery-boy.json')}
-              autoPlay
-              loop={true}
-              style={{height: heightPixel(90)}}
-            />
-            <View style={{width: widthPixel(200)}}>
-              <Text style={{fontSize: fontPixel(15), color: COLORS.BLACK}}>
-                Your Delivery Partner will be assigned soon
-              </Text>
-              <Text
-                style={{
-                  fontSize: fontPixel(15),
-                  color: COLORS.BLACK,
-                  paddingTop: 5,
-                }}>
-                +91 7739*******980
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={Styles.CONTEXTONEQ}>
-          <Text style={Styles.TEXTONEQ}>Order Summary</Text>
-        </View>
 
-        <View style={Styles.cartBox}>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingHorizontal: 10,
-              // paddingVertical: 10,
-            }}>
+          <View>
+            <View
+              style={{
+                backgroundColor: COLORS.GREEN,
+                alignItems: 'center',
+                paddingVertical: 20,
+              }}>
+              {orderdataOne?.orderStatus === 'Order Placed' ? (
+                <Text style={Styles.TextSoon}>
+                  Your Order hase been received by store
+                </Text>
+              ) : orderdataOne?.orderStatus === 'Order Packed' ? (
+                <Text style={Styles.TextSoon}>Your Order has been Packed</Text>
+              ) : orderdataOne?.orderStatus === 'Assigned Delivery Partner' ? (
+                <Text style={Styles.TextSoon}>
+                  Your Delivery Partner Will be assigned soon
+                </Text>
+              ) : orderdataOne?.orderStatus === 'Out of Delivery' ? (
+                <Text style={Styles.TextSoon}>
+                  Your Order is out for delivery
+                </Text>
+              ) : (
+                <Text style={Styles.TextSoon}>
+                  Your Order has been Delivered
+                </Text>
+              )}
+            </View>
+
+            {orderdataOne?.orderStatus === 'Delivered' ? (
+              <View style={{alignItems: 'center'}}>
+                <Lottie
+                  source={require('../Assets/Lottiejson/animation_lk12elde.json')}
+                  autoPlay
+                  loop={true}
+                  style={{height: heightPixel(150)}}
+                />
+              </View>
+            ) : (
+              <View activeOpacity={0.4} style={Styles.QBOXBOT}>
+                <Lottie
+                  source={require('../Assets/Lottiejson/58352-delivery-boy.json')}
+                  autoPlay
+                  loop={true}
+                  style={{height: heightPixel(90)}}
+                />
+                <View style={{width: widthPixel(200)}}>
+                  <Text style={{fontSize: fontPixel(15), color: COLORS.BLACK}}>
+                    Your Delivery Partner will be assigned soon
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: fontPixel(15),
+                      color: COLORS.BLACK,
+                      paddingTop: 5,
+                    }}>
+                    +91 7739*******980
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+          <View style={Styles.CONTEXTONEQ}>
+            <Text style={Styles.TEXTONEQ}>Order Summary</Text>
+          </View>
+
+          <View style={Styles.cartBox}>
             <View
               style={{
                 flexDirection: 'row',
-                justifyContent: 'flex-start',
+                justifyContent: 'space-between',
                 alignItems: 'center',
+                paddingHorizontal: 10,
+                // paddingVertical: 10,
               }}>
-              <Image source={Yourordericonebox} style={Styles.iconeimage} />
-              <View style={{paddingLeft: heightPixel(20)}}>
-                <Text style={Styles.TEXTONEQ}>
-                  {orderdataOne?.storeName} Store
-                </Text>
-                <Text
-                  numberOfLines={2}
-                  style={{
-                    color: COLORS.BLACK,
-                    fontSize: fontPixel(14),
-                    width: widthPixel(220),
-                  }}>
-                  By passing data through props, you can send various types of
-                  values, such as strings, numbers, objects,
-                </Text>
-              </View>
-            </View>
-            <TouchableOpacity onPress={makePhoneCall} activeOpacity={0.6}>
-              <Image
-                source={yourirdercallsicon}
-                style={{height: heightPixel(45), width: widthPixel(40)}}
-              />
-            </TouchableOpacity>
-          </View>
-          <View style={Styles.MAINCONTAINERMAIN}>
-            {orderDetails.map((item, index) => (
-              <View key={index} style={Styles.MAINBOX}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                  }}>
-                  <Image
-                    source={{uri: item?.productId?.productImage}}
-                    style={Styles.IMAGESTYLES}
-                  />
-                  <View style={Styles.QTEXTBOX}>
-                    <View>
-                      <Text numberOfLines={1} style={Styles.QTEXTNAME}>
-                        {item?.productId?.productName}
-                      </Text>
-                      <Text
-                        style={
-                          Styles.QSUBTITEL
-                        }>{`Pack:${item?.productId?.productUnit}`}</Text>
-                      <Text
-                        style={
-                          Styles.QSUBTITEL
-                        }>{`Pack:${item?.productId?.productUnit}`}</Text>
-                      <Text
-                        style={
-                          Styles.QSUBTITEL
-                        }>{`Qty: ${item?.quantity} Pack`}</Text>
-                    </View>
-                    <Text
-                      style={
-                        Styles.QPRICES
-                      }>{`Total: ₹${item?.productId?.productPrice}`}</Text>
-                  </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'flex-start',
+                  alignItems: 'center',
+                }}>
+                <Image source={Yourordericonebox} style={Styles.iconeimage} />
+                <View style={{paddingLeft: heightPixel(20)}}>
+                  <Text style={Styles.TEXTONEQ}>
+                    {orderdataOne?.storeName} Store
+                  </Text>
+                  <Text
+                    numberOfLines={2}
+                    style={{
+                      color: COLORS.BLACK,
+                      fontSize: fontPixel(14),
+                      width: widthPixel(220),
+                    }}>
+                    By passing data through props, you can send various types of
+                    values, such as strings, numbers, objects,
+                  </Text>
                 </View>
               </View>
-            ))}
+              <TouchableOpacity onPress={makePhoneCall} activeOpacity={0.6}>
+                <Image
+                  source={yourirdercallsicon}
+                  style={{height: heightPixel(45), width: widthPixel(40)}}
+                />
+              </TouchableOpacity>
+            </View>
+            <View style={Styles.MAINCONTAINERMAIN}>
+              {orderDetails?.map((item, index) => (
+                <View key={index} style={Styles.MAINBOX}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Image
+                      source={{uri: item?.productId?.productImage}}
+                      style={Styles.IMAGESTYLES}
+                    />
+                    <View style={Styles.QTEXTBOX}>
+                      <View>
+                        <Text numberOfLines={1} style={Styles.QTEXTNAME}>
+                          {item?.productId?.productName}
+                        </Text>
+                        <Text
+                          style={
+                            Styles.QSUBTITEL
+                          }>{`Pack:${item?.productId?.productUnit}`}</Text>
+                        <Text
+                          style={
+                            Styles.QSUBTITEL
+                          }>{`Pack:${item?.productId?.productUnit}`}</Text>
+                        <Text
+                          style={
+                            Styles.QSUBTITEL
+                          }>{`Qty: ${item?.quantity} Pack`}</Text>
+                      </View>
+                      <Text
+                        style={
+                          Styles.QPRICES
+                        }>{`Total: ₹${item?.productId?.productPrice}`}</Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
+            </View>
+            <View style={Styles.PRICEBOX}>
+              <View style={Styles.ROWBOX}>
+                <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                  Item Total
+                </Text>
+                <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                  {`Rs.${'322'}`}
+                </Text>
+              </View>
+              <View style={Styles.ROWBOX}>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    Styles.ROWTEXT,
+                    {
+                      color: COLORS.GRAYDARK,
+                      fontSize: 15,
+                      fontWeight: 'normal',
+                    },
+                  ]}>
+                  Handling Charges{' '}
+                  <Text style={{color: COLORS.GREEN, fontSize: 12}}>
+                    (Rs.24 Saved)
+                  </Text>
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    Styles.ROWTEXT,
+                    {
+                      fontWeight: 'normal',
+                      fontSize: 14,
+                      // textDecorationLine: 'line-through',
+                    },
+                  ]}>
+                  Rs.15{' '}
+                  <Text
+                    style={{
+                      color: COLORS.GREEN,
+                      fontWeight: 'normal',
+                      // textDecorationLine: 'line-through',
+                    }}>
+                    Rs.24
+                  </Text>
+                </Text>
+              </View>
+              <View style={Styles.ROWBOX}>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    Styles.ROWTEXT,
+                    {
+                      color: COLORS.GRAYDARK,
+                      fontSize: 15,
+                      fontWeight: 'normal',
+                    },
+                  ]}>
+                  Delivery Free{' '}
+                  <Text
+                    style={{
+                      color: COLORS.GREEN,
+                      fontSize: 12,
+                      fontWeight: 'normal',
+                    }}>
+                    (Rs.24 Saved)
+                  </Text>
+                </Text>
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    Styles.ROWTEXT,
+                    {
+                      fontWeight: 'normal',
+                      fontSize: 14,
+                    },
+                  ]}>
+                  Rs.35{' '}
+                  <Text
+                    style={{
+                      color: COLORS.GREEN,
+                      fontWeight: 'normal',
+                    }}>
+                    Rs.0
+                  </Text>
+                </Text>
+              </View>
+              <View style={Styles.ROWBOX}>
+                <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                  To Pay
+                </Text>
+                <Text numberOfLines={1} style={Styles.ROWTEXT}>
+                  {`Rs.${'2555'}`}
+                </Text>
+              </View>
+            </View>
           </View>
-          <View style={Styles.PRICEBOX}>
-            <View style={Styles.ROWBOX}>
-              <Text numberOfLines={1} style={Styles.ROWTEXT}>
-                Item Total
-              </Text>
-              <Text numberOfLines={1} style={Styles.ROWTEXT}>
-                {`Rs.${'322'}`}
-              </Text>
-            </View>
-            <View style={Styles.ROWBOX}>
-              <Text
-                numberOfLines={1}
-                style={[
-                  Styles.ROWTEXT,
-                  {
-                    color: COLORS.GRAYDARK,
-                    fontSize: 15,
-                    fontWeight: 'normal',
-                  },
-                ]}>
-                Handling Charges{' '}
-                <Text style={{color: COLORS.GREEN, fontSize: 12}}>
-                  (Rs.24 Saved)
-                </Text>
-              </Text>
-              <Text
-                numberOfLines={1}
-                style={[
-                  Styles.ROWTEXT,
-                  {
-                    fontWeight: 'normal',
-                    fontSize: 14,
-                    // textDecorationLine: 'line-through',
-                  },
-                ]}>
-                Rs.15{' '}
-                <Text
-                  style={{
-                    color: COLORS.GREEN,
-                    fontWeight: 'normal',
-                    // textDecorationLine: 'line-through',
-                  }}>
-                  Rs.24
-                </Text>
-              </Text>
-            </View>
-            <View style={Styles.ROWBOX}>
-              <Text
-                numberOfLines={1}
-                style={[
-                  Styles.ROWTEXT,
-                  {
-                    color: COLORS.GRAYDARK,
-                    fontSize: 15,
-                    fontWeight: 'normal',
-                  },
-                ]}>
-                Delivery Free{' '}
-                <Text
-                  style={{
-                    color: COLORS.GREEN,
-                    fontSize: 12,
-                    fontWeight: 'normal',
-                  }}>
-                  (Rs.24 Saved)
-                </Text>
-              </Text>
-              <Text
-                numberOfLines={1}
-                style={[
-                  Styles.ROWTEXT,
-                  {
-                    fontWeight: 'normal',
-                    fontSize: 14,
-                  },
-                ]}>
-                Rs.35{' '}
-                <Text
-                  style={{
-                    color: COLORS.GREEN,
-                    fontWeight: 'normal',
-                  }}>
-                  Rs.0
-                </Text>
-              </Text>
-            </View>
-            <View style={Styles.ROWBOX}>
-              <Text numberOfLines={1} style={Styles.ROWTEXT}>
-                To Pay
-              </Text>
-              <Text numberOfLines={1} style={Styles.ROWTEXT}>
-                {`Rs.${'2555'}`}
-              </Text>
-            </View>
-          </View>
-        </View>
-        {orderdataOne?.orderStatus === 'Order Placed' ? (
-          <TouchableOpacity
-            onPress={Cancelled_Booking}
-            activeOpacity={0.6}
-            style={{
-              marginTop: 20,
-              width: widthPixel(150),
-              height: heightPixel(50),
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: COLORS.GREEN,
-              borderRadius: 4,
-              alignSelf: 'center',
-            }}>
-            <Text
+          {orderdataOne?.orderStatus === 'Order Placed' ? (
+            <TouchableOpacity
+              onPress={Cancelled_Booking}
+              activeOpacity={0.6}
               style={{
-                color: COLORS.WHITE,
-                fontWeight: '500',
-                letterSpacing: 0.6,
+                marginTop: 20,
+                width: widthPixel(150),
+                height: heightPixel(50),
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: COLORS.GREEN,
+                borderRadius: 4,
+                alignSelf: 'center',
               }}>
-              Cancel Booking
-            </Text>
-          </TouchableOpacity>
-        ) : null}
-      </ScrollView>
+              {state.isLoading ? (
+                <View style={Styles.activStylesIndicator}>
+                  <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                  <Text style={Styles.activeStylesTitleIndicator}>
+                    Please wait....
+                  </Text>
+                </View>
+              ) : (
+                <Text
+                  style={{
+                    color: COLORS.WHITE,
+                    fontWeight: '500',
+                    letterSpacing: 0.6,
+                  }}>
+                  Cancel Booking
+                </Text>
+              )}
+            </TouchableOpacity>
+          ) : null}
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -483,5 +565,21 @@ const Styles = StyleSheet.create({
     color: COLORS.BLACK,
     fontWeight: '500',
     fontSize: fontPixel(17),
+  },
+  activStylesIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  activeStylesTitleIndicator: {
+    color: COLORS.WHITE,
+    fontSize: fontPixel(15),
+    paddingLeft: 5,
+  },
+  TextSoon: {
+    color: COLORS.WHITE,
+    fontSize: fontPixel(20),
+    fontWeight: '500',
+    letterSpacing: 0.6,
   },
 });
