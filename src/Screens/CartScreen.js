@@ -12,8 +12,11 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 import MyHeader from '../Components/MyHeader';
+import Collapsible from 'react-native-collapsible';
+
 import {
   BASE_URL,
+  EntypoIcon,
   FontAwesomeIcon,
   IonIcon,
   MaterialCommunityIconsTwo,
@@ -29,6 +32,8 @@ import Productinfo from '../Components/Productinfo';
 import Button from '../Components/Button';
 import Routes from '../Navigation/Routes';
 import {useSelector} from 'react-redux';
+import {BottomSheet} from 'react-native-btr';
+
 import {
   addToCart,
   decrementQuantity,
@@ -51,6 +56,7 @@ import {WebView} from 'react-native-webview';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import Toast from 'react-native-toast-message';
 import {setCartdata} from '../Redux/ReducerSlice/CartDatapassSlices';
+import GlobelStyles from '../utils/GlobelStyles';
 
 export default function CartScreen({navigation}) {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
@@ -61,6 +67,8 @@ export default function CartScreen({navigation}) {
   const [orderKey, setOrderKey] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   // const [payLoading, setPayLoading] = useState(true);
+  const [visible, setVisible] = useState(false);
+
   const [state, setState] = useState({
     isLoading: false,
   });
@@ -71,6 +79,8 @@ export default function CartScreen({navigation}) {
   const [isProfile, setIsProfile] = useState('');
   const webviewRef = useRef(null);
   const [showWebView, setShowWebView] = useState(false);
+  const [PrductByiDetails, setPrductByiDetails] = useState('');
+  const [collapsed, setCollapsed] = useState(true);
 
   console.log('orderKey------>>', orderKey);
 
@@ -120,7 +130,7 @@ export default function CartScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        // console.log('_Order_Might_Missed=========', response.data.categoryData);
+        console.log('_Order_Might_Missed=========', response.data.categoryData);
         setOrder_Might_Missed(response.data.categoryData);
       })
       .catch(error => {
@@ -172,7 +182,7 @@ export default function CartScreen({navigation}) {
 
   const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
 
-  console.log('newAddress', newAddress);
+  // console.log('newAddress', newAddress);
 
   const _Handle_Cart_Data = async () => {
     const token = await _getStorage('token');
@@ -205,7 +215,6 @@ export default function CartScreen({navigation}) {
       status: 'Successful',
     };
     console.log('hey---------DGGGGGGGGGGGGGGGGGGGGGGG', statusobj);
-
     axios
       .post(BASE_URL + `/addOrder`, objcartdata, {
         headers: {Authorization: `Bearer ${token}`},
@@ -365,6 +374,14 @@ export default function CartScreen({navigation}) {
     );
   }
 
+  const toggleBottomNavigationView = item => {
+    setVisible(!visible);
+    setPrductByiDetails(item);
+  };
+  const toggleExpanded = () => {
+    setCollapsed(!collapsed);
+  };
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       {showWebView ? (
@@ -502,6 +519,7 @@ export default function CartScreen({navigation}) {
                     <View key={index}>
                       <Productinfo
                         key={index}
+                        onPress={() => toggleBottomNavigationView(item)}
                         HeartUI={
                           <View>
                             {wishlist.some(value => value?._id == item?._id) ? (
@@ -620,7 +638,7 @@ export default function CartScreen({navigation}) {
                   ]}>
                   <Text style={Styles.TOTALTITLES}>To pay</Text>
                   <Text style={[Styles.TOTALTITLES, {fontSize: fontPixel(20)}]}>
-                    {`Rs.${totalprice}`}
+                    {`Rs.${totalprice + 13}`}
                   </Text>
                 </View>
                 <View style={Styles.SAVETHISORDERTITLE}>
@@ -763,7 +781,6 @@ export default function CartScreen({navigation}) {
               </TouchableOpacity>
             </View>
           )}
-
           <MyModalinfo
             type={'payment_check'}
             _YES={() => setModalVisible(!modalVisible)}
@@ -776,6 +793,229 @@ export default function CartScreen({navigation}) {
             isModal={modalVisible}
             _Visible={() => setModalVisible(!modalVisible)}
           />
+
+          <BottomSheet
+            visible={visible}
+            onBackButtonPress={toggleBottomNavigationView}
+            onBackdropPress={toggleBottomNavigationView}>
+            <View>
+              <TouchableOpacity
+                onPress={() => setVisible(!visible)}
+                activeOpacity={0.6}
+                style={Styles.CLOSEBTN}>
+                <EntypoIcon title="cross" size={25} IconColor={COLORS.WHITE} />
+              </TouchableOpacity>
+              <View
+                style={{
+                  backgroundColor: COLORS.WHITE,
+                  height: heightPixel(700),
+                  marginHorizontal: 10,
+                  borderTopRightRadius: 15,
+                  borderTopLeftRadius: 15,
+                }}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{}}>
+                  <Image
+                    source={{uri: PrductByiDetails?.productImage}}
+                    style={GlobelStyles.Modalimagestyle}
+                  />
+                  <View style={{marginHorizontal: 20, marginTop: '5%'}}>
+                    <Text numberOfLines={4} style={GlobelStyles.MODALTITLE}>
+                      {PrductByiDetails?.productName}
+                    </Text>
+                    <Text numberOfLines={3} style={GlobelStyles.SUBMODALTITLE}>
+                      {PrductByiDetails?.productUnit}
+                    </Text>
+                    <View style={GlobelStyles.ACTIONMAINCONQ}>
+                      <View style={GlobelStyles.MAINQ}>
+                        <Text style={GlobelStyles.MAINQTEXT}>
+                          {PrductByiDetails?.productPrice}
+                        </Text>
+                        <Text style={GlobelStyles.MAINQDISCOUNT}>
+                          {PrductByiDetails?.discountPrice}
+                        </Text>
+                      </View>
+
+                      <View>
+                        {productDataByRe.map((value, index) => (
+                          <View key={value?._id}>
+                            {PrductByiDetails?._id == value?._id ? (
+                              <View style={Styles.INCREAMENTBOTTONMAIN}>
+                                <TouchableOpacity
+                                  onPress={() => decreaseQuantity(value)}>
+                                  <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                                </TouchableOpacity>
+                                <Text style={Styles.ITEMTITEL}>
+                                  {value?.quantity}
+                                </Text>
+                                <TouchableOpacity
+                                  onPress={() => increaseQuantity(value)}>
+                                  <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                                </TouchableOpacity>
+                              </View>
+                            ) : null}
+                          </View>
+                        ))}
+                        {productDataByRe.some(
+                          value => value._id == PrductByiDetails._id,
+                        ) ? null : (
+                          <TouchableOpacity
+                            onPress={() => addItemToCart(PrductByiDetails)}
+                            activeOpacity={0.5}
+                            style={GlobelStyles.ADDBOTTONSTYL}>
+                            <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+
+                    <View style={GlobelStyles.MAINQCON}>
+                      <Text numberOfLines={3} style={GlobelStyles.MAINQTEXTDEL}>
+                        Product Details
+                      </Text>
+                      <Text
+                        numberOfLines={3}
+                        style={{fontSize: fontPixel(14), color: COLORS.BLACK}}>
+                        Shelf Life
+                      </Text>
+                      <Text numberOfLines={3} style={GlobelStyles.MAINQTEXTDAY}>
+                        5 Days
+                      </Text>
+                      <TouchableOpacity
+                        onPress={toggleExpanded}
+                        style={GlobelStyles.MAINQTEXTVIEWDETAILS}>
+                        <Text
+                          numberOfLines={3}
+                          style={GlobelStyles.MAINQVIEWMORE}>
+                          View More Details
+                        </Text>
+                        <IonIcon
+                          title={
+                            collapsed
+                              ? 'chevron-down-sharp'
+                              : 'chevron-up-sharp'
+                          }
+                          size={16}
+                          IconColor={COLORS.PURPLE}
+                        />
+                      </TouchableOpacity>
+                      <Collapsible collapsed={collapsed}>
+                        <View style={GlobelStyles.EXPLOREBOX}>
+                          <Text style={GlobelStyles.manufTitle}>
+                            Manufacturer Details
+                          </Text>
+                          <Text
+                            numberOfLines={2}
+                            style={GlobelStyles.EXPLORETITLESUB}>
+                            {PrductByiDetails?.productDescription}
+                          </Text>
+                        </View>
+                      </Collapsible>
+                    </View>
+                    <View>
+                      <Text numberOfLines={3} style={GlobelStyles.MAINQSIMILAR}>
+                        Similar Product
+                      </Text>
+                      <FlatList
+                        keyExtractor={(item, index) => index.toString()}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{paddingBottom: 5}}
+                        horizontal
+                        data={[1, 2, 3, 4]}
+                        renderItem={({item, index}) => (
+                          <View key={index}>
+                            <Productinfo
+                              key={index}
+                              HeartUI={
+                                <View>
+                                  {wishlist.some(
+                                    value => value?._id == item?._id,
+                                  ) ? (
+                                    <TouchableOpacity
+                                      onPress={() =>
+                                        removeItemFromWishlist(item)
+                                      }
+                                      style={[Styles.CONTAINERHEART]}>
+                                      <FontAwesomeIcon
+                                        title={'heart'}
+                                        size={20}
+                                        IconColor={COLORS.BROWN}
+                                      />
+                                    </TouchableOpacity>
+                                  ) : (
+                                    <TouchableOpacity
+                                      onPress={() => addtoWishlist(item)}
+                                      style={[Styles.CONTAINERHEART]}>
+                                      <FontAwesomeIcon
+                                        title={'heart-o'}
+                                        size={20}
+                                        IconColor={COLORS.GRAYDARK}
+                                      />
+                                    </TouchableOpacity>
+                                  )}
+                                </View>
+                              }
+                              Productimage={{uri: item?.productImage}}
+                              ProductName={item?.productName}
+                              ProductSubName={item?.productUnit}
+                              discountPrice={item?.discountPrice}
+                              ProductPrice={item?.productPrice}
+                              UIBotton={
+                                <View>
+                                  {productDataByRe.map((value, index) => (
+                                    <View key={value?._id}>
+                                      {item?._id == value?._id ? (
+                                        <View
+                                          style={Styles.INCREAMENTBOTTONMAIN}>
+                                          <TouchableOpacity
+                                            onPress={() =>
+                                              decreaseQuantity(value)
+                                            }>
+                                            <Text style={Styles.DCREAMENTTITLE}>
+                                              -
+                                            </Text>
+                                          </TouchableOpacity>
+                                          <Text style={Styles.ITEMTITEL}>
+                                            {value?.quantity}
+                                          </Text>
+                                          <TouchableOpacity
+                                            onPress={() =>
+                                              increaseQuantity(value)
+                                            }>
+                                            <Text
+                                              style={Styles.INCREAMENTTITLE}>
+                                              +
+                                            </Text>
+                                          </TouchableOpacity>
+                                        </View>
+                                      ) : null}
+                                    </View>
+                                  ))}
+                                  {productDataByRe.some(
+                                    value => value._id == item._id,
+                                  ) ? null : (
+                                    <TouchableOpacity
+                                      onPress={() => addItemToCart(item)}
+                                      activeOpacity={0.5}
+                                      style={GlobelStyles.ADDBOTTONSTYL}>
+                                      <Text style={Styles.BOTTONTEXTSTYL}>
+                                        ADD
+                                      </Text>
+                                    </TouchableOpacity>
+                                  )}
+                                </View>
+                              }
+                            />
+                          </View>
+                        )}
+                      />
+                    </View>
+                  </View>
+                </ScrollView>
+              </View>
+            </View>
+          </BottomSheet>
         </View>
       )}
       <Toast />
@@ -1034,5 +1274,15 @@ const Styles = StyleSheet.create({
   ActivityIndicatorStyle: {
     flex: 1,
     justifyContent: 'center',
+  },
+  CLOSEBTN: {
+    backgroundColor: COLORS.BLACK,
+    height: heightPixel(50),
+    width: widthPixel(50),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginBottom: 10,
   },
 });

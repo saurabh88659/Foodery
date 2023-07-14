@@ -58,7 +58,7 @@ const GlobelStyles = StyleSheet.create({
     width: widthPixel(400),
     resizeMode: 'contain',
     alignSelf: 'center',
-    // marginTop: '4%',
+    marginTop: '4%',
   },
   MODALTITLE: {
     color: COLORS.BLACK,

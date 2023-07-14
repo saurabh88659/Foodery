@@ -25,10 +25,10 @@ export default function AddressScreen({navigation}) {
   const [selectedValue, setSelectedValue] = useState('');
 
   const Locations = useSelector(state => state.locationReducer);
+
   const addressCurrent = useSelector(
     state => state.AddressLSlice.currentAddress,
   );
-  console.log('addressCurrent==============>>>>>', checked);
 
   useEffect(() => {
     geoCoding();
@@ -125,7 +125,7 @@ export default function AddressScreen({navigation}) {
               marginHorizontal: 5,
               textAlign: 'left',
             }}>
-            Noida sector 62 Noida sector 62Noida sector sector 62Noida sector
+            {addressCurrent}
           </Text>
         </View> */}
       </View>

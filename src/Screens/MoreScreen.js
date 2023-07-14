@@ -25,9 +25,11 @@ import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import MyModalinfo from '../Components/MyModalinfo';
 import Routes from '../Navigation/Routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useSelector} from 'react-redux';
 
 export default function MoreScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
+  const profiledata = useSelector(state => state.ProfileSlice.profiledata);
 
   const _Logout = async () => {
     await AsyncStorage.removeItem('token');
@@ -36,6 +38,18 @@ export default function MoreScreen({navigation}) {
     navigation.navigate(Routes.LOG_IN_SCREEN);
   };
 
+  const getGreeting = () => {
+    const currentHour = new Date().getHours();
+    if (currentHour >= 5 && currentHour < 12) {
+      return 'Good morning';
+    } else if (currentHour >= 12 && currentHour < 18) {
+      return 'Good afternoon';
+    } else {
+      return 'Good evening';
+    }
+  };
+
+  const greeting = getGreeting();
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <View style={Styles.MainBOx}>
@@ -44,7 +58,9 @@ export default function MoreScreen({navigation}) {
             onPress={() => navigation.navigate(Routes.HOME_SCREEN)}>
             <EntypoIcon title="cross" size={35} IconColor={COLORS.GRAYDARK} />
           </TouchableOpacity>
-          <Text style={Styles.HEADERTITLE}>Good Morning Akila!</Text>
+          <Text style={Styles.HEADERTITLE}>
+            {greeting} {profiledata?.name}!
+          </Text>
         </View>
         <ScrollView>
           <TouchableOpacity
@@ -192,8 +208,8 @@ const Styles = StyleSheet.create({
     justifyContent: 'center',
   },
   iconstyle: {
-    height: heightPixel(55),
-    width: widthPixel(50),
+    height: heightPixel(45),
+    width: widthPixel(40),
     resizeMode: 'contain',
   },
   boxTitle: {

@@ -44,6 +44,7 @@ import {
   generousvegetablicon,
   SimpleToast,
   BASE_URL,
+  EntypoIcon,
 } from '../utils/Const';
 import Collapsible from 'react-native-collapsible';
 import MyModalinfo from '../Components/MyModalinfo';
@@ -67,6 +68,8 @@ import {
   removeFromWishlist,
 } from '../Redux/ReducerSlice/WishlistReducerSlice';
 import {checkLocationEnabled} from '../utils/Handler/Locationhandles';
+import {BottomSheet} from 'react-native-btr';
+import GlobelStyles from '../utils/GlobelStyles';
 
 const {diffClamp} = Animated;
 const headerHeight = 58 * 2;
@@ -88,6 +91,9 @@ export default function HomeScreen({navigation}) {
   const [nuts_and_Dry_Cat, setNuts_and_Dry_Cat] = useState([]);
   const [order_Again, setOrder_Again] = useState([]);
   const dispatch = useDispatch();
+  const [PrductByiDetails, setPrductByiDetails] = useState('');
+  // const [collapsed, setCollapsed] = useState(true);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -250,7 +256,7 @@ export default function HomeScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('hey=========', response?.data?.result);
+        console.log('ORDER GAAIN=========', response?.data?.result);
         setOrder_Again(response?.data?.result);
       })
       .catch(error => {
@@ -285,6 +291,16 @@ export default function HomeScreen({navigation}) {
       SimpleToast({title: 'removed from the wishlist.', isLong: true});
     }
   };
+
+  const toggleBottomNavigationView = item => {
+    setVisible(!visible);
+    setPrductByiDetails(item);
+    console.log('heyyyyyyyyyyyyyyy', item.productId.productImage);
+  };
+  const toggleExpandedOne = () => {
+    setCollapsed(!collapsed);
+  };
+
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
@@ -477,6 +493,9 @@ export default function HomeScreen({navigation}) {
                 <View key={index}>
                   <Productinfo
                     key={index}
+                    onPress={() => {
+                      toggleBottomNavigationView(item);
+                    }}
                     HeartUI={
                       <View>
                         {wishlist.some(value => value?._id == item?._id) ? (
@@ -824,6 +843,230 @@ export default function HomeScreen({navigation}) {
               </View>
             }
           />
+          <BottomSheet
+            visible={visible}
+            onBackButtonPress={toggleBottomNavigationView}
+            onBackdropPress={toggleBottomNavigationView}>
+            <View>
+              <TouchableOpacity
+                onPress={() => setVisible(!visible)}
+                activeOpacity={0.6}
+                style={Styles.CLOSEBTN}>
+                <EntypoIcon title="cross" size={25} IconColor={COLORS.WHITE} />
+              </TouchableOpacity>
+              <View
+                style={{
+                  backgroundColor: COLORS.WHITE,
+                  height: heightPixel(700),
+                  marginHorizontal: 10,
+                  borderTopRightRadius: 15,
+                  borderTopLeftRadius: 15,
+                }}>
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={{}}>
+                  <Image
+                    source={{uri: PrductByiDetails?.productId?.productImage}}
+                    style={GlobelStyles.Modalimagestyle}
+                  />
+                  <View style={{marginHorizontal: 20, marginTop: '5%'}}>
+                    <Text numberOfLines={4} style={GlobelStyles.MODALTITLE}>
+                      {PrductByiDetails?.productId?.productName}
+                    </Text>
+                    <Text numberOfLines={3} style={GlobelStyles.SUBMODALTITLE}>
+                      {PrductByiDetails?.productId?.productUnit}
+                    </Text>
+                    <View style={GlobelStyles.ACTIONMAINCONQ}>
+                      <View style={GlobelStyles.MAINQ}>
+                        <Text style={GlobelStyles.MAINQTEXT}>
+                          {PrductByiDetails?.productId?.productPrice}
+                        </Text>
+                        <Text style={GlobelStyles.MAINQDISCOUNT}>
+                          {PrductByiDetails?.productId?.discountPrice}
+                        </Text>
+                      </View>
+
+                      <View>
+                        {cartdata.map((value, index) => (
+                          <View key={value?._id}>
+                            {PrductByiDetails?._id == value?._id ? (
+                              <View style={Styles.INCREAMENTBOTTONMAIN}>
+                                <TouchableOpacity
+                                  onPress={() => decreaseQuantity(value)}>
+                                  <Text style={Styles.DCREAMENTTITLE}>-</Text>
+                                </TouchableOpacity>
+                                <Text style={Styles.ITEMTITEL}>
+                                  {value?.quantity}
+                                </Text>
+                                <TouchableOpacity
+                                  onPress={() => increaseQuantity(value)}>
+                                  <Text style={Styles.INCREAMENTTITLE}>+</Text>
+                                </TouchableOpacity>
+                              </View>
+                            ) : null}
+                          </View>
+                        ))}
+                        {cartdata.some(
+                          value => value._id == PrductByiDetails._id,
+                        ) ? null : (
+                          <TouchableOpacity
+                            onPress={() => addItemToCart(PrductByiDetails)}
+                            activeOpacity={0.5}
+                            style={GlobelStyles.ADDBOTTONSTYL}>
+                            <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                          </TouchableOpacity>
+                        )}
+                      </View>
+                    </View>
+
+                    <View style={GlobelStyles.MAINQCON}>
+                      <Text numberOfLines={3} style={GlobelStyles.MAINQTEXTDEL}>
+                        Product Details
+                      </Text>
+                      <Text
+                        numberOfLines={3}
+                        style={{fontSize: fontPixel(14), color: COLORS.BLACK}}>
+                        Shelf Life
+                      </Text>
+                      <Text numberOfLines={3} style={GlobelStyles.MAINQTEXTDAY}>
+                        5 Days
+                      </Text>
+                      <TouchableOpacity
+                        onPress={toggleExpandedOne}
+                        style={GlobelStyles.MAINQTEXTVIEWDETAILS}>
+                        <Text
+                          numberOfLines={3}
+                          style={GlobelStyles.MAINQVIEWMORE}>
+                          View More Details
+                        </Text>
+                        <IonIcon
+                          title={
+                            collapsed
+                              ? 'chevron-down-sharp'
+                              : 'chevron-up-sharp'
+                          }
+                          size={16}
+                          IconColor={COLORS.PURPLE}
+                        />
+                      </TouchableOpacity>
+                      <Collapsible collapsed={collapsed}>
+                        <View style={GlobelStyles.EXPLOREBOX}>
+                          <Text style={GlobelStyles.manufTitle}>
+                            Manufacturer Details
+                          </Text>
+                          <Text
+                            numberOfLines={2}
+                            style={GlobelStyles.EXPLORETITLESUB}>
+                            {PrductByiDetails?.productDescription}
+                          </Text>
+                        </View>
+                      </Collapsible>
+                    </View>
+                    <View>
+                      <Text numberOfLines={3} style={GlobelStyles.MAINQSIMILAR}>
+                        Similar Product
+                      </Text>
+                      <FlatList
+                        keyExtractor={(item, index) => index.toString()}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{paddingBottom: 5}}
+                        horizontal
+                        data={[1, 2, 3, 4]}
+                        renderItem={({item, index}) => (
+                          <View key={index}>
+                            <Productinfo
+                              key={index}
+                              HeartUI={
+                                <View>
+                                  {wishlist.some(
+                                    value => value?._id == item?._id,
+                                  ) ? (
+                                    <TouchableOpacity
+                                      onPress={() =>
+                                        removeItemFromWishlist(item)
+                                      }
+                                      style={[Styles.CONTAINERHEART]}>
+                                      <FontAwesomeIcon
+                                        title={'heart'}
+                                        size={20}
+                                        IconColor={COLORS.BROWN}
+                                      />
+                                    </TouchableOpacity>
+                                  ) : (
+                                    <TouchableOpacity
+                                      onPress={() => addtoWishlist(item)}
+                                      style={[Styles.CONTAINERHEART]}>
+                                      <FontAwesomeIcon
+                                        title={'heart-o'}
+                                        size={20}
+                                        IconColor={COLORS.GRAYDARK}
+                                      />
+                                    </TouchableOpacity>
+                                  )}
+                                </View>
+                              }
+                              Productimage={{uri: item?.productImage}}
+                              ProductName={item?.productName}
+                              ProductSubName={item?.productUnit}
+                              discountPrice={item?.discountPrice}
+                              ProductPrice={item?.productPrice}
+                              UIBotton={
+                                <View>
+                                  {cartdata.map((value, index) => (
+                                    <View key={value?._id}>
+                                      {item?._id == value?._id ? (
+                                        <View
+                                          style={Styles.INCREAMENTBOTTONMAIN}>
+                                          <TouchableOpacity
+                                            onPress={() =>
+                                              decreaseQuantity(value)
+                                            }>
+                                            <Text style={Styles.DCREAMENTTITLE}>
+                                              -
+                                            </Text>
+                                          </TouchableOpacity>
+                                          <Text style={Styles.ITEMTITEL}>
+                                            {value?.quantity}
+                                          </Text>
+                                          <TouchableOpacity
+                                            onPress={() =>
+                                              increaseQuantity(value)
+                                            }>
+                                            <Text
+                                              style={Styles.INCREAMENTTITLE}>
+                                              +
+                                            </Text>
+                                          </TouchableOpacity>
+                                        </View>
+                                      ) : null}
+                                    </View>
+                                  ))}
+                                  {cartdata.some(
+                                    value => value._id == item._id,
+                                  ) ? null : (
+                                    <TouchableOpacity
+                                      onPress={() =>
+                                        addItemToCart(PrductByiDetails)
+                                      }
+                                      activeOpacity={0.5}
+                                      style={GlobelStyles.ADDBOTTONSTYL}>
+                                      <Text style={Styles.BOTTONTEXTSTYL}>
+                                        ADD
+                                      </Text>
+                                    </TouchableOpacity>
+                                  )}
+                                </View>
+                              }
+                            />
+                          </View>
+                        )}
+                      />
+                    </View>
+                  </View>
+                </ScrollView>
+              </View>
+            </View>
+          </BottomSheet>
         </SafeAreaView>
       ) : (
         <HomeShimmerPlaceHolder />
@@ -924,16 +1167,17 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   CATBOXMAINSTYLS: {
-    height: heightPixel(80),
-    width: widthPixel(80),
+    height: heightPixel(60),
+    width: widthPixel(60),
     backgroundColor: COLORS.LIGHTGREEN,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: heightPixel(screenWidth),
   },
   IMAGEALLCATLOGO: {
-    height: heightPixel(50),
-    width: widthPixel(50),
+    height: heightPixel(35),
+    width: widthPixel(35),
+    resizeMode: 'contain',
   },
   CATTITLESTYLS: {
     fontWeight: '500',
@@ -968,12 +1212,13 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
   },
   EXPLOREICON: {
-    height: heightPixel(80),
-    width: widthPixel(80),
+    height: heightPixel(60),
+    width: widthPixel(60),
     backgroundColor: COLORS.LIGHTGREEN,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: heightPixel(screenWidth),
+    resizeMode: 'contain',
   },
 
   TOGGLEEXPOSTYLS: {
@@ -1112,6 +1357,7 @@ const Styles = StyleSheet.create({
     justifyContent: 'flex-start',
     flexWrap: 'wrap',
     alignItems: 'center',
+    paddingHorizontal: 2,
   },
   GREENMAINBOXMODAL: {
     marginTop: 30,
@@ -1119,8 +1365,8 @@ const Styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   MODALBOX: {
-    height: heightPixel(70),
-    width: widthPixel(70),
+    height: heightPixel(60),
+    width: widthPixel(60),
     backgroundColor: COLORS.LIGHTGREEN,
     alignItems: 'center',
     justifyContent: 'center',
@@ -1135,4 +1381,14 @@ const Styles = StyleSheet.create({
     width: 70,
   },
   CONTAINERHEART: {alignItems: 'flex-end', margin: 5},
+  CLOSEBTN: {
+    backgroundColor: COLORS.BLACK,
+    height: heightPixel(50),
+    width: widthPixel(50),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 50,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
 });

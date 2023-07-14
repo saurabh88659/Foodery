@@ -115,6 +115,7 @@ export default function ProdcutsItem({navigation, route}) {
         );
       });
   };
+
   const addItemToCart = item => {
     dispatch(addToCart(item));
   };

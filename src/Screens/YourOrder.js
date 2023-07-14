@@ -29,7 +29,6 @@ import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
 import OrderhistoryShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/OrderhistoryShimmerPlaceHolder';
-import {NetInfoCellularGeneration} from '@react-native-community/netinfo';
 
 export default function YourOrder({navigation}) {
   const [visible, setVisible] = useState(false);
@@ -318,7 +317,7 @@ export default function YourOrder({navigation}) {
                   Item Total
                 </Text>
                 <Text numberOfLines={1} style={Styles.ROWTEXT}>
-                  {`Rs.${'322'}`}
+                  {`Rs.${orderdataOne?.totalAmount}`}
                 </Text>
               </View>
               <View style={Styles.ROWBOX}>
@@ -403,7 +402,7 @@ export default function YourOrder({navigation}) {
                   To Pay
                 </Text>
                 <Text numberOfLines={1} style={Styles.ROWTEXT}>
-                  {`Rs.${'2555'}`}
+                  {`Rs.${orderdataOne?.totalAmount - 24}`}
                 </Text>
               </View>
             </View>

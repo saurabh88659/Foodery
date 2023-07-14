@@ -40,9 +40,9 @@ export default function ProfileScreen({navigation}) {
   const [isProfile, setIsProfile] = useState('');
   const dispatch = useDispatch();
 
-  const profiledata = useSelector(state => state.ProfileSlice);
+  const profiledata = useSelector(state => state.ProfileSlice.profiledata);
 
-  // console.log('profiledata---------', profiledata);
+  console.log('profiledata---DF------', profiledata);
 
   const [state, setState] = useState({
     profileImg: null,
@@ -66,7 +66,7 @@ export default function ProfileScreen({navigation}) {
       .then(response => {
         // console.log('Profile Response', response.data.result);
         setIsProfile(response?.data?.result);
-        dispatch(setProfileData(response?.data));
+        dispatch(setProfileData(response?.data?.result));
 
         setIsLoading(false);
       })

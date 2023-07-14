@@ -13,7 +13,7 @@ import {
 import OffersStack from './OffersStack';
 import WishlistStack from './WishlistStack';
 import CartStack from './CartStack';
-import {Image, View} from 'react-native';
+import {Image, StyleSheet, View} from 'react-native';
 import {heightPixel, widthPixel} from '../Components/Dimensions';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import Routes from './Routes';
@@ -23,6 +23,7 @@ const Tab = createBottomTabNavigator();
 
 const getTabBarVisibility = route => {
   const routeName = getFocusedRouteNameFromRoute(route);
+
   if (
     routeName === 'FruitsVegetables' ||
     routeName === 'SubCategories' ||
@@ -50,8 +51,6 @@ const getTabBarVisibility = route => {
 function BottomTabBar() {
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
-  console.log('cartdata', cartdata.length);
-
   return (
     <Tab.Navigator
       initialRouteName={Routes.TAB_HOME}
@@ -61,15 +60,12 @@ function BottomTabBar() {
         showLabel: false,
         headerShown: true,
         tabBarActiveTintColor: COLORS.GREEN,
-        tabBarShowLabel: true,
+        // tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
-        tabBarStyle: {
-          height: 60,
-          backgroundColor: COLORS.WHITE,
-        },
+        // tabBarStyle: styles.tab,
         tabBarLabelStyle: {
           fontWeight: '500',
-          fontSize: 12,
+          fontSize: 11,
         },
       }}>
       <Tab.Screen
@@ -79,7 +75,7 @@ function BottomTabBar() {
           headerShown: false,
           tabBarColor: COLORS.BLUE,
           tabBarIcon: ({focused}) => (
-            <View style={{}}>
+            <View style={[styles.btnInactive, focused && styles.btnActive]}>
               <Badge style={{top: 10, zIndex: +99999}} size={19}>
                 {cartdata.length}
               </Badge>
@@ -102,11 +98,13 @@ function BottomTabBar() {
           headerShown: false,
           tabBarColor: COLORS.BLUE,
           tabBarIcon: ({focused}) => (
-            <FontAwesomeIcon
-              title={'heart-o'}
-              size={26}
-              IconColor={focused ? COLORS.GREEN : COLORS.GRAYDARK}
-            />
+            <View style={[styles.btnInactive, focused && styles.btnActive]}>
+              <FontAwesomeIcon
+                title={'heart-o'}
+                size={25}
+                IconColor={focused ? COLORS.GREEN : COLORS.GRAYDARK}
+              />
+            </View>
           ),
         }}
       />
@@ -115,24 +113,16 @@ function BottomTabBar() {
         name={Routes.TAB_HOME}
         component={HomeStack}
         options={({route}) => ({
-          tabBarStyle: {display: getTabBarVisibility(route)},
+          tabBarStyle: {
+            display: getTabBarVisibility(route),
+          },
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <View
-              style={{
-                height: 60,
-                width: 60,
-                borderRadius: 50,
-                backgroundColor: COLORS.GREEN,
-                justifyContent: 'center',
-                alignItems: 'center',
-                marginTop: -35,
-                elevation: 10,
-              }}>
+            <View style={[styles.btnInactive, focused && styles.btnActive]}>
               <IonIcon
                 title="ios-home-sharp"
-                size={28}
-                IconColor={focused ? COLORS.WHITE : COLORS.WHITE}
+                size={25}
+                IconColor={focused ? COLORS.GREEN : COLORS.GRAYDARK}
               />
             </View>
           ),
@@ -146,14 +136,16 @@ function BottomTabBar() {
           headerShown: false,
           tabBarColor: COLORS.BLUE,
           tabBarIcon: ({focused}) => (
-            <Image
-              source={shoppingbagIcon}
-              style={{
-                height: heightPixel(27),
-                width: widthPixel(27),
-                tintColor: focused ? COLORS.GREEN : COLORS.GRAYDARK,
-              }}
-            />
+            <View style={[styles.btnInactive, focused && styles.btnActive]}>
+              <Image
+                source={shoppingbagIcon}
+                style={{
+                  height: heightPixel(25),
+                  width: widthPixel(25),
+                  tintColor: focused ? COLORS.GREEN : COLORS.GRAYDARK,
+                }}
+              />
+            </View>
           ),
         }}
       />
@@ -162,14 +154,18 @@ function BottomTabBar() {
         name={Routes.TAB_MERE}
         component={MoreStack}
         options={({route}) => ({
-          tabBarStyle: {display: getTabBarVisibility(route)},
+          tabBarStyle: {
+            display: getTabBarVisibility(route),
+          },
           headerShown: false,
           tabBarIcon: ({focused}) => (
-            <FoundationIcon
-              title="indent-more"
-              size={28}
-              IconColor={focused ? COLORS.GREEN : COLORS.GRAYDARK}
-            />
+            <View style={[styles.btnInactive, focused && styles.btnActive]}>
+              <FoundationIcon
+                title="indent-more"
+                size={25}
+                IconColor={focused ? COLORS.GREEN : COLORS.GRAYDARK}
+              />
+            </View>
           ),
         })}
       />
@@ -178,3 +174,27 @@ function BottomTabBar() {
 }
 
 export default BottomTabBar;
+
+const styles = StyleSheet.create({
+  tab: {
+    backgroundColor: COLORS.WHITE,
+    height: 65,
+    alignItems: 'center',
+    // position: 'absolute',
+    borderTopWidth: 2,
+    borderTopColor: COLORS.GRAYDARK,
+    elevation: 10,
+    borderTopRightRadius: 45 / 4,
+    borderTopLeftRadius: 45 / 4,
+  },
+  btnActive: {
+    backgroundColor: COLORS.LIGHTGREEN,
+  },
+  btnInactive: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 35,
+    width: 60,
+    borderRadius: 45 / 4,
+  },
+});

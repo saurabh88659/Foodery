@@ -97,7 +97,7 @@ export default function MyModalinfo({
                 All Categories
               </Text>
               <ScrollView>
-                {/* <View
+                <View
                   style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
@@ -143,7 +143,7 @@ export default function MyModalinfo({
                     }}>
                     Atta, Rice, Oil & Dals
                   </Text>
-                </View> */}
+                </View>
                 <View>{_Ui}</View>
               </ScrollView>
             </View>

@@ -128,3 +128,57 @@ const Styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
+
+// import React, {useState} from 'react';
+// import {View, Text, TouchableOpacity} from 'react-native';
+// import {COLORS} from '../utils/Colors';
+
+// const AboutUs = () => {
+//   const [selectedOption, setSelectedOption] = useState(null);
+
+//   const handleOptionSelect = option => {
+//     setSelectedOption(option);
+//   };
+
+//   return (
+//     <View style={{marginVertical: 100}}>
+//       <TouchableOpacity onPress={() => handleOptionSelect('Option 1')}>
+//         <View style={{flexDirection: 'row', alignItems: 'center'}}>
+//           <View
+//             style={{
+//               width: 24,
+//               height: 24,
+//               borderRadius: 12,
+//               borderWidth: 2,
+//               borderColor: 'black',
+//               marginRight: 10,
+//             }}
+//           />
+//           <Text style={{color: COLORS.BLACK}}>Option 1</Text>
+//         </View>
+//       </TouchableOpacity>
+
+//       <TouchableOpacity onPress={() => handleOptionSelect('Option 2')}>
+//         <View style={{flexDirection: 'row', alignItems: 'center'}}>
+//           <View
+//             style={{
+//               width: 24,
+//               height: 24,
+//               borderRadius: 12,
+//               borderWidth: 2,
+//               borderColor: 'black',
+//               marginRight: 10,
+//             }}
+//           />
+//           <Text style={{color: COLORS.BLACK}}>Option 2</Text>
+//         </View>
+//       </TouchableOpacity>
+
+//       {selectedOption && (
+//         <Text style={{marginTop: 20}}>Selected option: {selectedOption}</Text>
+//       )}
+//     </View>
+//   );
+// };
+
+// export default AboutUs;
