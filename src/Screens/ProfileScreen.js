@@ -41,8 +41,7 @@ export default function ProfileScreen({navigation}) {
   const dispatch = useDispatch();
 
   const profiledata = useSelector(state => state.ProfileSlice.profiledata);
-
-  console.log('profiledata---DF------', profiledata);
+  // console.log('profiledata---DF------', profiledata);
 
   const [state, setState] = useState({
     profileImg: null,
@@ -208,9 +207,9 @@ export default function ProfileScreen({navigation}) {
               </View> */}
 
               <Text style={Styles.NAMETITLE}>Hi {isProfile?.name}!</Text>
-              <Text style={{color: COLORS.GRAYDARK, fontWeight: '500'}}>
+              {/* <Text style={{color: COLORS.GRAYDARK, fontWeight: '500'}}>
                 Sign out
-              </Text>
+              </Text> */}
             </View>
 
             <View style={{marginVertical: '5%'}}>
@@ -277,13 +276,11 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.DarkGreen2,
     alignSelf: 'center',
-    // marginTop: heightPixel(40),
     marginVertical: 20,
   },
 
   CAMERAICON: {
     alignItems: 'center',
-    // top: -8,
   },
   EDITTITLE: {
     alignItems: 'center',

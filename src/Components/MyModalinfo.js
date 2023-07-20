@@ -29,6 +29,7 @@ export default function MyModalinfo({
   _NO,
   _Ui,
   _PayUI,
+  _TOP_UI,
 }) {
   const UI = data => {
     switch (data) {
@@ -97,53 +98,8 @@ export default function MyModalinfo({
                 All Categories
               </Text>
               <ScrollView>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    marginHorizontal: 15,
-                    // backgroundColor: 'red',
-                    // paddingVertical: 30,
-                  }}>
-                  <View
-                    style={{
-                      height: heightPixel(60),
-                      width: widthPixel(165),
-                      borderRadius: 10,
-                      backgroundColor: COLORS.LIGHTGREEN,
-                    }}></View>
-                  <View
-                    style={{
-                      height: heightPixel(60),
-                      width: widthPixel(165),
-                      borderRadius: 10,
-                      backgroundColor: COLORS.LIGHTGREEN,
-                    }}></View>
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-evenly',
-                    alignItems: 'center',
-                    marginTop: 8,
-                  }}>
-                  <Text
-                    style={{
-                      fontSize: fontPixel(17),
-                      fontWeight: '500',
-                      color: COLORS.GRAYDARK,
-                    }}>
-                    Fruits & Vegetables
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: fontPixel(17),
-                      fontWeight: '500',
-                      color: COLORS.GRAYDARK,
-                    }}>
-                    Atta, Rice, Oil & Dals
-                  </Text>
-                </View>
+                <View>{_TOP_UI}</View>
+
                 <View>{_Ui}</View>
               </ScrollView>
             </View>

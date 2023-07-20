@@ -37,6 +37,7 @@ export default function Otp({navigation, route}) {
 
   const _HandleOTP = async () => {
     const fcmToken = await AsyncStorage.getItem('fcmToken');
+    console.log('FCM TOKEN--------->>>>>', fcmToken);
     setState({
       ...state,
       isLoading: true,

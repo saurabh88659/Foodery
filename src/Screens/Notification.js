@@ -6,21 +6,31 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {COLORS} from '../utils/Colors';
-import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
-import {EntypoIcon, IonIcon} from '../utils/Const';
+import {
+  fontPixel,
+  heightPixel,
+  screenHeight,
+  widthPixel,
+} from '../Components/Dimensions';
+import {BASE_URL, EntypoIcon, IonIcon} from '../utils/Const';
+import {_getStorage} from '../utils/Storage';
+import axios from 'axios';
 
 export default function Notification({navigation}) {
+  const [isNotifications, setIsNotifications] = useState([]);
   const SRTNOW = [
     {
       title: 'Your order has been delivered',
       time: 'Now',
+      itecolor: '#38EF7D',
     },
     {
       title: 'Your order has been delivered',
       time: 'Now',
+      itecolor: '#38EF',
     },
     {
       title: 'Your order has been delivered',
@@ -64,6 +74,26 @@ export default function Notification({navigation}) {
       time: 'Now',
     },
   ];
+
+  useEffect(() => {
+    _Notification();
+  });
+
+  const _Notification = async () => {
+    const token = await _getStorage('token');
+    axios
+      .get(BASE_URL + `/notificationModel/getAllNotification`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(response => {
+        console.log('message response------>>>', response.data);
+        setIsNotifications(response?.data?.result);
+      })
+      .catch(error => {
+        console.log('catch message error----->>>>', error);
+      });
+  };
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <MyHeader
@@ -82,20 +112,23 @@ export default function Notification({navigation}) {
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{paddingBottom: 10}}
-        data={SRTNOW}
+        data={isNotifications}
         renderItem={({item, index}) => (
-          <TouchableOpacity activeOpacity={0.7} style={Styles.MAINBOX}>
+          <TouchableOpacity
+            activeOpacity={0.7}
+            style={[Styles.MAINBOX, {backgroundColor: item.itecolor}]}>
             <EntypoIcon
               title="dot-single"
               size={35}
               IconColor={COLORS.PURPLE}
             />
             <View>
-              <Text numberOfLines={3} style={Styles.TITLE}>
-                Your orders has been picked up Your orders has been picked up
-                Your orders has been picked
+              <Text numberOfLines={1} style={[Styles.TITLE]}>
+                {item?.title}
               </Text>
-              <Text style={Styles.SUBTITLE}>Now</Text>
+              <Text numberOfLines={2} style={Styles.SUBTITLE}>
+                {item?.body}
+              </Text>
             </View>
           </TouchableOpacity>
         )}
@@ -130,5 +163,7 @@ const Styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.GRAYDARK,
     letterSpacing: 0.5,
+    // width: widthPixel(screenHeight),
+    width: widthPixel(350),
   },
 });

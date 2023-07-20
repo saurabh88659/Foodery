@@ -41,7 +41,7 @@ const cartemptyIcon = require('../Assets/Lottiejson/112087-empty.json');
 const Yourordericonebox = require('../Assets/Logo/donation.png');
 const yourirdercallsicon = require('../Assets/Logo/callsicon.png');
 
-const BASE_URL = 'http:/192.168.68.116:8000/api'; //  Server URL  Localhost
+const BASE_URL = 'http:/192.168.68.185:8000/api'; //  Server URL  Localhost
 
 // AIzaSyChkQstsYAs6SgA0d4UIIBnhXfK_wf0iV4?
 const MAP_API_KEY = 'AIzaSyChkQstsYAs6SgA0d4UIIBnhXfK_wf0iV4'; // Map key here

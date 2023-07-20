@@ -251,8 +251,9 @@ export default function HomeScreen({navigation}) {
 
   const _Order_Again = async () => {
     const token = await _getStorage('token');
+    console.log('token', token);
     axios
-      .get(BASE_URL + `/getOrderAgain`, {
+      .get(BASE_URL + `/User/getTrandingProduct`, {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
@@ -295,7 +296,6 @@ export default function HomeScreen({navigation}) {
   const toggleBottomNavigationView = item => {
     setVisible(!visible);
     setPrductByiDetails(item);
-    console.log('heyyyyyyyyyyyyyyy', item.productId.productImage);
   };
   const toggleExpandedOne = () => {
     setCollapsed(!collapsed);
@@ -347,6 +347,62 @@ export default function HomeScreen({navigation}) {
                   />
                 </TouchableOpacity>
               </View>
+
+              <Collapsible collapsed={collapsed}>
+                <FlatList
+                  keyExtractor={(item, index) => index.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  numColumns={2}
+                  data={all_Category.slice(0, 2)}
+                  renderItem={({item, index}) => (
+                    <View>
+                      <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={() =>
+                          navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)
+                        }
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginHorizontal: 5,
+                          alignItems: 'center',
+                          marginTop: 5,
+                        }}>
+                        <View style={[Styles.COTVS]}>
+                          <Image
+                            source={{uri: item?.categoryIcon}}
+                            style={{
+                              height: heightPixel(75),
+                              width: widthPixel(180),
+                              resizeMode: 'contain',
+                              alignSelf: 'center',
+                              top: 3,
+                            }}
+                          />
+                        </View>
+                      </TouchableOpacity>
+
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginHorizontal: 10,
+                          alignSelf: 'center',
+                          marginVertical: 10,
+                        }}>
+                        <Text
+                          style={{
+                            color: COLORS.BLACK,
+                            fontWeight: '500',
+                            fontSize: fontPixel(16),
+                          }}>
+                          {item?.categoryName}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+                />
+              </Collapsible>
               <View style={{}}>
                 <FlatList
                   keyExtractor={(item, index) => index.toString()}
@@ -354,7 +410,7 @@ export default function HomeScreen({navigation}) {
                   // contentContainerStyle={{paddingBottom: 5}}
                   numColumns={4}
                   // data={showModal?all_Category:}
-                  data={all_Category.slice(0, 4)}
+                  data={all_Category.slice(2, 6)}
                   renderItem={({item, index}) => (
                     <TouchableOpacity
                       activeOpacity={0.6}
@@ -465,7 +521,7 @@ export default function HomeScreen({navigation}) {
             <View style={{marginHorizontal: 10}}>
               {order_Again?.length !== 0 ? (
                 <View style={Styles.SubTitleheader}>
-                  <Text style={Styles.titlemain}>Order Again</Text>
+                  <Text style={Styles.titlemain}>Tranding Product</Text>
                   {order_Again.some(item => (
                     <TouchableOpacity
                       onPress={() => navigation.navigate(Routes.PRODUCT_ITEM)}
@@ -521,17 +577,17 @@ export default function HomeScreen({navigation}) {
                         )}
                       </View>
                     }
-                    Productimage={{uri: item?.productId?.productImage}}
-                    ProductName={item?.productId?.productName}
-                    ProductSubName={item?.productId?.productUnit}
-                    discountPrice={item?.productId?.discountPrice}
-                    ProductPrice={item?.productId?.productPrice}
+                    Productimage={{uri: item?.productImage}}
+                    ProductName={item?.productName}
+                    ProductSubName={item?.productUnit}
+                    discountPrice={item?.discountPrice}
+                    ProductPrice={item?.productPrice}
                     UIBotton={
                       <View>
                         <View>
                           {cartdata.map((value, index) => (
                             <View key={value?._id}>
-                              {value?._id == item?.productId?._id ? (
+                              {value?._id == item?._id ? (
                                 <View style={Styles.INCREAMENTBOTTONMAIN}>
                                   <TouchableOpacity
                                     onPress={() => decreaseQuantity(value)}>
@@ -551,7 +607,7 @@ export default function HomeScreen({navigation}) {
                             </View>
                           ))}
                           {cartdata.some(
-                            value => value?._id == item?.productId?._id,
+                            value => value?._id == item?._id,
                           ) ? null : (
                             <TouchableOpacity
                               onPress={() => addItemToCart(item)}
@@ -819,34 +875,121 @@ export default function HomeScreen({navigation}) {
             _SubonPress={() => navigation.navigate(Routes.SUB_CATEGRIES_MODAL)}
             isModal={modalVisible}
             _Visible={() => setModalVisible(!modalVisible)}
+            _TOP_UI={
+              <View>
+                {/* <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    marginHorizontal: 15,
+                  }}>
+                  <View
+                    style={{
+                      height: heightPixel(60),
+                      width: widthPixel(165),
+                      borderRadius: 10,
+                      backgroundColor: COLORS.LIGHTGREEN,
+                    }}></View>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-evenly',
+                    alignItems: 'center',
+                    marginTop: 8,
+                  }}>
+                  <Text
+                    style={{
+                      fontSize: fontPixel(17),
+                      fontWeight: '500',
+                      color: COLORS.GRAYDARK,
+                    }}>
+                    Atta, Rice, Oil & Dals
+                  </Text>
+                </View> */}
+                <FlatList
+                  keyExtractor={(item, index) => index.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  numColumns={2}
+                  data={all_Category.slice(0, 2)}
+                  renderItem={({item, index}) => (
+                    // <Collapsible collapsed={collapsed} key={index}>
+                    <View>
+                      <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={() =>
+                          navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)
+                        }
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginHorizontal: 5,
+                        }}>
+                        <View style={[Styles.COTVS]}>
+                          <Image
+                            source={{uri: item?.categoryIcon}}
+                            style={{
+                              height: heightPixel(75),
+                              width: widthPixel(180),
+                              // resizeMode: 'contain',
+                            }}
+                          />
+                        </View>
+                      </TouchableOpacity>
+
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          marginHorizontal: 10,
+                          alignSelf: 'center',
+                          marginTop: 3,
+                        }}>
+                        <Text
+                          style={{
+                            color: COLORS.BLACK,
+                            fontWeight: '500',
+                            fontSize: fontPixel(16),
+                          }}>
+                          {item?.categoryName}
+                        </Text>
+                      </View>
+                    </View>
+                    // </Collapsible>
+                  )}
+                />
+              </View>
+            }
             _Ui={
               <View style={Styles.MODALPRODUCTBOXMAIN}>
-                {all_Category.map((item, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    activeOpacity={0.6}
-                    onPress={() =>
-                      navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)
-                    }
-                    style={Styles.GREENMAINBOXMODAL}>
-                    <View style={Styles.MODALBOX}>
-                      <Image
-                        source={{uri: item.categoryIcon}}
-                        style={Styles.IMAGEALLCATLOGO}
-                      />
-                    </View>
-                    <Text numberOfLines={2} style={Styles.MODALTEXT}>
-                      {item.categoryName}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                {all_Category
+                  .slice(2, all_Category.length)
+                  .map((item, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      activeOpacity={0.6}
+                      onPress={() =>
+                        navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)
+                      }
+                      style={Styles.GREENMAINBOXMODAL}>
+                      <View style={Styles.MODALBOX}>
+                        <Image
+                          source={{uri: item.categoryIcon}}
+                          style={Styles.IMAGEALLCATLOGO}
+                        />
+                      </View>
+                      <Text numberOfLines={2} style={Styles.MODALTEXT}>
+                        {item.categoryName}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
               </View>
             }
           />
           <BottomSheet
             visible={visible}
-            onBackButtonPress={toggleBottomNavigationView}
-            onBackdropPress={toggleBottomNavigationView}>
+            onBackButtonPress={() => {}}
+            onBackdropPress={() => {}}>
             <View>
               <TouchableOpacity
                 onPress={() => setVisible(!visible)}
@@ -866,23 +1009,23 @@ export default function HomeScreen({navigation}) {
                   showsVerticalScrollIndicator={false}
                   contentContainerStyle={{}}>
                   <Image
-                    source={{uri: PrductByiDetails?.productId?.productImage}}
+                    source={{uri: PrductByiDetails?.productImage}}
                     style={GlobelStyles.Modalimagestyle}
                   />
                   <View style={{marginHorizontal: 20, marginTop: '5%'}}>
                     <Text numberOfLines={4} style={GlobelStyles.MODALTITLE}>
-                      {PrductByiDetails?.productId?.productName}
+                      {PrductByiDetails?.productName}
                     </Text>
                     <Text numberOfLines={3} style={GlobelStyles.SUBMODALTITLE}>
-                      {PrductByiDetails?.productId?.productUnit}
+                      {PrductByiDetails?.productUnit}
                     </Text>
                     <View style={GlobelStyles.ACTIONMAINCONQ}>
                       <View style={GlobelStyles.MAINQ}>
                         <Text style={GlobelStyles.MAINQTEXT}>
-                          {PrductByiDetails?.productId?.productPrice}
+                          {PrductByiDetails?.productPrice}
                         </Text>
                         <Text style={GlobelStyles.MAINQDISCOUNT}>
-                          {PrductByiDetails?.productId?.discountPrice}
+                          {PrductByiDetails?.discountPrice}
                         </Text>
                       </View>
 
@@ -971,7 +1114,7 @@ export default function HomeScreen({navigation}) {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={{paddingBottom: 5}}
                         horizontal
-                        data={[1, 2, 3, 4]}
+                        data={order_Again}
                         renderItem={({item, index}) => (
                           <View key={index}>
                             <Productinfo
@@ -1390,5 +1533,14 @@ const Styles = StyleSheet.create({
     borderRadius: 50,
     alignSelf: 'center',
     marginBottom: 10,
+  },
+  COTVS: {
+    height: heightPixel(70),
+    width: widthPixel(175),
+    marginTop: 5,
+    borderRadius: 10,
+    backgroundColor: COLORS.LIGHTGREEN,
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
 });

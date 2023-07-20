@@ -7,9 +7,10 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import {
+  BASE_URL,
   EntypoIcon,
   LogoutIcon,
   OrderHistoryicon,
@@ -26,6 +27,9 @@ import MyModalinfo from '../Components/MyModalinfo';
 import Routes from '../Navigation/Routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector} from 'react-redux';
+import {Badge} from 'react-native-paper';
+import {_getStorage} from '../utils/Storage';
+import axios from 'axios';
 
 export default function MoreScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -47,6 +51,24 @@ export default function MoreScreen({navigation}) {
     } else {
       return 'Good evening';
     }
+  };
+
+  useEffect(() => {
+    _Notification();
+  });
+
+  const _Notification = async () => {
+    const token = await _getStorage('token');
+    axios
+      .get(BASE_URL + `/notificationModel/getAllNotification`, {
+        headers: {Authorization: `Bearer ${token}`},
+      })
+      .then(response => {
+        console.log('message response------>>>', response.data);
+      })
+      .catch(error => {
+        console.log('catch message error----->>>>', error);
+      });
   };
 
   const greeting = getGreeting();
@@ -72,6 +94,7 @@ export default function MoreScreen({navigation}) {
             </View>
             <Text style={Styles.boxTitle}>Your Order</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             onPress={() => navigation.navigate(Routes.ORDER_HISTORY)}
             activeOpacity={0.6}
@@ -104,6 +127,10 @@ export default function MoreScreen({navigation}) {
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>
+              {/* <Badge style={{top: 10, zIndex: +999}} size={16}>
+                {'1'}
+              </Badge> */}
+              <Badge style={{top: 10, zIndex: +999}} size={8}></Badge>
               <Image source={notificationIcon} style={Styles.iconstyle} />
             </View>
             <Text style={Styles.boxTitle}>Notification</Text>
@@ -182,6 +209,7 @@ const Styles = StyleSheet.create({
     marginVertical: '5%',
     borderBottomRightRadius: 20,
     borderBottomLeftRadius: 20,
+    paddingVertical: '8%',
   },
   HEADERBOX: {
     flexDirection: 'row',
@@ -201,15 +229,15 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 15,
     paddingVertical: 5,
-    marginVertical: 5,
+    marginVertical: 3,
   },
   Greenbox: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconstyle: {
-    height: heightPixel(45),
-    width: widthPixel(40),
+    height: heightPixel(50),
+    width: widthPixel(45),
     resizeMode: 'contain',
   },
   boxTitle: {

@@ -120,7 +120,7 @@ const Styles = StyleSheet.create({
   TITLE: {
     fontSize: fontPixel(16),
     fontWeight: '400',
-    color: COLORS.GRAYDARK,
+    color: COLORS.BLACK,
     letterSpacing: 0.4,
     width: widthPixel(360),
   },

@@ -154,8 +154,8 @@ const Styles = StyleSheet.create({
   },
   headerTitle: {
     paddingLeft: '4%',
-    fontSize: fontPixel(21),
-    fontWeight: '500',
+    fontSize: fontPixel(25),
+    fontWeight: '900',
     letterSpacing: 0.5,
     color: COLORS.WHITE,
   },
