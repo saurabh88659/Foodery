@@ -45,6 +45,8 @@ import {
   SimpleToast,
   BASE_URL,
   EntypoIcon,
+  Down_Arrow,
+  Up_Arrow,
 } from '../utils/Const';
 import Collapsible from 'react-native-collapsible';
 import MyModalinfo from '../Components/MyModalinfo';
@@ -192,7 +194,10 @@ export default function HomeScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        // console.log('All Category Response', response.data.getAll);
+        // console.log(
+        //   'All Category Response----------->>>>>',
+        //   response.data.getAll,
+        // );
         setAll_Category(response?.data?.getAll);
       })
       .catch(error => {
@@ -257,7 +262,7 @@ export default function HomeScreen({navigation}) {
         headers: {Authorization: `Bearer ${token}`},
       })
       .then(response => {
-        console.log('ORDER GAAIN=========', response?.data?.result);
+        // console.log('ORDER GAAIN=========', response?.data?.result);
         setOrder_Again(response?.data?.result);
       })
       .catch(error => {
@@ -435,7 +440,7 @@ export default function HomeScreen({navigation}) {
 
               <View style={Styles.EXPLOREMAINCONTAINER}>
                 {all_Category
-                  .slice(4, all_Category.length)
+                  .slice(6, all_Category.length)
                   .map((item, index) => (
                     <Collapsible collapsed={collapsed} key={index}>
                       <View style={Styles.EXPLOREBOX}>
@@ -464,11 +469,16 @@ export default function HomeScreen({navigation}) {
             <TouchableOpacity
               onPress={toggleExpanded}
               activeOpacity={0.6}
-              style={Styles.TOGGLEEXPOSTYLS}>
-              <SimpleLineIconsIcon
+              style={[Styles.TOGGLEEXPOSTYLS]}>
+              {/* <SimpleLineIconsIcon
                 title={collapsed ? 'arrow-down' : 'arrow-up'}
-                size={22}
+                size={26}
                 IconColor={COLORS.GRAYDARK}
+              /> */}
+
+              <Image
+                source={collapsed ? Down_Arrow : Up_Arrow}
+                style={{height: 30, width: 30}}
               />
             </TouchableOpacity>
             <View style={{marginHorizontal: 15}}>
@@ -578,6 +588,9 @@ export default function HomeScreen({navigation}) {
                       </View>
                     }
                     Productimage={{uri: item?.productImage}}
+                    Stocktitle={
+                      item?.productStock === 'yes' ? null : 'Out of stock'
+                    }
                     ProductName={item?.productName}
                     ProductSubName={item?.productUnit}
                     discountPrice={item?.discountPrice}
@@ -737,6 +750,9 @@ export default function HomeScreen({navigation}) {
                             )}
                           </View>
                         }
+                        Stocktitle={
+                          item?.productStock === 'yes' ? null : 'Out of stock'
+                        }
                         Productimage={{uri: item?.productImage}}
                         ProductName={item?.productName}
                         ProductSubName={item?.productUnit}
@@ -826,6 +842,9 @@ export default function HomeScreen({navigation}) {
                             </TouchableOpacity>
                           )}
                         </View>
+                      }
+                      Stocktitle={
+                        item?.productStock === 'yes' ? null : 'Out of stock'
                       }
                       Productimage={{uri: item.productImage}}
                       ProductName={item.productName}
@@ -1149,6 +1168,11 @@ export default function HomeScreen({navigation}) {
                                 </View>
                               }
                               Productimage={{uri: item?.productImage}}
+                              Stocktitle={
+                                item?.productStock === 'yes'
+                                  ? null
+                                  : 'Out of stock'
+                              }
                               ProductName={item?.productName}
                               ProductSubName={item?.productUnit}
                               discountPrice={item?.discountPrice}
@@ -1367,7 +1391,10 @@ const Styles = StyleSheet.create({
   TOGGLEEXPOSTYLS: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 10,
+    marginTop: 5,
+    width: 40,
+    alignSelf: 'center',
+    alignItems: 'center',
   },
   EXPLORENEWTITLE: {
     fontWeight: '500',

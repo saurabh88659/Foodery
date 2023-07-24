@@ -131,3 +131,59 @@ const Styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 });
+
+// import React, {useState} from 'react';
+// import {View, Text, Button} from 'react-native';
+// import {COLORS} from '../utils/Colors';
+
+// const YourComponent = () => {
+//   // Sample dynamic data with different types and data (replace with your actual data)
+
+//   const dynamicData = [
+//     {id: 1, type: 'Type 1', data: 'Type 1 Data'},
+//     {id: 2, type: 'Type 2', data: 'Type 2 Data'},
+//     {id: 3, type: 'Type 3', data: 'Type 3 Data'},
+//     // Add more data objects as needed
+//   ];
+
+//   const [selectedType, setSelectedType] = useState(dynamicData[0].id); // Set the initial selected type to the first type
+
+//   // Function to handle the click on each type
+//   const handleTypeClick = typeId => {
+//     setSelectedType(typeId);
+//   };
+
+//   // Get the selected data object based on the selected type
+//   const selectedData = dynamicData.find(item => item.id === selectedType);
+
+//   return (
+//     <View style={{marginVertical: 50}}>
+//       {/* Buttons to select the type */}
+
+//       {dynamicData.map(item => (
+//         <Button
+//           key={item.id}
+//           title={item.type}
+//           onPress={() => handleTypeClick(item.id)}
+//           disabled={selectedType === item.id} // Disable the button if it's already selected
+//         />
+//       ))}
+
+//       {/* Display the data based on the selected type */}
+//       {selectedData && (
+//         <View>
+//           <Text
+//             style={{
+//               color: COLORS.BLACK,
+//             }}>{`Selected Type: ${selectedData.type}`}</Text>
+//           <Text
+//             style={{
+//               color: COLORS.BLACK,
+//             }}>{`Data: ${selectedData.data}`}</Text>
+//         </View>
+//       )}
+//     </View>
+//   );
+// };
+
+// export default YourComponent;

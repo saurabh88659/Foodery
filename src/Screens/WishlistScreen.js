@@ -193,9 +193,10 @@ const Styles = StyleSheet.create({
     borderColor: COLORS.GRAYDARK,
   },
   IMAGESTYLES: {
-    height: heightPixel(120),
+    height: heightPixel(100),
     width: widthPixel(83),
     borderRadius: 10,
+    resizeMode: 'contain',
     // backgroundColor: 'red',
   },
   TITLESTYLES: {

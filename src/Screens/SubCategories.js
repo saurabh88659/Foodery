@@ -24,12 +24,10 @@ import Productinfo from '../Components/Productinfo';
 import AddTocart from '../Components/AddTocart';
 import ActionSheet from 'react-native-actions-sheet';
 import Collapsible from 'react-native-collapsible';
-
 import {useDispatch, useSelector} from 'react-redux';
 import SubShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/SubShimmerPlaceHolder';
 import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
-
 import {useIsFocused} from '@react-navigation/native';
 import {
   decrementQuantity,
@@ -52,7 +50,7 @@ import GlobelStyles from '../utils/GlobelStyles';
 export default function SubCategories({navigation, route}) {
   const CatItem = route.params;
   const [isloading, setIsloading] = useState(false);
-  const [cartitem, setCartitem] = useState(0);
+  // const [cartitem, setCartitem] = useState(0);
   const [subCatProduct, setSubCatProduct] = useState([]);
   const [productById, setProductById] = useState([]);
   const [status, setStatus] = useState('tab1');
@@ -86,9 +84,6 @@ export default function SubCategories({navigation, route}) {
       _Cart_get_data();
       _Similar_Product();
     }
-    setTimeout(() => {
-      setIsloading(true);
-    }, 1000);
   }, [IsFocused]);
 
   const _ProductItem = async () => {
@@ -102,12 +97,14 @@ export default function SubCategories({navigation, route}) {
       .then(res => {
         // console.log('res?.data?.result---------', res?.data?.result);
         setSubCatProduct(res?.data?.result);
+        setIsloading(false);
       })
       .catch(error => {
         console.log(
           'Product Item catch error------->>>>',
           error?.response?.data,
         );
+        setIsloading(false);
       });
   };
 
@@ -216,7 +213,7 @@ export default function SubCategories({navigation, route}) {
 
   const _Wishlist_get_data = async () => {
     const token = await _getStorage('token');
-    dispatch(fetchApiData_wishlist(token));
+    // dispatch(fetchApiData_wishlist(token));
   };
 
   const _Similar_Product = async () => {
@@ -246,7 +243,7 @@ export default function SubCategories({navigation, route}) {
 
   const _Cart_get_data = async () => {
     const token = await _getStorage('token');
-    dispatch(cartdata_in_data_base(token));
+    // dispatch(cartdata_in_data_base(token));
   };
 
   return (
@@ -269,6 +266,8 @@ export default function SubCategories({navigation, route}) {
         }
       />
       {isloading ? (
+        <SubShimmerPlaceHolder />
+      ) : (
         <SafeAreaView style={Styles.CONTAINERMAIN}>
           <ScrollView showsVerticalScrollIndicator={false}>
             <Image
@@ -340,6 +339,9 @@ export default function SubCategories({navigation, route}) {
                       </View>
                     }
                     onPress={() => toggleBottomNavigationView(value)}
+                    Stocktitle={
+                      value?.productStock === 'yes' ? null : 'Out of stock'
+                    }
                     Productimage={{uri: value?.productImage}}
                     ProductName={value?.productName}
                     ProductSubName={value?.productUnit}
@@ -411,7 +413,10 @@ export default function SubCategories({navigation, route}) {
                       )}
                     </View>
                   }
-                  //   onPress={() => toggleBottomNavigationView(value.id)}
+                  onPress={() => toggleBottomNavigationView(value)}
+                  Stocktitle={
+                    value?.productStock === 'yes' ? null : 'Out of stock'
+                  }
                   Productimage={{uri: value?.productImage}}
                   ProductName={value?.productName}
                   ProductSubName={value?.productUnit}
@@ -463,8 +468,6 @@ export default function SubCategories({navigation, route}) {
             />
           )}
         </SafeAreaView>
-      ) : (
-        <SubShimmerPlaceHolder />
       )}
       <ActionSheet
         ref={actionSheetRef}
@@ -681,8 +684,8 @@ const Styles = StyleSheet.create({
     // backgroundColor:'red'
   },
   IMAGETOOLS: {
-    height: heightPixel(90),
-    width: widthPixel(80),
+    height: heightPixel(70),
+    width: widthPixel(70),
     borderRadius: 10,
   },
   CONTAINERBOXMAIN: {

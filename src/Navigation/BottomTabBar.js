@@ -13,8 +13,8 @@ import {
 import OffersStack from './OffersStack';
 import WishlistStack from './WishlistStack';
 import CartStack from './CartStack';
-import {Image, StyleSheet, View} from 'react-native';
-import {heightPixel, widthPixel} from '../Components/Dimensions';
+import {Image, StyleSheet, Text, View} from 'react-native';
+import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
 import Routes from './Routes';
 import {Badge} from 'react-native-paper';
@@ -60,9 +60,9 @@ function BottomTabBar() {
         showLabel: false,
         headerShown: true,
         tabBarActiveTintColor: COLORS.GREEN,
-        // tabBarShowLabel: false,
+        tabBarShowLabel: false,
         tabBarHideOnKeyboard: true,
-        // tabBarStyle: styles.tab,
+        tabBarStyle: styles.tab,
         tabBarLabelStyle: {
           fontWeight: '500',
           fontSize: 11,
@@ -76,7 +76,9 @@ function BottomTabBar() {
           tabBarColor: COLORS.BLUE,
           tabBarIcon: ({focused}) => (
             <View style={[styles.btnInactive, focused && styles.btnActive]}>
-              <Badge style={{top: 10, zIndex: +99999}} size={19}>
+              <Badge
+                style={{top: -8, zIndex: +99999, position: 'absolute'}}
+                size={19}>
                 {cartdata.length}
               </Badge>
               <Image
@@ -87,6 +89,7 @@ function BottomTabBar() {
                   tintColor: focused ? COLORS.GREEN : COLORS.GRAYDARK,
                 }}
               />
+              {focused ? <Text style={styles.hindentext}>Cart</Text> : null}
             </View>
           ),
         }}
@@ -104,6 +107,7 @@ function BottomTabBar() {
                 size={25}
                 IconColor={focused ? COLORS.GREEN : COLORS.GRAYDARK}
               />
+              {focused ? <Text style={styles.hindentext}>Wishlist</Text> : null}
             </View>
           ),
         }}
@@ -112,9 +116,18 @@ function BottomTabBar() {
       <Tab.Screen
         name={Routes.TAB_HOME}
         component={HomeStack}
-        options={({route}) => ({
+        options={({route, tabBarStyle}) => ({
           tabBarStyle: {
             display: getTabBarVisibility(route),
+            backgroundColor: COLORS.WHITE,
+            height: 65,
+            alignItems: 'center',
+            // position: 'absolute',
+            borderTopWidth: 2,
+            borderTopColor: COLORS.GRAYDARK,
+            elevation: 10,
+            borderTopRightRadius: 45 / 4,
+            borderTopLeftRadius: 45 / 4,
           },
           headerShown: false,
           tabBarIcon: ({focused}) => (
@@ -124,6 +137,7 @@ function BottomTabBar() {
                 size={25}
                 IconColor={focused ? COLORS.GREEN : COLORS.GRAYDARK}
               />
+              {focused ? <Text style={styles.hindentext}>Home</Text> : null}
             </View>
           ),
         })}
@@ -145,6 +159,7 @@ function BottomTabBar() {
                   tintColor: focused ? COLORS.GREEN : COLORS.GRAYDARK,
                 }}
               />
+              {focused ? <Text style={styles.hindentext}>Offers</Text> : null}
             </View>
           ),
         }}
@@ -153,9 +168,18 @@ function BottomTabBar() {
       <Tab.Screen
         name={Routes.TAB_MERE}
         component={MoreStack}
-        options={({route}) => ({
+        options={({route, tabBarStyle}) => ({
           tabBarStyle: {
             display: getTabBarVisibility(route),
+            backgroundColor: COLORS.WHITE,
+            height: 65,
+            alignItems: 'center',
+            // position: 'absolute',
+            borderTopWidth: 2,
+            borderTopColor: COLORS.GRAYDARK,
+            elevation: 10,
+            borderTopRightRadius: 45 / 4,
+            borderTopLeftRadius: 45 / 4,
           },
           headerShown: false,
           tabBarIcon: ({focused}) => (
@@ -165,6 +189,7 @@ function BottomTabBar() {
                 size={25}
                 IconColor={focused ? COLORS.GREEN : COLORS.GRAYDARK}
               />
+              {focused ? <Text style={styles.hindentext}>More</Text> : null}
             </View>
           ),
         })}
@@ -189,6 +214,13 @@ const styles = StyleSheet.create({
   },
   btnActive: {
     backgroundColor: COLORS.LIGHTGREEN,
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    width: widthPixel(100),
+    // paddingHorizontal: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: heightPixel(46),
   },
   btnInactive: {
     justifyContent: 'center',
@@ -196,5 +228,11 @@ const styles = StyleSheet.create({
     height: 35,
     width: 60,
     borderRadius: 45 / 4,
+  },
+  hindentext: {
+    color: COLORS.BLACK,
+    fontSize: fontPixel(17),
+    fontWeight: '500',
+    paddingLeft: widthPixel(6),
   },
 });

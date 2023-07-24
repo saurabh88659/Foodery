@@ -5,20 +5,14 @@ import {fontPixel, heightPixel, widthPixel} from './Dimensions';
 
 export default function Productinfo(props) {
   return (
-    <View
-      key={props.index}
-      style={[
-        Styles.CONTAINERBOX,
-        props.Styles,
-
-        // {
-        //   backgroundColor:
-        //     props.valu === 'yes' ? COLORS.WHITE : COLORS.GRAYDARK,
-        // },
-      ]}>
+    <View key={props.index} style={[Styles.CONTAINERBOX, props.Styles]}>
       <View>{props.HeartUI}</View>
       <TouchableOpacity onPress={props.onPress}>
-        <View style={{alignItems: 'center'}}>
+        <View
+          style={{
+            alignItems: 'center',
+          }}>
+          <Text style={Styles.stocktext}>{props.Stocktitle}</Text>
           <Image source={props.Productimage} style={Styles.imagestyle} />
         </View>
         <View style={{marginHorizontal: 7}}>
@@ -112,9 +106,7 @@ const Styles = StyleSheet.create({
     marginTop: 10,
     elevation: 10,
     borderRadius: 4,
-    // paddingVertical: '2%',
-    // position: 'absolute',
-    // position: 'relative',
+    paddingVertical: '2%',
   },
   CONTAINERBOXMAIN: {
     flexDirection: 'row',
@@ -129,6 +121,9 @@ const Styles = StyleSheet.create({
     width: widthPixel(100),
     resizeMode: 'contain',
     top: -5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // backgroundColor: COLORS.grayWithOpacity,
   },
   TITLESTYL: {
     color: COLORS.BLACK,
@@ -193,4 +188,14 @@ const Styles = StyleSheet.create({
   },
 
   SUBMODALTITLEPRICE: {},
+  stocktext: {
+    color: COLORS.WHITE,
+    fontSize: fontPixel(15),
+    fontWeight: '500',
+    position: 'absolute',
+    zIndex: +999,
+    alignSelf: 'center',
+    backgroundColor: COLORS.GREEN,
+    top: '15%',
+  },
 });

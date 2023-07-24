@@ -545,6 +545,9 @@ export default function CartScreen({navigation}) {
                             )}
                           </View>
                         }
+                        Stocktitle={
+                          item?.productStock === 'yes' ? null : 'Out of stock'
+                        }
                         Productimage={{uri: item?.productImage}}
                         ProductName={item?.productName}
                         ProductSubName={item?.productUnit}

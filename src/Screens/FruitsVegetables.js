@@ -240,6 +240,7 @@ export default function FruitsVegetables({navigation, route}) {
                 toggleBottomNavigationView(value?._id),
                   setPrductByiDetails(value);
               }}
+              Stocktitle={value?.productStock === 'yes' ? null : 'Out of stock'}
               Productimage={{uri: value?.productImage}}
               ProductName={value?.productName}
               ProductSubName={value?.productUnit}
@@ -418,6 +419,9 @@ export default function FruitsVegetables({navigation, route}) {
                             </TouchableOpacity>
                           )}
                         </View>
+                      }
+                      Stocktitle={
+                        item?.productStock === 'yes' ? null : 'Out of stock'
                       }
                       Productimage={{uri: item?.productImage}}
                       ProductName={item?.productName}

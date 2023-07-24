@@ -70,6 +70,7 @@ export default function ProdcutsItem({navigation, route}) {
       _Similar_Product();
     }
   }, [IsFocused]);
+
   const _ProductItem = async () => {
     const token = await _getStorage('token');
     setIsloading(true);
@@ -175,15 +176,7 @@ export default function ProdcutsItem({navigation, route}) {
         }
       />
       {notFound ? (
-        <Text
-          style={{
-            color: COLORS.GRAYDARK,
-            alignSelf: 'center',
-            justifyContent: 'center',
-            fontSize: fontPixel(15),
-          }}>
-          {notFound}
-        </Text>
+        <Text style={Styles.foundtext}>{notFound}</Text>
       ) : isloading ? (
         <SubShimmerPlaceHolder />
       ) : (
@@ -223,9 +216,12 @@ export default function ProdcutsItem({navigation, route}) {
                     toggleBottomNavigationView(value);
                   }}
                   Productimage={{uri: value?.productImage}}
+                  Stocktitle={
+                    value?.productStock === 'yes' ? null : 'Out of stock'
+                  }
                   ProductName={value?.productName}
                   ProductSubName={value?.productUnit}
-                  discountPrice={'Rs.80'}
+                  discountPrice={`Rs.${value.discountPrice}`}
                   ProductPrice={value.productPrice}
                   UIBotton={
                     <View>
@@ -248,8 +244,10 @@ export default function ProdcutsItem({navigation, route}) {
                           ) : null}
                         </View>
                       ))}
+
                       {cartdata.some(item => item._id == value._id) ? null : (
                         <TouchableOpacity
+                          disabled={value.productStock === 'yes' ? false : true}
                           onPress={() => addItemToCart(value)}
                           activeOpacity={0.5}
                           style={GlobelStyles.ADDBOTTONSTYL}>
@@ -334,10 +332,17 @@ export default function ProdcutsItem({navigation, route}) {
                   value => value._id == PrductByiDetails._id,
                 ) ? null : (
                   <TouchableOpacity
+                    disabled={
+                      PrductByiDetails?.productStock === 'yes' ? false : true
+                    }
                     onPress={() => addItemToCart(PrductByiDetails)}
                     activeOpacity={0.5}
-                    style={GlobelStyles.ADDBOTTONSTYL}>
-                    <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                    style={[GlobelStyles.ADDBOTTONSTYL]}>
+                    {PrductByiDetails?.productStock === 'yes' ? (
+                      <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
+                    ) : (
+                      <Text style={Styles.BOTTONTEXTSTYL}>Out of stock</Text>
+                    )}
                   </TouchableOpacity>
                 )}
               </View>
@@ -417,6 +422,9 @@ export default function ProdcutsItem({navigation, route}) {
                           )}
                         </View>
                       }
+                      Stocktitle={
+                        item?.productStock === 'yes' ? null : 'Out of stock'
+                      }
                       Productimage={{uri: item?.productImage}}
                       ProductName={item?.productName}
                       ProductSubName={item?.productUnit}
@@ -449,9 +457,12 @@ export default function ProdcutsItem({navigation, route}) {
                             value => value._id == item._id,
                           ) ? null : (
                             <TouchableOpacity
+                              disabled={
+                                item?.productStock === 'yes' ? false : true
+                              }
                               onPress={() => addItemToCart(item)}
                               activeOpacity={0.5}
-                              style={GlobelStyles.ADDBOTTONSTYL}>
+                              style={[GlobelStyles.ADDBOTTONSTYL]}>
                               <Text style={Styles.BOTTONTEXTSTYL}>ADD</Text>
                             </TouchableOpacity>
                           )}
@@ -530,4 +541,10 @@ const Styles = StyleSheet.create({
     paddingVertical: 4,
   },
   CONTAINERHEART: {alignItems: 'flex-end', margin: 5},
+  foundtext: {
+    color: COLORS.GRAYDARK,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    fontSize: fontPixel(15),
+  },
 });
