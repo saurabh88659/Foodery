@@ -156,6 +156,16 @@ export default function ProdcutsItem({navigation, route}) {
     dispatch(getCartTotal());
   }, [cartdata]);
 
+  console.log('cartdata---------------', cartdata);
+
+  let arr = [];
+
+  cartdata.map(item => {
+    arr.push({Imagenew: item?.productImage});
+  });
+
+  // console.log('arr===================', arr[0].Imagenew);
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <StatusBar
@@ -264,9 +274,8 @@ export default function ProdcutsItem({navigation, route}) {
           {cartdata?.length !== 0 && (
             <AddTocart
               onPress={() => navigation.navigate(Routes.TAB_CART)}
-              Image={bannerIcon}
-              // ItemTotalofnum={`item ${cartdata?.length}`}
-              // PriceTotalofnum={'Rs.10'}
+              Image={{uri: arr[0].Imagenew}}
+              data={arr}
               ItemTotalofnum={`item ${totalQuantity}`}
               PriceTotalofnum={`Rs.${totalprice}`}
               PriceTotalDis={`Rs.${totaldisPrice}`}
@@ -453,6 +462,7 @@ export default function ProdcutsItem({navigation, route}) {
                               ) : null}
                             </View>
                           ))}
+
                           {cartdata.some(
                             value => value._id == item._id,
                           ) ? null : (

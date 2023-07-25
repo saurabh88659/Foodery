@@ -42,6 +42,7 @@ const Yourordericonebox = require('../Assets/Logo/donation.png');
 const yourirdercallsicon = require('../Assets/Logo/callsicon.png');
 const Down_Arrow = require('../Assets/Logo/3d02.png');
 const Up_Arrow = require('../Assets/Logo/UpDown.png');
+const deliveryBoyjson = require('../Assets/Lottiejson/90553-delivery-boy.json');
 
 const BASE_URL = 'http:/192.168.68.185:8000/api'; //  Server URL  Localhost
 
@@ -189,4 +190,5 @@ export {
   yourirdercallsicon,
   Down_Arrow,
   Up_Arrow,
+  deliveryBoyjson,
 };

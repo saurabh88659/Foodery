@@ -214,7 +214,7 @@ export default function CartScreen({navigation}) {
       paid: true,
       status: 'Successful',
     };
-    console.log('hey---------DGGGGGGGGGGGGGGGGGGGGGGG', statusobj);
+    // console.log('hey---------DGGGGGGGGGGGGGGGGGGGGGGG', statusobj);
     axios
       .post(BASE_URL + `/addOrder`, objcartdata, {
         headers: {Authorization: `Bearer ${token}`},
@@ -1067,9 +1067,10 @@ const Styles = StyleSheet.create({
     borderColor: COLORS.GRAYDARK,
   },
   IMAGESTYLES: {
-    height: heightPixel(90),
+    height: heightPixel(80),
     width: widthPixel(60),
     borderRadius: 10,
+    resizeMode: 'contain',
   },
   CONTAINERMAINBOXPLUS: {
     flexDirection: 'row',

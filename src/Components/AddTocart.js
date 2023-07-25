@@ -5,6 +5,9 @@ import {fontPixel, heightPixel, widthPixel} from './Dimensions';
 import {MaterialIconsIcon, bannerIcon} from '../utils/Const';
 
 export default function AddTocart(props) {
+  const imagedata = props.data;
+  // console.log('imagedata-----------', imagedata);
+
   return (
     <View
       style={{
@@ -68,6 +71,7 @@ export default function AddTocart(props) {
           </View>
         </View>
       </View>
+
       <TouchableOpacity
         onPress={props.onPress}
         style={{

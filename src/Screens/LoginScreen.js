@@ -14,7 +14,12 @@ import {
 import React, {useEffect, useState} from 'react';
 import {BASE_URL, SimpleToast, createaccountTOPImage} from '../utils/Const';
 import {COLORS} from '../utils/Colors';
-import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
+import {
+  fontPixel,
+  heightPixel,
+  screenHeight,
+  widthPixel,
+} from '../Components/Dimensions';
 import Button from '../Components/Button';
 import axios from 'axios';
 import Routes from '../Navigation/Routes';
@@ -80,9 +85,10 @@ export default function LoginScreen({navigation}) {
         <KeyboardAvoidingView
           behavior="padding"
           style={{
-            alignItems: 'center',
+            // alignItems: 'center',
             alignSelf: 'center',
-            top: heightPixel(-50),
+            // top: heightPixel(-50),
+            marginTop: heightPixel(300),
           }}>
           <View style={{alignItems: 'center'}}>
             <Text style={Styles.headerTitle}>Login</Text>
@@ -108,7 +114,10 @@ export default function LoginScreen({navigation}) {
             <Text style={Styles.Errortext}>{errorMobileNumber}</Text>
           ) : null}
           <View style={{marginTop: 20}}>
-            <View style={{marginTop: 30}}>
+            <View
+              style={{
+                marginTop: 10,
+              }}>
               <Button
                 title={
                   state.isLoading ? (
@@ -156,7 +165,9 @@ const Styles = StyleSheet.create({
   CONTAINERIMAGEMAIN: {
     alignItems: 'center',
     alignSelf: 'flex-end',
+    flex: 1,
   },
+
   IMAGESTYL: {
     width: widthPixel(420),
     height: heightPixel(450),

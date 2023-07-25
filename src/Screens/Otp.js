@@ -132,9 +132,10 @@ export default function Otp({navigation, route}) {
         <KeyboardAvoidingView
           behavior="padding"
           style={{
-            alignItems: 'center',
+            // alignItems: 'center',
             alignSelf: 'center',
-            top: heightPixel(-50),
+            // top: heightPixel(-50),
+            marginTop: heightPixel(150),
           }}>
           <View>
             <View style={{alignItems: 'center'}}>
@@ -213,11 +214,13 @@ const Styles = StyleSheet.create({
   CONTAINERIMAGEMAIN: {
     alignItems: 'center',
     justifyContent: 'center',
+    flex: 1,
   },
   IMAGESTYL: {
     width: widthPixel(420),
     height: heightPixel(450),
     alignSelf: 'flex-end',
+    resizeMode: 'cover',
   },
   sectionStyle: {
     flexDirection: 'row',

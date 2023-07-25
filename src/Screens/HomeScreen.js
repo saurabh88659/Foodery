@@ -47,6 +47,7 @@ import {
   EntypoIcon,
   Down_Arrow,
   Up_Arrow,
+  deliveryBoyjson,
 } from '../utils/Const';
 import Collapsible from 'react-native-collapsible';
 import MyModalinfo from '../Components/MyModalinfo';
@@ -96,12 +97,6 @@ export default function HomeScreen({navigation}) {
   const [PrductByiDetails, setPrductByiDetails] = useState('');
   // const [collapsed, setCollapsed] = useState(true);
   const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsLoading(true);
-    }, 1000);
-  }, []);
 
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
@@ -173,6 +168,7 @@ export default function HomeScreen({navigation}) {
 
   const _First_Banner = async () => {
     const token = await _getStorage('token');
+    setIsLoading(true);
     axios
       .get(BASE_URL + `/User/getAllBanner`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -181,14 +177,17 @@ export default function HomeScreen({navigation}) {
         // console.log('Banner Response=======', response.data);
         setFirstBanner(response?.data?.advertisement);
         setSecond_Banner(response?.data?.offer);
+        setIsLoading(false);
       })
       .catch(error => {
         console.log('Banner Catch error', error);
+        setIsLoading(false);
       });
   };
 
   const _all_Category = async () => {
     const token = await _getStorage('token');
+    setIsLoading(true);
     axios
       .get(BASE_URL + `/User/getAllcategorylist`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -199,14 +198,17 @@ export default function HomeScreen({navigation}) {
         //   response.data.getAll,
         // );
         setAll_Category(response?.data?.getAll);
+        setIsLoading(false);
       })
       .catch(error => {
         console.log('All Category Catch error', error);
+        setIsLoading(false);
       });
   };
 
   const _ExSubCategory = async () => {
     const token = await _getStorage('token');
+    setIsLoading(true);
     axios
       .get(BASE_URL + `/User/getAllcategorylist1`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -217,14 +219,17 @@ export default function HomeScreen({navigation}) {
         //   response?.data?.getAll,
         // );
         setEx_category_Two(response?.data?.getAll);
+        setIsLoading(false);
       })
       .catch(error => {
         console.log('All Category Two Catch error', error);
+        setIsLoading(false);
       });
   };
 
   const _FreshnessCategory = async () => {
     const token = await _getStorage('token');
+    setIsLoading(true);
     axios
       .get(BASE_URL + `/User/freshProductlist`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -232,15 +237,18 @@ export default function HomeScreen({navigation}) {
       .then(res => {
         // console.log('Freshness Response----->>>', res?.data?.result);
         setFreshnes_Cat(res?.data?.result);
+        setIsLoading(false);
       })
       .catch(error => {
         console.log('Error Freshness catch error---->>>', error);
+        setIsLoading(false);
       });
   };
 
   const _Nuts_and_Dry_sCategory = async () => {
     const token = await _getStorage('token');
     // console.log(token);
+    setIsLoading(true);
     axios
       .get(BASE_URL + `/User/nutdryProductlist`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -248,15 +256,18 @@ export default function HomeScreen({navigation}) {
       .then(res => {
         // console.log('Nuts_and_Dry Response----->>>', res?.data?.result);
         setNuts_and_Dry_Cat(res?.data?.result);
+        setIsLoading(false);
       })
       .catch(error => {
         console.log('Error Nuts_and_Dry catch error---->>>', error);
+        setIsLoading(false);
       });
   };
 
   const _Order_Again = async () => {
     const token = await _getStorage('token');
     console.log('token', token);
+    setIsLoading(true);
     axios
       .get(BASE_URL + `/User/getTrandingProduct`, {
         headers: {Authorization: `Bearer ${token}`},
@@ -264,9 +275,11 @@ export default function HomeScreen({navigation}) {
       .then(response => {
         // console.log('ORDER GAAIN=========', response?.data?.result);
         setOrder_Again(response?.data?.result);
+        setIsLoading(false);
       })
       .catch(error => {
         console.log('order again catch Error', error);
+        setIsLoading(false);
       });
   };
 
@@ -312,6 +325,8 @@ export default function HomeScreen({navigation}) {
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       {isLoading ? (
+        <HomeShimmerPlaceHolder />
+      ) : (
         <SafeAreaView style={Styles.container}>
           <StatusBar
             barStyle={COLORS.WHITE}
@@ -319,7 +334,6 @@ export default function HomeScreen({navigation}) {
             backgroundColor={COLORS.GREEN}
             translucent={true}
           />
-
           <Animated.View style={[Styles.header, {transform: [{translateY}]}]}>
             <Header
               onPressserch={() => navigation.navigate(Routes.SEARCH_BAR)}
@@ -366,41 +380,17 @@ export default function HomeScreen({navigation}) {
                         onPress={() =>
                           navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)
                         }
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          marginHorizontal: 5,
-                          alignItems: 'center',
-                          marginTop: 5,
-                        }}>
+                        style={Styles.fruitItemSTY}>
                         <View style={[Styles.COTVS]}>
                           <Image
                             source={{uri: item?.categoryIcon}}
-                            style={{
-                              height: heightPixel(75),
-                              width: widthPixel(180),
-                              resizeMode: 'contain',
-                              alignSelf: 'center',
-                              top: 3,
-                            }}
+                            style={Styles.fruitImageSTY}
                           />
                         </View>
                       </TouchableOpacity>
 
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-between',
-                          marginHorizontal: 10,
-                          alignSelf: 'center',
-                          marginVertical: 10,
-                        }}>
-                        <Text
-                          style={{
-                            color: COLORS.BLACK,
-                            fontWeight: '500',
-                            fontSize: fontPixel(16),
-                          }}>
+                      <View style={Styles.fruitnameSTY}>
+                        <Text style={Styles.fruitnametext}>
                           {item?.categoryName}
                         </Text>
                       </View>
@@ -656,13 +646,9 @@ export default function HomeScreen({navigation}) {
             <View style={{marginHorizontal: 10}}>
               <View style={Styles.SubTitleheader}>
                 <Text style={Styles.titlemain}>Buy 'Em Now</Text>
-                {/* {freshness_Cat.includes(item => { */}
                 <TouchableOpacity
-                  // onPress={toggleExpanded}
                   onPress={() =>
-                    navigation.navigate(Routes.FRUITS_VEGETABLES, {
-                      // fruitItem: freshness_Cat,
-                    })
+                    navigation.navigate(Routes.FRUITS_VEGETABLES, {})
                   }
                   activeOpacity={0.6}
                   style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -699,8 +685,6 @@ export default function HomeScreen({navigation}) {
                     style={[
                       Styles.IMAGESTYLESBANNER,
                       {
-                        // top: 0,
-                        // left: 0,
                         opacity: imageOpacity,
                       },
                     ]}
@@ -862,10 +846,9 @@ export default function HomeScreen({navigation}) {
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
-                // marginHorizontal: 10,
               }}>
               <Lottie
-                source={require('../Assets/Lottiejson/90553-delivery-boy.json')}
+                source={deliveryBoyjson}
                 autoPlay
                 loop={true}
                 style={{height: heightPixel(200)}}
@@ -1235,8 +1218,6 @@ export default function HomeScreen({navigation}) {
             </View>
           </BottomSheet>
         </SafeAreaView>
-      ) : (
-        <HomeShimmerPlaceHolder />
       )}
     </TouchableWithoutFeedback>
   );
@@ -1524,7 +1505,10 @@ const Styles = StyleSheet.create({
   },
   MODALPRODUCTBOXMAIN: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
+    // justifyContent: 'flex-start',
+    // justifyContent: 'space-between',
+    // justifyContent: 'space-around',
+    justifyContent: 'space-evenly',
     flexWrap: 'wrap',
     alignItems: 'center',
     paddingHorizontal: 2,
@@ -1569,5 +1553,31 @@ const Styles = StyleSheet.create({
     backgroundColor: COLORS.LIGHTGREEN,
     alignItems: 'center',
     justifyContent: 'space-around',
+  },
+  fruitItemSTY: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 5,
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  fruitImageSTY: {
+    height: heightPixel(75),
+    width: widthPixel(180),
+    resizeMode: 'contain',
+    alignSelf: 'center',
+    top: 3,
+  },
+  fruitnameSTY: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 10,
+    alignSelf: 'center',
+    marginVertical: 10,
+  },
+  fruitnametext: {
+    color: COLORS.BLACK,
+    fontWeight: '500',
+    fontSize: fontPixel(16),
   },
 });

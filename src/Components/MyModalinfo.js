@@ -114,8 +114,9 @@ export default function MyModalinfo({
                 width: widthPixel(50),
                 alignItems: 'center',
                 justifyContent: 'center',
-                borderRadius: 50,
+                borderRadius: 50 / 2,
                 alignSelf: 'center',
+                // overflow: 'hidden',
               }}>
               <EntypoIcon title="cross" size={25} IconColor={COLORS.WHITE} />
             </TouchableOpacity>
