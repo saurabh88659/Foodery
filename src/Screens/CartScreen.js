@@ -255,8 +255,8 @@ export default function CartScreen({navigation}) {
     const dataPayment = {
       // RedirectUrl: Routes.YOUR_ORDER,
       RedirectUrl: '',
-      // OrderAmount: totalprice,
-      OrderAmount: '1',
+      OrderAmount: totalprice,
+      // OrderAmount: '1',
       ProductData: {PaymentReason: "''", ItemId: "''", AppName: 'fooderyApp'},
       CustomerData: {
         MobileNo: isProfile?.phone,

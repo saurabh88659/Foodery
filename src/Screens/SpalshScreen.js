@@ -14,7 +14,7 @@ import Geolocation from '@react-native-community/geolocation';
 import {updateGeolocation} from '../Redux/Action/locationAction';
 import {useDispatch, useSelector} from 'react-redux';
 import {BASE_URL, MAP_API_KEY} from '../utils/Const';
-import Geocoder from 'react-native-geocoding';
+// import Geocoder from 'react-native-geocoding';
 import {useIsFocused} from '@react-navigation/native';
 import Routes from '../Navigation/Routes';
 import {_getStorage} from '../utils/Storage';
@@ -116,16 +116,18 @@ export default function SpalshScreen({navigation}) {
                 );
                 const userId = await AsyncStorage.getItem('user_id');
 
-                console.log('userId--------->>', userId);
+                // console.log('userId--------->>', userId);
 
                 const SubmitDAta = {
                   refreshToken: resfreshToken,
                   user_id: userId,
                 };
+
                 //refresh token api
-                console.log('refresh token------->>', SubmitDAta);
+                // console.log('refresh token------->>', SubmitDAta);
                 axios
                   .post(BASE_URL + `/User/refreshToken`, SubmitDAta)
+
                   .then(async res => {
                     // console.log('dablu------------------', res?.data);
                     await AsyncStorage.setItem('token', res?.data?.token);
@@ -133,8 +135,12 @@ export default function SpalshScreen({navigation}) {
                       'refreshToken',
                       res.data.refreshToken,
                     );
+
                     if (res?.data?.token) {
                       navigation.replace(Routes.BOTTOM_TAB_BAR);
+                      console.log(
+                        'heyyyyyyyyyyyy====================================0000000000000',
+                      );
                     }
                   })
                   .catch(error => {

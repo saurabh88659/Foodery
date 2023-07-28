@@ -16,6 +16,7 @@ import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
 import SubCategoryPlaceHolder from '../Components/ShimmerPlaceHolder/SubCategoryPlaceHolder';
+// import {BackHandler} from 'react-native';
 
 export default function SubCategriesModal({navigation, route}) {
   const itemAll = route.params;
@@ -64,6 +65,27 @@ export default function SubCategriesModal({navigation, route}) {
         }
       });
   };
+
+  // useEffect(() => {
+  //   // Add event listener for the back button
+  //   const backHandler = BackHandler.addEventListener(
+  //     'hardwareBackPress',
+  //     handleBackPress,
+  //   );
+
+  //   // Clean up the event listener on component unmount
+  //   return () => backHandler.remove();
+  // }, []);
+
+  // const handleBackPress = () => {
+  //   navigation.goBack();
+  //   // Your custom logic here
+  //   // For example, you can show a confirmation dialog before navigating back
+  //   // and prevent the default back behavior by returning true.
+
+  //   // If you want to navigate back normally, return false.
+  //   return false;
+  // };
 
   return (
     <SafeAreaView style={Styles.container}>
