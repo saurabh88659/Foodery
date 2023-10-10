@@ -165,7 +165,8 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>Terms & Condition</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate(Routes.PRIVACY_POLICY)}
+            // onPress={() => navigation.navigate(Routes.PRIVACY_POLICY)}
+            onPress={() => navigation.navigate(Routes.PAYMENTSUCCESSFUL)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>

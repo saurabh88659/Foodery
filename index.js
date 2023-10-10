@@ -11,6 +11,7 @@ import persistStore from 'redux-persist/es/persistStore';
 import {PersistGate} from 'redux-persist/integration/react';
 import {_getStorage, _setStorage} from './src/utils/Storage';
 import messaging from '@react-native-firebase/messaging';
+import LocationStatesProvider from './src/utils/Handler/LocationStatesProvider';
 let persiststor = persistStore(store);
 
 messaging().onMessage(async remoteMessage => {
@@ -39,9 +40,11 @@ messaging()
 const NewApp = () => {
   return (
     <Provider store={store}>
-      <PersistGate persistor={persiststor}>
-        <App />
-      </PersistGate>
+      <LocationStatesProvider>
+        <PersistGate persistor={persiststor}>
+          <App />
+        </PersistGate>
+      </LocationStatesProvider>
     </Provider>
   );
 };

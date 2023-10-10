@@ -12,6 +12,7 @@ import Toast from 'react-native-simple-toast';
 // import Toast from 'react-native-toast-message';
 import {MMKV} from 'react-native-mmkv';
 import {Dimensions} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {height, width} = Dimensions.get('window');
 
@@ -44,7 +45,9 @@ const Down_Arrow = require('../Assets/Logo/3d02.png');
 const Up_Arrow = require('../Assets/Logo/UpDown.png');
 const deliveryBoyjson = require('../Assets/Lottiejson/90553-delivery-boy.json');
 
-const BASE_URL = 'http:/192.168.68.185:8000/api'; //  Server URL  Localhost
+// const BASE_URL = 'http:/192.168.68.112:8000/api'; //  Server URL  Localhost
+
+const BASE_URL = 'https://apigrocery.kickrtechnology.online/api';
 
 // AIzaSyChkQstsYAs6SgA0d4UIIBnhXfK_wf0iV4?
 const MAP_API_KEY = 'AIzaSyChkQstsYAs6SgA0d4UIIBnhXfK_wf0iV4'; // Map key here
@@ -148,6 +151,14 @@ const SimpleToast = ({title, isLong}) => {
 
 // }
 
+const headerConfig = async () => {
+  const token = await AsyncStorage.getItem('token');
+  const HEADER = {
+    Authorization: `Bearer ${token}`,
+  };
+  return HEADER;
+};
+
 export {
   userIconHome,
   createaccountTOPImage,
@@ -191,4 +202,5 @@ export {
   Down_Arrow,
   Up_Arrow,
   deliveryBoyjson,
+  headerConfig,
 };

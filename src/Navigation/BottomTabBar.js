@@ -41,7 +41,8 @@ const getTabBarVisibility = route => {
     routeName === 'NutsDryFruits' ||
     routeName === 'OrderHistoryMain' ||
     routeName === 'OrderHistoryMain' ||
-    routeName === 'OrderDetails'
+    routeName === 'OrderDetails' ||
+    routeName === 'PaymentSuccessful'
   ) {
     return 'none';
   }
@@ -71,6 +72,44 @@ function BottomTabBar() {
       <Tab.Screen
         name={Routes.TAB_CART}
         component={CartStack}
+        options={({route, tabBarStyle}) => ({
+          tabBarStyle: {
+            display: getTabBarVisibility(route),
+            backgroundColor: COLORS.WHITE,
+            height: 65,
+            alignItems: 'center',
+            // position: 'absolute',
+            borderTopWidth: 2,
+            borderTopColor: COLORS.GRAYDARK,
+            elevation: 10,
+            borderTopRightRadius: 45 / 4,
+            borderTopLeftRadius: 45 / 4,
+          },
+          headerShown: false,
+          tabBarIcon: ({focused}) => (
+            <View style={[styles.btnInactive, focused && styles.btnActive]}>
+              <Badge
+                style={{top: -8, zIndex: +99999, position: 'absolute'}}
+                size={19}>
+                {cartdata.length}
+              </Badge>
+              <Image
+                source={shoppingcartIcon}
+                style={{
+                  height: heightPixel(27),
+                  width: widthPixel(30),
+                  tintColor: focused ? COLORS.GREEN : COLORS.GRAYDARK,
+                }}
+              />
+              {focused ? <Text style={styles.hindentext}>Cart</Text> : null}
+            </View>
+          ),
+        })}
+      />
+
+      {/* <Tab.Screen
+        name={Routes.TAB_CART}
+        component={CartStack}
         options={{
           headerShown: false,
           tabBarColor: COLORS.BLUE,
@@ -93,7 +132,7 @@ function BottomTabBar() {
             </View>
           ),
         }}
-      />
+      /> */}
       <Tab.Screen
         name={Routes.TAB_WISHLIST}
         component={WishlistStack}

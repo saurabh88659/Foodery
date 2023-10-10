@@ -58,7 +58,6 @@ import Swiper from 'react-native-swiper';
 import {_getStorage} from '../utils/Storage';
 import {useIsFocused} from '@react-navigation/native';
 import Lottie from 'lottie-react-native';
-import axios from 'axios';
 import {useDispatch, useSelector} from 'react-redux';
 import {
   addToCart,
@@ -70,9 +69,17 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from '../Redux/ReducerSlice/WishlistReducerSlice';
-import {checkLocationEnabled} from '../utils/Handler/Locationhandles';
+// import {checkLocationEnabled} from '../utils/Handler/Locationhandles';
 import {BottomSheet} from 'react-native-btr';
 import GlobelStyles from '../utils/GlobelStyles';
+import {
+  _first_banner,
+  _freshProductlist,
+  _getTranding,
+  _getcategorylist,
+  _getcategorylistone,
+  _nutdryProduct,
+} from '../utils/Handler/EpicControllers';
 
 const {diffClamp} = Animated;
 const headerHeight = 58 * 2;
@@ -155,132 +162,88 @@ export default function HomeScreen({navigation}) {
 
   useEffect(() => {
     useDoubleBackPressExit();
-    if (IsFocused) {
-      _First_Banner();
-      _all_Category();
-      _ExSubCategory();
-      _FreshnessCategory();
-      _Nuts_and_Dry_sCategory();
-      _Order_Again();
-      checkLocationEnabled();
-    }
-  }, [IsFocused]);
+    _FirstBanner();
+    _all_Category();
+    _ExSubCategory();
+    _FreshnessCategory();
+    _Nuts_and_Dry_sCategory();
+    _Order_Again();
+    // checkLocationEnabled();
+  }, []);
 
-  const _First_Banner = async () => {
-    const token = await _getStorage('token');
+  const _FirstBanner = async () => {
     setIsLoading(true);
-    axios
-      .get(BASE_URL + `/User/getAllBanner`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        // console.log('Banner Response=======', response.data);
-        setFirstBanner(response?.data?.advertisement);
-        setSecond_Banner(response?.data?.offer);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log('Banner Catch error', error);
-        setIsLoading(false);
-      });
+    const result = await _first_banner();
+    if (result?.data) {
+      // console.log('result----------', result?.data);
+      setFirstBanner(result?.data?.advertisement);
+      setSecond_Banner(result?.data?.offer);
+      setIsLoading(false);
+    } else {
+      console.log('Banner Catch error', result?.data);
+      setIsLoading(false);
+    }
   };
 
   const _all_Category = async () => {
-    const token = await _getStorage('token');
     setIsLoading(true);
-    axios
-      .get(BASE_URL + `/User/getAllcategorylist`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        // console.log(
-        //   'All Category Response----------->>>>>',
-        //   response.data.getAll,
-        // );
-        setAll_Category(response?.data?.getAll);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log('All Category Catch error', error);
-        setIsLoading(false);
-      });
+    const result = await _getcategorylist();
+
+    if (result?.data) {
+      setAll_Category(result?.data?.getAll);
+      setIsLoading(false);
+    } else {
+      console.log('All Category Catch error', result?.data);
+      setIsLoading(false);
+    }
   };
 
   const _ExSubCategory = async () => {
-    const token = await _getStorage('token');
     setIsLoading(true);
-    axios
-      .get(BASE_URL + `/User/getAllcategorylist1`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        // console.log(
-        //   '_ExSubCategory Category Two Response----->>>',
-        //   response?.data?.getAll,
-        // );
-        setEx_category_Two(response?.data?.getAll);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log('All Category Two Catch error', error);
-        setIsLoading(false);
-      });
+    const result = await _getcategorylistone();
+    if (result?.data) {
+      setEx_category_Two(result?.data?.getAll);
+      setIsLoading(false);
+    } else {
+      console.log('All Category Two Catch error', result?.data);
+      setIsLoading(false);
+    }
   };
 
   const _FreshnessCategory = async () => {
-    const token = await _getStorage('token');
     setIsLoading(true);
-    axios
-      .get(BASE_URL + `/User/freshProductlist`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(res => {
-        // console.log('Freshness Response----->>>', res?.data?.result);
-        setFreshnes_Cat(res?.data?.result);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log('Error Freshness catch error---->>>', error);
-        setIsLoading(false);
-      });
+    const result = await _freshProductlist();
+    if (result?.data) {
+      setFreshnes_Cat(result?.data?.result);
+      setIsLoading(false);
+    } else {
+      console.log('Error Freshness catch error---->>>', result?.data);
+      setIsLoading(false);
+    }
   };
 
   const _Nuts_and_Dry_sCategory = async () => {
-    const token = await _getStorage('token');
-    // console.log(token);
     setIsLoading(true);
-    axios
-      .get(BASE_URL + `/User/nutdryProductlist`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(res => {
-        // console.log('Nuts_and_Dry Response----->>>', res?.data?.result);
-        setNuts_and_Dry_Cat(res?.data?.result);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log('Error Nuts_and_Dry catch error---->>>', error);
-        setIsLoading(false);
-      });
+    const result = await _nutdryProduct();
+    if (result?.data) {
+      setNuts_and_Dry_Cat(result?.data?.result);
+      setIsLoading(false);
+    } else {
+      console.log('Error Nuts_and_Dry catch error---->>>', result?.data);
+      setIsLoading(false);
+    }
   };
 
   const _Order_Again = async () => {
-    const token = await _getStorage('token');
-    console.log('token', token);
     setIsLoading(true);
-    axios
-      .get(BASE_URL + `/User/getTrandingProduct`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        // console.log('ORDER GAAIN=========', response?.data?.result);
-        setOrder_Again(response?.data?.result);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log('order again catch Error', error);
-        setIsLoading(false);
-      });
+    const result = await _getTranding();
+    if (result?.data) {
+      setOrder_Again(result?.data?.result);
+      setIsLoading(false);
+    } else {
+      console.log('order again catch Error', result?.data);
+      setIsLoading(false);
+    }
   };
 
   const addItemToCart = item => {
@@ -372,6 +335,7 @@ export default function HomeScreen({navigation}) {
                   keyExtractor={(item, index) => index.toString()}
                   showsHorizontalScrollIndicator={false}
                   numColumns={2}
+                  scrollEnabled={false}
                   data={all_Category.slice(0, 2)}
                   renderItem={({item, index}) => (
                     <View>
@@ -404,6 +368,7 @@ export default function HomeScreen({navigation}) {
                   showsHorizontalScrollIndicator={false}
                   // contentContainerStyle={{paddingBottom: 5}}
                   numColumns={4}
+                  scrollEnabled={false}
                   // data={showModal?all_Category:}
                   data={all_Category.slice(2, 6)}
                   renderItem={({item, index}) => (
@@ -479,6 +444,7 @@ export default function HomeScreen({navigation}) {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{paddingBottom: 5}}
               horizontal
+              scrollEnabled={true}
               data={ex_Category_Two}
               renderItem={({item, index}) => (
                 <TouchableOpacity
@@ -544,6 +510,7 @@ export default function HomeScreen({navigation}) {
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={{paddingBottom: 5}}
               horizontal
+              scrollEnabled={true}
               data={order_Again}
               renderItem={({item, index}) => (
                 <View key={index}>
@@ -698,6 +665,7 @@ export default function HomeScreen({navigation}) {
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{paddingLeft: '35%'}}
                   horizontal
+                  scrollEnabled={true}
                   data={freshness_Cat}
                   renderItem={({item, index}) => {
                     return (
@@ -792,6 +760,7 @@ export default function HomeScreen({navigation}) {
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{paddingLeft: '35%'}}
                   horizontal
+                  scrollEnabled={true}
                   data={nuts_and_Dry_Cat}
                   renderItem={({item, index}) => (
                     <Productinfo
@@ -913,6 +882,7 @@ export default function HomeScreen({navigation}) {
                   keyExtractor={(item, index) => index.toString()}
                   showsHorizontalScrollIndicator={false}
                   numColumns={2}
+                  scrollEnabled={true}
                   data={all_Category.slice(0, 2)}
                   renderItem={({item, index}) => (
                     // <Collapsible collapsed={collapsed} key={index}>
@@ -1116,6 +1086,7 @@ export default function HomeScreen({navigation}) {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={{paddingBottom: 5}}
                         horizontal
+                        scrollEnabled={true}
                         data={order_Again}
                         renderItem={({item, index}) => (
                           <View key={index}>

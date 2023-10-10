@@ -11,7 +11,6 @@ import {
 import React, {createRef, useState, useEffect} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {
-  BASE_URL,
   FontAwesomeIcon,
   IonIcon,
   SimpleToast,
@@ -24,7 +23,6 @@ import Productinfo from '../Components/Productinfo';
 import GlobelStyles from '../utils/GlobelStyles';
 import Collapsible from 'react-native-collapsible';
 import {_getStorage} from '../utils/Storage';
-import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
 import {
   addToWishlist,
@@ -40,6 +38,10 @@ import {
 } from '../Redux/ReducerSlice/CartReducerSlice';
 import Routes from '../Navigation/Routes';
 import AddTocart from '../Components/AddTocart';
+import {
+  _getSimmilarProduct,
+  _getfreshProduct,
+} from '../utils/Handler/EpicControllers';
 
 export default function FruitsVegetables({navigation, route}) {
   const actionSheetRef = createRef(false);
@@ -65,38 +67,16 @@ export default function FruitsVegetables({navigation, route}) {
     }
   }
 
-  const SRTDATANEW = [
-    {
-      _id: 1,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 2,
-      Nmae: 'ravi rai',
-    },
-    {
-      _id: 3,
-      Nmae: 'ravi rai',
-    },
-  ];
-
   const _Simailar_Product = async () => {
-    const token = await _getStorage('token');
-    axios
-      .get(
-        BASE_URL +
-          `/User/getSimmilarProductByCatId/${similar_Product.fruitItem.categoryId}`,
-        {
-          headers: {Authorization: `Bearer ${token}`},
-        },
-      )
-      .then(response => {
-        console.log('_Simailar_Product', response.data.result);
-        set_Simailr(response.data.result);
-      })
-      .catch(error => {
-        console.log('_Simailar_Product catch error', error);
-      });
+    const result = await _getSimmilarProduct(
+      similar_Product.fruitItem.categoryId,
+    );
+    if (result?.data) {
+      console.log('_Simailar_Product', result.data.result);
+      set_Simailr(result.data.result);
+    } else {
+      console.log('_Simailar_Product catch error', error);
+    }
   };
 
   const toggleExpanded = () => {
@@ -115,23 +95,14 @@ export default function FruitsVegetables({navigation, route}) {
   }, [IsFocused]);
 
   const _FreshnessCategory = async () => {
-    const token = await _getStorage('token');
-    // console.log(token);
-    axios
-      .get(BASE_URL + `/User/freshProductlist`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(res => {
-        // console.log('Freshness Response QQQQQQQQQ----->>>', res?.data?.result);
-
-        setFreshnes_Cat(res?.data?.result);
-      })
-      .catch(error => {
-        console.log('Error Freshness catch error---->>>', error);
-      });
+    const result = await _getfreshProduct();
+    if (result?.data) {
+      setFreshnes_Cat(result?.data?.result);
+    } else {
+      console.log('Error Freshness catch error---->>>', result?.data);
+    }
   };
 
-  // const _FreshnessCategoryBYIdDetails = async () => {
   //   const token = await _getStorage('token');
   //   // console.log(token);
   //   axios

@@ -97,9 +97,8 @@ export default function MyModalinfo({
                 }}>
                 All Categories
               </Text>
-              <ScrollView>
+              <ScrollView scrollEnabled={true}>
                 <View>{_TOP_UI}</View>
-
                 <View>{_Ui}</View>
               </ScrollView>
             </View>

@@ -10,7 +10,7 @@ import {
 import React, {useEffect, useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel} from '../Components/Dimensions';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 import {updateGeolocation} from '../Redux/Action/locationAction';
 import {useDispatch, useSelector} from 'react-redux';
 import {BASE_URL, MAP_API_KEY} from '../utils/Const';
@@ -24,6 +24,7 @@ import {checkInternetConnection} from '../utils/Handler/InternetInfo';
 import Lottie from 'lottie-react-native';
 import RNExitApp from 'react-native-exit-app';
 import {fetchData} from '../Redux/RootsagaEpic';
+import {_getProfile, _postcoordinates} from '../utils/Handler/EpicControllers';
 
 export default function SpalshScreen({navigation}) {
   const IsFocused = useIsFocused();
@@ -32,6 +33,7 @@ export default function SpalshScreen({navigation}) {
   const [isLoading, setIsLoading] = useState(true);
 
   const Locations = useSelector(state => state.locationReducer);
+  console.log('Locations------------', Locations);
 
   // const {loading, data, error} = useSelector(state => state.Profilereducer);
   // console.log(
@@ -45,9 +47,10 @@ export default function SpalshScreen({navigation}) {
     Geolocation.getCurrentPosition(
       position => {
         const {latitude, longitude} = position.coords;
+
         dispatch(updateGeolocation(latitude, longitude));
       },
-      error => console.log('error locations', error), // handle error if needed
+      error => console.log('error locations', error),
     );
   };
 
@@ -82,12 +85,15 @@ export default function SpalshScreen({navigation}) {
 
   useEffect(() => {
     dispatch(fetchData());
+    _Coordinates();
   }, []);
 
   const _Handle_Splash = async () => {
     const token = await _getStorage('token');
     const isInternet = await checkInternetConnection();
-    console.log('isInternet', isInternet);
+
+    // const result = await _getProfile();
+
     if (isInternet) {
       if (token) {
         axios
@@ -138,16 +144,12 @@ export default function SpalshScreen({navigation}) {
 
                     if (res?.data?.token) {
                       navigation.replace(Routes.BOTTOM_TAB_BAR);
-                      console.log(
-                        'heyyyyyyyyyyyy====================================0000000000000',
-                      );
                     }
                   })
                   .catch(error => {
                     console.log('errr--->>>', error?.response?.data?.message);
                     navigation.replace(Routes.BOTTOM_TAB_BAR);
                   });
-                // update access token in storage
               }
             }
           });
@@ -157,6 +159,19 @@ export default function SpalshScreen({navigation}) {
     } else {
       setIsLoading(false);
       setHasInternet(isInternet);
+    }
+  };
+
+  const _Coordinates = async () => {
+    const logtat = {
+      latitude: Locations.longitude,
+      longitude: Locations.latitude,
+    };
+    const result = await _postcoordinates(logtat);
+    if (result?.data) {
+      console.log('coordinates-----------', result?.data);
+    } else {
+      console.log('coordinates catch error--->>', result?.data);
     }
   };
 

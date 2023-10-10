@@ -20,47 +20,32 @@ import {
 } from '../utils/Const';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import {_getStorage} from '../utils/Storage';
-import axios from 'axios';
 import moment from 'moment';
 
 import OrderhistoryShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/OrderhistoryShimmerPlaceHolder';
+import {_getorderhistory} from '../utils/Handler/EpicControllers';
 
 export default function OrderHistory({navigation}) {
   const [orderData, setOrderData] = useState([]);
   const [isloading, setIsloading] = useState(false);
   const [notfound, setNotfound] = useState('');
 
-  console.log('notfound----------', notfound);
-
   useEffect(() => {
     _Order_History();
   }, []);
 
   const _Order_History = async () => {
-    const token = await _getStorage('token');
     setIsloading(true);
-    console.log(token);
-
-    axios
-      .get(BASE_URL + `/User/getOrderData`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        console.log('order data----------->>', response?.data);
-
-        setOrderData(response?.data?.result);
-        setIsloading(false);
-      })
-      .catch(error => {
-        setIsloading(false);
-        if (error?.response?.data.message == 'Data Not Founded') {
-          setNotfound(error?.response?.data.message);
-        }
-        console.log(
-          'catch error order data ------',
-          error.response.data.message,
-        );
-      });
+    const result = await _getorderhistory();
+    if (result?.data) {
+      setOrderData(result?.data?.result);
+      setIsloading(false);
+    } else {
+      setIsloading(false);
+      if (result?.response?.data.message == 'Data Not Founded') {
+        setNotfound(result?.response?.data.message);
+      }
+    }
   };
 
   return (

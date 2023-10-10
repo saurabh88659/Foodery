@@ -28,6 +28,10 @@ import {useSelector} from 'react-redux';
 import MapView, {Marker} from 'react-native-maps';
 import moment from 'moment';
 import OrderDetailsShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/OrderDetailsShimmerPlaceHolder';
+import {
+  _getorderDetails,
+  _getorderdetails,
+} from '../utils/Handler/EpicControllers';
 
 export default function OrderDetails({navigation, route}) {
   const OrderHistoryData = route.params;
@@ -40,28 +44,23 @@ export default function OrderDetails({navigation, route}) {
     setVisible(!visible);
   };
   const Locations = useSelector(state => state.locationReducer);
+
   useEffect(() => {
     _Order_Details();
   }, []);
 
   const _Order_Details = async () => {
-    const token = await _getStorage('token');
-    console.log(token);
     setIsloading(true);
-    axios
-      .get(BASE_URL + `/User/getOneOrderData/${OrderHistoryData?._id}`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        console.log('order data- Details---------->>', response?.data.result);
-        setOrderDetails(response?.data?.result?.orderedProducts);
-        setIsOrderDetails(response?.data?.result);
-        setIsloading(false);
-      })
-      .catch(error => {
-        console.log('catch error order data Details ------>>>', error);
-        setIsloading(false);
-      });
+    const result = await _getorderDetails(OrderHistoryData?._id);
+    if (result?.data) {
+      console.log('order data- Details---------->>', result?.data.result);
+      setOrderDetails(result?.data?.result?.orderedProducts);
+      setIsOrderDetails(result?.data?.result);
+      setIsloading(false);
+    } else {
+      console.log('catch error order data Details ------>>>', result?.data);
+      setIsloading(false);
+    }
   };
 
   return (

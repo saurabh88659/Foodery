@@ -57,6 +57,13 @@ import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import Toast from 'react-native-toast-message';
 import {setCartdata} from '../Redux/ReducerSlice/CartDatapassSlices';
 import GlobelStyles from '../utils/GlobelStyles';
+import {
+  _getProfile,
+  _getaddorder,
+  _getcreatpayment,
+  _getmightmissed,
+  _getorderDetailorderkey,
+} from '../utils/Handler/EpicControllers';
 
 export default function CartScreen({navigation}) {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
@@ -91,6 +98,7 @@ export default function CartScreen({navigation}) {
   console.log('addressCurrent--------DG-', addressCurrent);
 
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
+  const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
 
   const totalQuantity = useSelector(
     state => state.CartReducerSlice.totalQuantity,
@@ -123,19 +131,13 @@ export default function CartScreen({navigation}) {
   }, [IsFocused]);
 
   const _Order_Might_Missed = async () => {
-    const token = await _getStorage('token');
-
-    axios
-      .get(BASE_URL + `/getAllshowCarts`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        console.log('_Order_Might_Missed=========', response.data.categoryData);
-        setOrder_Might_Missed(response.data.categoryData);
-      })
-      .catch(error => {
-        console.log('_Order_Might_Missed catch Error', error);
-      });
+    const result = await _getmightmissed();
+    if (result?.data) {
+      // console.log('_Order_Might_Missed=========', result?.data);
+      setOrder_Might_Missed(result.data.categoryData);
+    } else {
+      console.log('_Order_Might_Missed catch Error', result?.data);
+    }
   };
 
   const increaseQuantity = item => {
@@ -166,35 +168,21 @@ export default function CartScreen({navigation}) {
   };
 
   const _Handle_Profile = async () => {
-    const token = await _getStorage('token');
-    axios
-      .get(BASE_URL + `/User/getProfile`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        setIsProfile(response?.data?.result);
-        // console.log('------------------', response?.data?.result);
-      })
-      .catch(error => {
-        console.log('Profile Catch Error', error);
-      });
+    const result = await _getProfile();
+    if (result?.data) {
+      setIsProfile(result?.data?.result);
+    } else {
+      console.log('Profile Catch Error', error);
+    }
   };
 
-  const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
-
-  // console.log('newAddress', newAddress);
-
   const _Handle_Cart_Data = async () => {
-    const token = await _getStorage('token');
-    console.log(token);
     let arr = [];
-
     {
       productDataByRe.map(item => {
         arr.push({productId: item._id, quantity: item.quantity});
       });
     }
-
     const objcartdata = {
       orderedProducts: arr,
       totalAmount: totalprice,
@@ -208,55 +196,26 @@ export default function CartScreen({navigation}) {
       },
     };
 
-    const statusobj = {
-      paymentId: orderKey,
-      _id: statusId,
-      paid: true,
-      status: 'Successful',
-    };
-    // console.log('hey---------DGGGGGGGGGGGGGGGGGGGGGGG', statusobj);
-    axios
-      .post(BASE_URL + `/addOrder`, objcartdata, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        console.log('Response api ------------->>>>', response?.data);
-        setStatusId(response?.data?.result?._id);
-        dispatch(setCartdata(response?.data?.result));
-        axios
-          .put(BASE_URL + `/updatePaymentStatus`, statusobj, {
-            headers: {Authorization: `Bearer ${token}`},
-          })
-          .then(res => {
-            console.log('status----------paid', res?.data);
-            navigation.navigate(Routes.YOUR_ORDER);
-          })
-          .catch(error => {
-            console.log('status catch error', error?.response?.data?.message);
-          });
-      })
-      .catch(error => {
-        console.log(
-          'add to cart data catch error',
-          error.response.data.message,
-        );
-      });
+    const result = await _getaddorder(objcartdata);
+    console.log('resul------one', result?.data);
+    if (result?.data) {
+      console.log('Response api ------------->>>>', result?.data);
+      setStatusId(result?.data?.result?._id);
+      dispatch(setCartdata(result?.data?.result));
+    } else {
+      console.log('add to cart data catch error', result?.data);
+    }
   };
 
   const _Payment_Handle = async () => {
-    const token = await _getStorage('token');
-
-    console.log(token);
     setState({
       ...state,
       isLoading: true,
     });
-
     const dataPayment = {
       // RedirectUrl: Routes.YOUR_ORDER,
       RedirectUrl: '',
       OrderAmount: totalprice,
-      // OrderAmount: '1',
       ProductData: {PaymentReason: "''", ItemId: "''", AppName: 'fooderyApp'},
       CustomerData: {
         MobileNo: isProfile?.phone,
@@ -265,81 +224,50 @@ export default function CartScreen({navigation}) {
       },
     };
 
-    axios
-      .post(BASE_URL + `/payG/createOrder`, dataPayment, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        console.log(
-          'Response api payment API ------------->>>>',
-          response.data,
-        );
+    const result = await _getcreatpayment(dataPayment);
+    console.log('ddddddddddddd', result?.data);
 
-        if (response?.data?.message === 'Payment Url Generated') {
-          setOrderKey(response?.data?.orderKeyId);
-          setShowWebView(true);
-
-          setLinkpay(response?.data);
-          setModalVisible(true);
-          setState({
-            ...state,
-            isLoading: false,
-          });
-        } else {
-          _Payment_Check_Handle();
-          console.log('hey____-----------------------------------------------');
-        }
-      })
-      .catch(error => {
-        console.log(
-          'Payment  API catch error ',
-          error?.response?.data?.message,
-        );
+    if (result?.data) {
+      if (result?.data?.message === 'Payment Url Generated') {
+        setOrderKey(result?.data?.orderKeyId);
+        setShowWebView(true);
+        setLinkpay(result?.data);
         setState({
           ...state,
           isLoading: false,
         });
+      }
+    } else {
+      console.log('Payment  API catch error ', result?.data);
+      setState({
+        ...state,
+        isLoading: false,
       });
+    }
   };
 
+  useEffect(() => {
+    let intervalid;
+    if (showWebView) {
+      intervalid = setInterval(_Payment_Check_Handle, 5000);
+    }
+    return () => clearInterval(intervalid);
+  }, [showWebView]);
+
   const _Payment_Check_Handle = async () => {
-    const token = await _getStorage('token');
-    setState({
-      ...state,
-      isLoading: true,
-    });
-    axios
-      .get(BASE_URL + `/payG/orderDetail/${orderKey}`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(res => {
-        console.log(
-          'Response api _Payment_Check_Handle ------------->>>>',
-          res?.data,
-        );
-        setPaidmess(res?.data?.OrderPaymentStatusText);
-        if (res?.data?.OrderPaymentStatusText == 'Pending') {
-          // setModalVisible(true);
-        } else if (res?.data?.OrderPaymentStatusText == 'Paid') {
-          console.log(
-            'hey-------------------------------------LLLLLL',
-            res?.data,
-          );
-          // setModalVisible(false);
-          _Handle_Cart_Data();
-          showToast();
-        }
-      })
-      .catch(error => {
-        setState({
-          ...state,
-          isLoading: false,
+    const result = await _getorderDetailorderkey(orderKey);
+    if (result?.data) {
+      if (result?.data?.OrderPaymentStatusText !== 'Pending') {
+        SimpleToast({
+          title: `Order Status: ${result?.data?.OrderPaymentStatusText}`,
+          isLong: true,
         });
-        console.log(
-          'Payment  API _Payment_Check_Handle catch error ',
-          error?.response?.data?.message,
-        );
-      });
+        _Handle_Cart_Data();
+        navigation.replace(Routes.PAYMENTSUCCESSFUL, result?.data);
+      }
+    } else {
+      console.log('Payment check', result?.data);
+    }
   };
 
   const openWebView = () => {
@@ -663,6 +591,7 @@ export default function CartScreen({navigation}) {
               <FlatList
                 keyExtractor={(item, index) => index.toString()}
                 showsHorizontalScrollIndicator={false}
+                scrollEnabled={true}
                 contentContainerStyle={{paddingBottom: 5, marginHorizontal: 10}}
                 horizontal
                 data={[1, 2, 3, 4]}
@@ -818,6 +747,7 @@ export default function CartScreen({navigation}) {
                 }}>
                 <ScrollView
                   showsVerticalScrollIndicator={false}
+                  scrollEnabled={true}
                   contentContainerStyle={{}}>
                   <Image
                     source={{uri: PrductByiDetails?.productImage}}
@@ -925,6 +855,7 @@ export default function CartScreen({navigation}) {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={{paddingBottom: 5}}
                         horizontal
+                        scrollEnabled={true}
                         data={[1, 2, 3, 4]}
                         renderItem={({item, index}) => (
                           <View key={index}>

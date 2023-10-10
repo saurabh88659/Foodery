@@ -15,6 +15,7 @@ export default {
   FORGET_NEW_PASSWORD: 'ForgetNewPassword',
   BOTTOM_TAB_BAR: 'BottomTabBar',
   SEARCH_BAR: 'SearchBar',
+  PAYMENTSUCCESSFUL: 'PaymentSuccessful',
 
   /*
       BOTTOM TAB BAR
