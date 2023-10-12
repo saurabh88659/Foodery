@@ -11,9 +11,8 @@ import {
   Image,
   FlatList,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
-  BASE_URL,
   EntypoIcon,
   FontAwesomeIcon,
   IonIcon,
@@ -22,7 +21,6 @@ import {
 } from '../utils/Const';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
-import axios from 'axios';
 import {_getStorage} from '../utils/Storage';
 import Productinfo from '../Components/Productinfo';
 import {useDispatch, useSelector} from 'react-redux';
@@ -43,6 +41,7 @@ import {
 import GlobelStyles from '../utils/GlobelStyles';
 import Routes from '../Navigation/Routes';
 import AddTocart from '../Components/AddTocart';
+import {_getSearchbarlist} from '../utils/Handler/EpicControllers';
 
 export default function SearchBar({navigation}) {
   const [searchBarList, setSearchBarList] = useState([]);
@@ -52,6 +51,9 @@ export default function SearchBar({navigation}) {
   const [visible, setVisible] = React.useState(false);
   const [PrductByiDetails, setPrductByiDetails] = useState('');
   const [collapsed, setCollapsed] = useState(true);
+
+  const textInputRef = useRef(null);
+  setTimeout(() => textInputRef.current.focus(), 1);
 
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
@@ -67,19 +69,13 @@ export default function SearchBar({navigation}) {
   }, []);
 
   const _SearchBarList = async () => {
-    const token = await _getStorage('token');
-
-    axios
-      .get(BASE_URL + `/getAllProductlist`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        console.log('Search bar Response', response.data.getAll);
-        setSearchBarList(response.data.getAll);
-      })
-      .catch(error => {
-        console.log('Search bar error====>>>', error);
-      });
+    const result = await _getSearchbarlist();
+    if (result?.data) {
+      console.log('Search bar Response', result.data.getAll);
+      setSearchBarList(result.data.getAll);
+    } else {
+      console.log('Search bar error====>>>', result?.data);
+    }
   };
 
   const addItemToCart = item => {
@@ -116,6 +112,7 @@ export default function SearchBar({navigation}) {
   const totalQuantity = useSelector(
     state => state.CartReducerSlice.totalQuantity,
   );
+
   const totaldisPrice = useSelector(
     state => state.CartReducerSlice.discountTotalPrice,
   );
@@ -130,7 +127,7 @@ export default function SearchBar({navigation}) {
       item.productName.toLowerCase().includes(text.toLowerCase()),
     );
     if (text === '') {
-      return true; // Show all data if search text is empty
+      return true;
     }
     setFilteredData(filteredItems);
   };
@@ -172,6 +169,7 @@ export default function SearchBar({navigation}) {
           style={Styles.inputStyles}
           value={searchText}
           onChangeText={handleSearch}
+          ref={textInputRef}
         />
       </View>
       <ScrollView>

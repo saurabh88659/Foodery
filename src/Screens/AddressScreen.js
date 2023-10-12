@@ -14,8 +14,9 @@ import {RadioButton} from 'react-native-paper';
 import {useDispatch, useSelector} from 'react-redux';
 import {setCurrentAddress} from '../Redux/ReducerSlice/AddressLSlice';
 import Geocoder from 'react-native-geocoding';
-import Button from '../Components/Button';
-import {WebView} from 'react-native-webview';
+// import Button from '../Components/Button';
+// import {WebView} from 'react-native-webview';
+import Routes from '../Navigation/Routes';
 
 export default function AddressScreen({navigation}) {
   const [checked, setChecked] = React.useState('');
@@ -23,12 +24,15 @@ export default function AddressScreen({navigation}) {
   const dispatch = useDispatch();
   const [newAddress, setNewAddress] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
+  const [showWebView, setShowWebView] = useState(false);
 
   const Locations = useSelector(state => state.locationReducer);
+  const addressold = useSelector(state => state.AddressLSlice.animalAddress);
 
-  const addressCurrent = useSelector(
-    state => state.AddressLSlice.currentAddress,
-  );
+  // console.log('addressold------------', addressold);
+  // const addressCurrent = useSelector(
+  //   state => state.AddressLSlice.currentAddress,
+  // );
 
   useEffect(() => {
     geoCoding();
@@ -59,9 +63,7 @@ export default function AddressScreen({navigation}) {
     setSelectedValue(value);
   };
 
-  console.log('selectedValue---------', selectedValue);
-
-  const [showWebView, setShowWebView] = useState(false);
+  // console.log('selectedValue---------', selectedValue);
 
   const handleButtonPress = () => {
     setShowWebView(true);
@@ -84,27 +86,35 @@ export default function AddressScreen({navigation}) {
         </Text>
       </TouchableOpacity>
       <View style={{}}>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginHorizontal: 15,
-          }}>
-          <RadioButton
-            value="first"
-            status={checked === 'first' ? 'checked' : 'unchecked'}
-            onPress={() => setChecked(addressCurrent)}
-          />
-          <Text
+        {addressold?.compleAddress ? (
+          <TouchableOpacity
+            onPress={() => {
+              setChecked('first');
+              navigation.navigate(Routes.TAB_CART);
+            }}
+            activeOpacity={0.6}
             style={{
-              color: COLORS.BLACK,
-              fontSize: fontPixel(18),
-              paddingHorizontal: 5,
-              textAlign: 'left',
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginHorizontal: 15,
             }}>
-            {addressCurrent}
-          </Text>
-        </View>
+            <RadioButton
+              value="first"
+              color={COLORS.GREEN}
+              status={checked === 'first' ? 'checked' : 'unchecked'}
+              onPress={() => setChecked('first')}
+            />
+            <Text
+              style={{
+                color: COLORS.BLACK,
+                fontSize: fontPixel(18),
+                paddingHorizontal: 5,
+                textAlign: 'left',
+              }}>
+              {addressold?.compleAddress}
+            </Text>
+          </TouchableOpacity>
+        ) : null}
 
         {/* <View
           style={{

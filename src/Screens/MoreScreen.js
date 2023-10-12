@@ -39,7 +39,7 @@ export default function MoreScreen({navigation}) {
     await AsyncStorage.removeItem('token');
     await AsyncStorage.removeItem('isLoggedIn');
     setModalVisible(!modalVisible);
-    navigation.navigate(Routes.LOG_IN_SCREEN);
+    navigation.replace(Routes.LOG_IN_SCREEN);
   };
 
   const getGreeting = () => {
@@ -165,8 +165,8 @@ export default function MoreScreen({navigation}) {
             <Text style={Styles.boxTitle}>Terms & Condition</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            // onPress={() => navigation.navigate(Routes.PRIVACY_POLICY)}
-            onPress={() => navigation.navigate(Routes.PAYMENTSUCCESSFUL)}
+            onPress={() => navigation.navigate(Routes.PRIVACY_POLICY)}
+            // onPress={() => navigation.navigate(Routes.PAYMENTSUCCESSFUL)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
             <View style={Styles.Greenbox}>

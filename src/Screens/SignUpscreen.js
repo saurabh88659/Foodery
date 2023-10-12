@@ -15,11 +15,14 @@ import React, {useEffect, useState} from 'react';
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, screenHeight} from '../Components/Dimensions';
 import Button from '../Components/Button';
-import axios from 'axios';
 import {BASE_URL, FontAwesome5Icon, SimpleToast} from '../utils/Const';
 import Routes from '../Navigation/Routes';
 import {_getStorage} from '../utils/Storage';
 import ImagePicker from 'react-native-image-crop-picker';
+import {
+  _UpdateprofilePic,
+  _postsignupnew,
+} from '../utils/Handler/EpicControllers';
 
 function SignUpscreen({navigation, route}) {
   const [email, setEmail] = useState('');
@@ -97,45 +100,37 @@ function SignUpscreen({navigation, route}) {
   };
 
   const _SignUp = async () => {
-    const token = await _getStorage('token');
     setState({
       ...state,
       isLoading: true,
     });
-
     let datasignup = {
       name: fullName,
       email: email,
       phone: PNumber,
       address: address,
     };
-    axios
-      .post(BASE_URL + `/User/addUser`, datasignup, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        if (response?.data?.message == 'User SignUp Successfully...') {
-          setState({
-            ...state,
-            isLoading: false,
-          });
-          navigation.navigate(Routes.BOTTOM_TAB_BAR);
-        } else {
-          console.log('else condition');
-        }
-      })
-      .catch(error => {
-        console.log('Sign Up Catch error', error);
+    const result = await _postsignupnew(datasignup);
+    if (result?.data) {
+      if (result?.data?.message == 'User SignUp Successfully...') {
         setState({
           ...state,
           isLoading: false,
         });
+        navigation.replace(Routes.BOTTOM_TAB_BAR);
+      } else {
+        console.log('else condition');
+      }
+    } else {
+      console.log('Sign Up Catch error', result?.data);
+      setState({
+        ...state,
+        isLoading: false,
       });
+    }
   };
 
   const _UP_LoadProfile_Img = async () => {
-    const token = await _getStorage('token');
-
     let formData = new FormData();
     if (state.profileImg) {
       var imgName = state.profileImg?.path?.replace(/^.*[\\\/]/, '');
@@ -147,28 +142,14 @@ function SignUpscreen({navigation, route}) {
             ? state.profileImg?.path
             : state.profileImg?.path?.replace('file://', ''),
       });
-
-      axios
-        .post(BASE_URL + `/User/userAddPic`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .then(res => {
-          SimpleToast({title: res.data.message, isLong: true});
-          setState({...state, profileImg: null});
-
-          SimpleToast({title: res?.data?.message, isLong: true});
-        })
-        .catch(error => {
-          console.log(
-            'error in catch Profile image',
-            error?.response?.data?.message,
-          );
-          SimpleToast({title: error?.response?.data?.message, isLong: true});
-          setState({...state, profileImg: null});
-        });
+      const result = await _UpdateprofilePic(formData);
+      if (result?.data) {
+        setState({...state, profileImg: null});
+        SimpleToast({title: result?.data?.message, isLong: true});
+      } else {
+        SimpleToast({title: result?.response?.data?.message, isLong: true});
+        setState({...state, profileImg: null});
+      }
     }
   };
 

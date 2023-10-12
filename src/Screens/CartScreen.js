@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   FlatList,
   ScrollView,
-  Linking,
   ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
@@ -15,14 +14,12 @@ import MyHeader from '../Components/MyHeader';
 import Collapsible from 'react-native-collapsible';
 
 import {
-  BASE_URL,
   EntypoIcon,
   FontAwesomeIcon,
   IonIcon,
   MaterialCommunityIconsTwo,
   MaterialIconsIcon,
   SimpleToast,
-  bannerIcon,
   cartemptyIcon,
 } from '../utils/Const';
 import {COLORS} from '../utils/Colors';
@@ -47,7 +44,6 @@ import {
   removeFromWishlist,
 } from '../Redux/ReducerSlice/WishlistReducerSlice';
 import {_getStorage} from '../utils/Storage';
-import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
 import {fetchApiData} from '../Redux/ReducerSlice/cartapiSlice';
 import Lottie from 'lottie-react-native';
@@ -57,15 +53,19 @@ import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import Toast from 'react-native-toast-message';
 import {setCartdata} from '../Redux/ReducerSlice/CartDatapassSlices';
 import GlobelStyles from '../utils/GlobelStyles';
+import {useNavigation} from '@react-navigation/native';
+
 import {
   _getProfile,
   _getaddorder,
   _getcreatpayment,
   _getmightmissed,
   _getorderDetailorderkey,
+  _postNotifee,
+  _putpaymentHistory,
 } from '../utils/Handler/EpicControllers';
 
-export default function CartScreen({navigation}) {
+export default function CartScreen() {
   const [order_Might_Missed, setOrder_Might_Missed] = useState([]);
   const IsFocused = useIsFocused();
   const productDataByRe = useSelector(state => state.CartReducerSlice.cart);
@@ -75,6 +75,7 @@ export default function CartScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
   // const [payLoading, setPayLoading] = useState(true);
   const [visible, setVisible] = useState(false);
+  const navigation = useNavigation();
 
   const [state, setState] = useState({
     isLoading: false,
@@ -89,13 +90,13 @@ export default function CartScreen({navigation}) {
   const [PrductByiDetails, setPrductByiDetails] = useState('');
   const [collapsed, setCollapsed] = useState(true);
 
-  console.log('orderKey------>>', orderKey);
+  // console.log('orderKey------>>', orderKey);
 
-  const addressCurrent = useSelector(
-    state => state.AddressLSlice.currentAddress,
-  );
+  // const addressCurrent = useSelector(
+  //   state => state.AddressLSlice.currentAddress,
+  // );
 
-  console.log('addressCurrent--------DG-', addressCurrent);
+  // console.log('addressCurrent--------DG-', addressCurrent);
 
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
   const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
@@ -176,7 +177,9 @@ export default function CartScreen({navigation}) {
     }
   };
 
-  const _Handle_Cart_Data = async () => {
+  const _Handle_Cart_Data = async datapay => {
+    console.log('datapay---------------new', datapay);
+
     let arr = [];
     {
       productDataByRe.map(item => {
@@ -186,15 +189,20 @@ export default function CartScreen({navigation}) {
     const objcartdata = {
       orderedProducts: arr,
       totalAmount: totalprice,
-      currentAddress: addressCurrent || '',
-      // currentAddress: 'noida sector 62',
+      currentAddress: newAddress?.compleAddress,
+      txnId: datapay?.orderKeyId,
+      resCode: datapay?.orderStatus,
+      txnRef: datapay?.TransactionRefNo,
+      status: datapay?.status,
       delieveryAddress: {
         completeAddress: newAddress?.compleAddress,
         floor: newAddress?.floor,
         nearby_landmark: newAddress?.nearby,
-        receiverName: newAddress?.namer || '',
+        receiverName: newAddress?.namer,
       },
     };
+
+    // console.log('objcartdata=======>>', objcartdata);
 
     const result = await _getaddorder(objcartdata);
     console.log('resul------one', result?.data);
@@ -202,6 +210,7 @@ export default function CartScreen({navigation}) {
       console.log('Response api ------------->>>>', result?.data);
       setStatusId(result?.data?.result?._id);
       dispatch(setCartdata(result?.data?.result));
+      orderNotifee(result?.data);
     } else {
       console.log('add to cart data catch error', result?.data);
     }
@@ -257,18 +266,50 @@ export default function CartScreen({navigation}) {
   const _Payment_Check_Handle = async () => {
     const result = await _getorderDetailorderkey(orderKey);
     if (result?.data) {
+      console.log('check data -----------new---------->>>', result?.data);
       if (result?.data?.OrderPaymentStatusText !== 'Pending') {
         SimpleToast({
           title: `Order Status: ${result?.data?.OrderPaymentStatusText}`,
           isLong: true,
         });
-        _Handle_Cart_Data();
-        navigation.replace(Routes.PAYMENTSUCCESSFUL, result?.data);
+        _Handle_Cart_Data(result?.data);
+        setShowWebView(false);
+        navigation.navigate('PaymentSuccessful', result?.data);
       }
     } else {
       console.log('Payment check', result?.data);
     }
   };
+
+  const orderNotifee = async data => {
+    console.log('data datblu----->>', data?.result?.orderId);
+    const result = await _postNotifee({orderId: data?.result?.orderId});
+    if (result?.data) {
+      console.log('NotiFeee:', result?.data);
+    } else {
+      console.log('Notifee:error', result?.data);
+    }
+  };
+
+  // const paymentHistory = async datatype => {
+  //   const data = {
+  //     order_id: statusId,
+  //     txnId: datatype?.orderKeyId,
+  //     resCode: datatype?.orderStatus,
+  //     txnRef: datatype?.TransactionRefNo,
+  //     totalAmount: datatype?.OrderAmount,
+  //     status: datatype?.status,
+  //   };
+
+  //   console.log('ravi 22222--------->>>', data);
+
+  //   const result = await _putpaymentHistory(data);
+  //   if (result?.data) {
+  //     console.log('response data--->>>', result?.data);
+  //   } else {
+  //     console.log('payment history:', result?.data);
+  //   }
+  // };
 
   const openWebView = () => {
     _Payment_Handle();
@@ -277,13 +318,11 @@ export default function CartScreen({navigation}) {
   const handleGoBack = () => {
     setShowWebView(!showWebView);
   };
-
   const handleNavigationStateChange = navState => {
     if (navState.url === linkpay.paymnetProcessUrl) {
       navigation.navigate(Routes.YOUR_ORDER);
     }
   };
-
   const showToast = () => {
     Toast.show({
       type: 'success',
@@ -291,7 +330,6 @@ export default function CartScreen({navigation}) {
       // text2: 'This is some something 👋',
     });
   };
-
   function LoadingIndicatorView() {
     return (
       <ActivityIndicator
@@ -301,7 +339,6 @@ export default function CartScreen({navigation}) {
       />
     );
   }
-
   const toggleBottomNavigationView = item => {
     setVisible(!visible);
     setPrductByiDetails(item);
@@ -309,6 +346,8 @@ export default function CartScreen({navigation}) {
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
   };
+
+  console.log('statusId-------------', statusId);
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -337,6 +376,7 @@ export default function CartScreen({navigation}) {
             <ScrollView
               showsVerticalScrollIndicator={false}
               scrollEventThrottle={16}
+              scrollEnabled={true}
               contentContainerStyle={{paddingBottom: 15}}>
               <View style={Styles.LOCATIONMAINBOX}>
                 <View style={Styles.SUBTITLELOCATIONS}>
@@ -348,7 +388,7 @@ export default function CartScreen({navigation}) {
                   <Text numberOfLines={1} style={Styles.SUBTITLELOCATIONS2}>
                     {/* Current Locations Current
                      */}
-                    {addressCurrent}
+                    {newAddress?.compleAddress}{' '}
                   </Text>
                 </View>
                 <TouchableOpacity
@@ -369,9 +409,10 @@ export default function CartScreen({navigation}) {
                 keyExtractor={(item, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{paddingBottom: 5}}
+                scrollEnabled={false}
                 data={productDataByRe}
                 renderItem={({item, index}) => (
-                  <View style={Styles.MAINCARD}>
+                  <View key={index} style={Styles.MAINCARD}>
                     <View
                       style={{
                         flexDirection: 'row',
@@ -486,7 +527,9 @@ export default function CartScreen({navigation}) {
                             {productDataByRe.map((value, index) => (
                               <View key={value?._id}>
                                 {value?._id == item?._id ? (
-                                  <View style={Styles.INCREAMENTBOTTONMAIN}>
+                                  <View
+                                    key={index}
+                                    style={Styles.INCREAMENTBOTTONMAIN}>
                                     <TouchableOpacity
                                       onPress={() => decreaseQuantity(value)}>
                                       <Text style={Styles.DCREAMENTTITLE}>
@@ -693,6 +736,10 @@ export default function CartScreen({navigation}) {
                   />
                 )}
               </View>
+              {/* <Button
+                title={'Choose address at next step   ▶'}
+                onPress={() => navigation.navigate('PaymentSuccessful')}
+              /> */}
             </ScrollView>
           ) : (
             <View style={Styles.EMPTYBOXMAIN}>
@@ -901,6 +948,7 @@ export default function CartScreen({navigation}) {
                                     <View key={value?._id}>
                                       {item?._id == value?._id ? (
                                         <View
+                                          key={index}
                                           style={Styles.INCREAMENTBOTTONMAIN}>
                                           <TouchableOpacity
                                             onPress={() =>

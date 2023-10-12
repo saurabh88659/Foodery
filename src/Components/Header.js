@@ -6,6 +6,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Pressable,
+  Image,
 } from 'react-native';
 import {COLORS} from '../utils/Colors';
 import {heightPixel, widthPixel, fontPixel} from '../Components/Dimensions';
@@ -16,6 +17,8 @@ import {useSelector} from 'react-redux';
 
 const Header = props => {
   const {headerHeight} = props;
+  const profiledata = useSelector(state => state.ProfileSlice.profiledata);
+  const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
 
   const texts = [
     'Search "rice"',
@@ -30,6 +33,7 @@ const Header = props => {
     'Search "Onions"',
     'Search "Tomatoes"',
   ];
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentText, setCurrentText] = useState('');
 
@@ -62,9 +66,9 @@ const Header = props => {
     return () => clearInterval(interval);
   }, []);
 
-  const addressCurrent = useSelector(
-    state => state.AddressLSlice.currentAddress,
-  );
+  // const addressCurrent = useSelector(
+  //   state => state.AddressLSlice.currentAddress,
+  // );
 
   return (
     <SafeAreaView style={{backgroundColor: COLORS.GREEN}}>
@@ -98,23 +102,41 @@ const Header = props => {
               }}>
               {/* Home-Kickr Tech Home-Kickr Tech
                */}
-              {addressCurrent}
+              {newAddress?.compleAddress}
             </Text>
             <Icon name="arrow-drop-down" color={COLORS.WHITE} size={25} />
           </View>
         </TouchableOpacity>
+
         <TouchableOpacity
           onPress={props.onPress}
           style={{
             alignItems: 'center',
             justifyContent: 'center',
             top: '4%',
+            // backgroundColor: 'red',
+            borderRadius: 40 / 2,
+            height: heightPixel(40),
+            width: widthPixel(40),
           }}>
+          {/* {profiledata?.profilePic ? (
+            <Image
+              source={{
+                uri: profiledata?.profilePic ? profiledata?.profilePic : null,
+              }}
+              style={{
+                height: heightPixel(40),
+                width: widthPixel(40),
+                borderRadius: 40 / 2,
+              }}
+            />
+          ) : ( */}
           <FontAwesome5Icon
             title={'user-circle'}
             size={30}
             IconColor={COLORS.WHITE}
           />
+          {/* )} */}
         </TouchableOpacity>
       </View>
 

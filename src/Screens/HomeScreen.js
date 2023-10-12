@@ -56,7 +56,7 @@ import Routes from '../Navigation/Routes';
 import {useDoubleBackPressExit} from '../utils/Handler/BackHandler';
 import Swiper from 'react-native-swiper';
 import {_getStorage} from '../utils/Storage';
-import {useIsFocused} from '@react-navigation/native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import Lottie from 'lottie-react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -104,6 +104,8 @@ export default function HomeScreen({navigation}) {
   const [PrductByiDetails, setPrductByiDetails] = useState('');
   // const [collapsed, setCollapsed] = useState(true);
   const [visible, setVisible] = useState(false);
+  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
+  const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
@@ -161,7 +163,7 @@ export default function HomeScreen({navigation}) {
   //  < ===================BackHandler Function =======================>
 
   useEffect(() => {
-    useDoubleBackPressExit();
+    // useDoubleBackPressExit();
     _FirstBanner();
     _all_Category();
     _ExSubCategory();
@@ -282,8 +284,45 @@ export default function HomeScreen({navigation}) {
     setCollapsed(!collapsed);
   };
 
-  const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
-  const cartdata = useSelector(state => state.CartReducerSlice.cart);
+  let currentCount = 0;
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backAction);
+    };
+  }, []);
+
+  const backAction = () => {
+    if (navigation.isFocused()) {
+      if (Platform.OS === 'ios') return;
+      const subscription = BackHandler.addEventListener(
+        'hardwareBackPress',
+        () => {
+          if (currentCount === 1) {
+            BackHandler.exitApp();
+            subscription.remove();
+            return true;
+          }
+          backPressHandler();
+          return true;
+        },
+      );
+
+      return true;
+    }
+  };
+
+  const backPressHandler = () => {
+    if (currentCount < 1) {
+      SimpleToast({title: 'Press back again to exit', isLong: true});
+      currentCount += 1;
+    }
+    setTimeout(() => {
+      currentCount = 0;
+    }, 3000);
+  };
 
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>

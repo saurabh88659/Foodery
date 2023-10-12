@@ -19,7 +19,6 @@ import {
   widthPixel,
 } from '../Components/Dimensions';
 import {
-  BASE_URL,
   FontAwesome5Icon,
   MaterialCommunityIconsTwo,
   SimpleToast,
@@ -34,13 +33,13 @@ import {useDispatch, useSelector} from 'react-redux';
 import ImagePicker from 'react-native-image-crop-picker';
 import ProfileshimmerPlaceHolder from '../Components/ShimmerPlaceHolder/ProfileshimmerPlaceHolder';
 import {setProfileData} from '../Redux/ReducerSlice/ProfileSlice';
+import {_UpdateprofilePic, _getProfile} from '../utils/Handler/EpicControllers';
 
 export default function ProfileScreen({navigation}) {
   const IsFocused = useIsFocused();
   const [isProfile, setIsProfile] = useState('');
   const dispatch = useDispatch();
-
-  const profiledata = useSelector(state => state.ProfileSlice.profiledata);
+  // const profiledata = useSelector(state => state.ProfileSlice.profiledata);
   // console.log('profiledata---DF------', profiledata);
 
   const [state, setState] = useState({
@@ -57,22 +56,15 @@ export default function ProfileScreen({navigation}) {
 
   const _Handle_Profile = async () => {
     setIsLoading(true);
-    const token = await _getStorage('token');
-    axios
-      .get(BASE_URL + `/User/getProfile`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        // console.log('Profile Response', response.data.result);
-        setIsProfile(response?.data?.result);
-        dispatch(setProfileData(response?.data?.result));
-
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.log('Profile Catch Error', error);
-        setIsLoading(false);
-      });
+    const result = await _getProfile();
+    if (result?.data) {
+      setIsProfile(result?.data?.result);
+      dispatch(setProfileData(result?.data?.result));
+      setIsLoading(false);
+    } else {
+      console.log('Profile Catch Error', result?.data);
+      setIsLoading(false);
+    }
   };
 
   const onGallary = () => {
@@ -98,12 +90,10 @@ export default function ProfileScreen({navigation}) {
   };
 
   const _UP_LoadProfile_Img = async () => {
-    const token = await _getStorage('token');
     setState({
       ...state,
       isLoading: true,
     });
-    console.log(token);
     let formData = new FormData();
     if (state.profileImg) {
       var imgName = state.profileImg?.path?.replace(/^.*[\\\/]/, '');
@@ -115,32 +105,24 @@ export default function ProfileScreen({navigation}) {
             ? state.profileImg?.path
             : state.profileImg?.path?.replace('file://', ''),
       });
-      axios
-        .post(BASE_URL + `/User/userAddPic`, formData, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'multipart/form-data',
-          },
-        })
-        .then(res => {
-          // console.log('Profile image--------->>', res.data);
-          // console.log('Profile only response data--------->>', res);
-          SimpleToast({title: res?.data?.message, isLong: true});
-          setState({...state, profileImg: null});
-          setState({
-            ...state,
-            isLoading: false,
-          });
-        })
-        .catch(error => {
-          console.log('error in catch Profile image ', error?.response?.data);
-          SimpleToast({title: error?.response?.data?.message, isLong: true});
-          setState({...state, profileImg: null});
-          setState({
-            ...state,
-            isLoading: false,
-          });
+      const result = await _UpdateprofilePic(formData);
+      if (result?.data) {
+        console.log('result-------->>>', result?.data);
+        SimpleToast({title: result?.data?.message, isLong: true});
+        setState({...state, profileImg: null});
+        setState({
+          ...state,
+          isLoading: false,
         });
+      } else {
+        console.log('error in catch Profile image ', result?.data);
+        SimpleToast({title: result?.data?.message, isLong: true});
+        setState({...state, profileImg: null});
+        setState({
+          ...state,
+          isLoading: false,
+        });
+      }
     }
   };
 
@@ -163,7 +145,7 @@ export default function ProfileScreen({navigation}) {
                 onPress={onGallary}
                 activeOpacity={0.6}
                 style={Styles.CAMERAICON}>
-                {state.profileImg || isProfile?.profilePic ? (
+                {isProfile?.profilePic || state.profileImg ? (
                   <Image
                     source={
                       state.profileImg

@@ -11,7 +11,6 @@ import Routes from './Routes';
 import LoginScreen from '../Screens/LoginScreen';
 import Otp from '../Screens/Otp';
 import SearchBar from '../Screens/SearchBar';
-import PaymentSuccessful from '../Screens/PaymentSuccessful';
 
 const Stack = createNativeStackNavigator();
 function AuthStack() {

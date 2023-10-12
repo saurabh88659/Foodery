@@ -11,6 +11,7 @@ import OrderDetails from '../Screens/OrderDetails';
 import Routes from './Routes';
 import OrderHistoryLive from '../Screens/OrderHistory/OrderHistoryLive';
 import YourOrder from '../Screens/YourOrder';
+import PaymentSuccessful from '../Screens/PaymentSuccessful';
 
 const Stack = createNativeStackNavigator();
 function MoreStack() {
@@ -64,6 +65,11 @@ function MoreStack() {
       <Stack.Screen
         name={Routes.YOUR_ORDER}
         component={YourOrder}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PaymentSuccessful"
+        component={PaymentSuccessful}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

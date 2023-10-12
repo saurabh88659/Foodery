@@ -14,7 +14,7 @@ import Routes from '../Navigation/Routes';
 
 export default function PaymentSuccessful({navigation, route}) {
   const predata = route.params;
-  console.log('payment details---------------', predata);
+  // console.log('payment details---------------', predata);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: COLORS.WHITE}}>

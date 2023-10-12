@@ -149,8 +149,6 @@ export const _getorderDetailorderkey = async id => {
 
 export const _getaddorder = async data => {
   const header = await headerConfig();
-  console.log('header--DG->>', header);
-  console.log('epic data----->>>', data);
 
   try {
     const result = await Instance('POST', BASE_URL + '/addOrder', header, data);
@@ -162,8 +160,6 @@ export const _getaddorder = async data => {
 
 export const _postcoordinates = async data => {
   const header = await headerConfig();
-  console.log('header--DG->>', header);
-  console.log('epic data----->>>', data);
 
   try {
     const result = await Instance(
@@ -268,17 +264,78 @@ export const _getgetSimmilarProducnuts = async id => {
   }
 };
 
-// export const _getorderdetails = async id => {
-//   const header = await headerConfig();
-//   console.log('header--DG->>', header, id);
-//   try {
-//     const result = await Instance(
-//       'GET',
-//       BASE_URL + '/User/getOneOrderData/' + id,
-//       header,
-//     );
-//     return result;
-//   } catch (e) {
-//     return e;
-//   }
-// };
+export const _UpdateprofilePic = async data => {
+  const header = await headerConfig();
+  header['Content-type'] = 'multipart/form-data';
+
+  try {
+    const result = await Instance(
+      'POST',
+      BASE_URL + '/User/userAddPic',
+      header,
+      data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _postsignupnew = async data => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'POST',
+      BASE_URL + '/User/addUser',
+      header,
+      data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _getSearchbarlist = async data => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'GET',
+      BASE_URL + '/getAllProductlist',
+      header,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _putpaymentHistory = async data => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'PUT',
+      BASE_URL + '/payG/addPaymentHistory',
+      header,
+      data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _postNotifee = async data => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'POST',
+      BASE_URL + '/sendOrderNotifiction',
+      header,
+      data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};

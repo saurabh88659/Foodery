@@ -5,8 +5,9 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
-import React, {createRef} from 'react';
+import React, {createRef, useEffect} from 'react';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import {COLORS} from '../utils/Colors';
 import {useDispatch, useSelector} from 'react-redux';
@@ -20,24 +21,31 @@ import {
   SimpleToast,
 } from '../utils/Const';
 import {TextInput} from 'react-native-paper';
-import MapView, {Marker} from 'react-native-maps';
+// import MapView, {Marker} from 'react-native-maps';
 // import Geocoder from 'react-native-geocoding';
 import {BottomSheet} from 'react-native-btr';
 import {setAnimalAddress} from '../Redux/ReducerSlice/AddressLSlice';
+import Lottie from 'lottie-react-native';
 
 export default function AddressScreenWithMap({navigation}) {
   const [visible, setVisible] = React.useState(false);
   const [completeAddress, setCompleteAddress] = React.useState('');
+
   const [completeAddressError, setCompleteAddressError] = React.useState('');
   const [isFloor, setIsFloor] = React.useState('');
   const [isFloorError, setIsFloorError] = React.useState('');
   const [isNearby, setIsnearby] = React.useState('');
   const [isNearbyError, setIsnearbyError] = React.useState('');
   const [isReceiveName, setIsReceiveName] = React.useState('');
+  const [issaveas, setIssaveas] = React.useState('Home');
 
-  const [state, setState] = React.useState({
-    isLoading: false,
-  });
+  const [isLoading, setIsLoading] = React.useState(false);
+
+  const mapjosn = require('../Assets/Lottiejson/animation_lnmpy47v.json');
+
+  // const [state, setState] = React.useState({
+  //   isLoading: false,
+  // });
 
   const dispatch = useDispatch();
 
@@ -52,11 +60,21 @@ export default function AddressScreenWithMap({navigation}) {
     }
   };
 
-  // const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
-  // console.log('newAddress-------------------', newAddress);
+  const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
+  console.log('newAddress-------------------', newAddress?.compleAddress);
 
+  useEffect(() => {
+    updatedata();
+  }, [newAddress]);
+
+  async function updatedata() {
+    setCompleteAddress(newAddress?.compleAddress);
+    setIsFloor(newAddress?.floor);
+    setIsnearby(newAddress?.nearby);
+    setIsReceiveName(newAddress?.namer);
+  }
   const validateFloorName = () => {
-    const namePattern = /^[a-zA-Z0-9]+$/;
+    const namePattern = /^[a-zA-Z0-9\s,]+$/;
     if (!namePattern.test(isFloor)) {
       setIsFloorError('Please enter your Floor');
       return false;
@@ -80,16 +98,20 @@ export default function AddressScreenWithMap({navigation}) {
     const _Is_Address_Complete = _Complete_validateAddress(completeAddress);
     const _is_Floor_Name = validateFloorName(isFloor);
     const _is_Near_by = validateNearBy(isNearby);
-
+    setIsLoading(true);
     if (_Is_Address_Complete && _is_Floor_Name && _is_Near_by) {
       SimpleToast({title: 'Address update successfully', isLong: true});
-      setVisible(!visible);
+      setTimeout(() => {
+        setVisible(!visible);
+        setIsLoading(false);
+      }, 1500);
       dispatch(
         setAnimalAddress({
           compleAddress: completeAddress,
           floor: isFloor,
           nearby: isNearby,
           namer: isReceiveName,
+          saveas: issaveas,
         }),
       );
     }
@@ -100,10 +122,15 @@ export default function AddressScreenWithMap({navigation}) {
   };
 
   const Locations = useSelector(state => state.locationReducer);
+
   const [adrtext, setAdrtext] = React.useState(1);
+
   const addressCurrent = useSelector(
     state => state.AddressLSlice.currentAddress,
   );
+
+  // console.log('addressCurrent---------', addressCurrent);
+
   const [placeholderText, setPlaceholderText] =
     React.useState('Complete address');
 
@@ -121,12 +148,12 @@ export default function AddressScreenWithMap({navigation}) {
     {
       Name: 'Other',
       _id: 3,
-      lablename: 'Complete address',
+      lablename: 'Other',
     },
     {
       Name: 'Hotel',
       _id: 4,
-      lablename: 'Complete address',
+      lablename: 'Hotel',
     },
   ];
 
@@ -141,7 +168,23 @@ export default function AddressScreenWithMap({navigation}) {
           title={'Choose Your Address'}
           onPress={() => navigation.goBack()}
         />
-        <View style={Styles.MAPBOX}>
+        <View
+          style={{
+            alignItems: 'center',
+            flex: 1,
+            justifyContent: 'center',
+          }}>
+          <Lottie
+            source={mapjosn}
+            autoPlay
+            loop={true}
+            style={{
+              height: heightPixel(300),
+              // width: widthPixel(200),
+            }}
+          />
+        </View>
+        {/* <View style={Styles.MAPBOX}>
           {Locations && (
             <MapView
               style={StyleSheet?.absoluteFill}
@@ -162,7 +205,8 @@ export default function AddressScreenWithMap({navigation}) {
               />
             </MapView>
           )}
-        </View>
+        </View> */}
+
         <View style={Styles.BOXNUMBEROF2}>
           <Text style={Styles.TITLEPR}>Your Locations</Text>
           <View style={Styles.BOXLOACTIONS}>
@@ -182,7 +226,9 @@ export default function AddressScreenWithMap({navigation}) {
                 {block}
               </Text> */}
 
-              <Text style={Styles.SUBTITLELOCATIONS}>{addressCurrent}</Text>
+              <Text style={Styles.SUBTITLELOCATIONS}>
+                {newAddress?.compleAddress}
+              </Text>
             </View>
           </View>
           <View style={{marginVertical: '2%'}}>
@@ -218,7 +264,9 @@ export default function AddressScreenWithMap({navigation}) {
                     IconColor={COLORS.GREEN}
                   />
                 </View>
-                <Text style={Styles.SUBTITLELOCATIONS}>{addressCurrent}</Text>
+                <Text style={Styles.SUBTITLELOCATIONS}>
+                  {newAddress?.compleAddress}
+                </Text>
               </View>
               <View style={{marginTop: 20}}>
                 <View
@@ -233,6 +281,7 @@ export default function AddressScreenWithMap({navigation}) {
                       onPress={() => {
                         setAdrtext(value?._id),
                           handleTextChange(value?.lablename);
+                        setIssaveas(value?.lablename);
                       }}
                       key={index}
                       style={[
@@ -360,13 +409,12 @@ export default function AddressScreenWithMap({navigation}) {
 
               <View style={{marginTop: 20, top: -10}}>
                 <Button
-                  // title={'Save address'}
                   title={
-                    state.isLoading ? (
+                    isLoading ? (
                       <View style={Styles.activStylesIndicator}>
-                        <ActivityIndicator color={COLORS.LIGHTGREEN} />
+                        <ActivityIndicator size="small" color={COLORS.WHITE} />
                         <Text style={Styles.activeStylesTitleIndicator}>
-                          Save address
+                          Please wait...
                         </Text>
                       </View>
                     ) : (
@@ -400,13 +448,16 @@ const Styles = StyleSheet.create({
   },
   BOXNUMBEROF2: {
     marginHorizontal: 10,
-    height: heightPixel(200),
+    // height: heightPixel(200),
     // borderWidth: 1,
-    flex: 1,
+    // flex: 1,
     elevation: 3,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
     // marginTop: '1%',
+    // flex: 0.5,
+    // justifyContent: 'flex-end',
+    // backgroundColor: 'red',
   },
   TITLEPR: {
     color: COLORS.BLACK,

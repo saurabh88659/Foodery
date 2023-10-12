@@ -51,6 +51,7 @@ const getTabBarVisibility = route => {
 
 function BottomTabBar() {
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
+  const wishlist = useSelector(state => state.WishlistReducerSlice?.wishlist);
 
   return (
     <Tab.Navigator
@@ -88,11 +89,14 @@ function BottomTabBar() {
           headerShown: false,
           tabBarIcon: ({focused}) => (
             <View style={[styles.btnInactive, focused && styles.btnActive]}>
-              <Badge
-                style={{top: -8, zIndex: +99999, position: 'absolute'}}
-                size={19}>
-                {cartdata.length}
-              </Badge>
+              {cartdata.length === 0 ? null : (
+                <Badge
+                  style={{top: -8, zIndex: +99999, position: 'absolute'}}
+                  size={19}>
+                  {cartdata.length}
+                </Badge>
+              )}
+
               <Image
                 source={shoppingcartIcon}
                 style={{
@@ -107,32 +111,6 @@ function BottomTabBar() {
         })}
       />
 
-      {/* <Tab.Screen
-        name={Routes.TAB_CART}
-        component={CartStack}
-        options={{
-          headerShown: false,
-          tabBarColor: COLORS.BLUE,
-          tabBarIcon: ({focused}) => (
-            <View style={[styles.btnInactive, focused && styles.btnActive]}>
-              <Badge
-                style={{top: -8, zIndex: +99999, position: 'absolute'}}
-                size={19}>
-                {cartdata.length}
-              </Badge>
-              <Image
-                source={shoppingcartIcon}
-                style={{
-                  height: heightPixel(27),
-                  width: widthPixel(30),
-                  tintColor: focused ? COLORS.GREEN : COLORS.GRAYDARK,
-                }}
-              />
-              {focused ? <Text style={styles.hindentext}>Cart</Text> : null}
-            </View>
-          ),
-        }}
-      /> */}
       <Tab.Screen
         name={Routes.TAB_WISHLIST}
         component={WishlistStack}
@@ -141,6 +119,19 @@ function BottomTabBar() {
           tabBarColor: COLORS.BLUE,
           tabBarIcon: ({focused}) => (
             <View style={[styles.btnInactive, focused && styles.btnActive]}>
+              {wishlist.length === 0 ? null : (
+                <Badge
+                  style={{
+                    top: -4,
+                    zIndex: +99999,
+                    position: 'absolute',
+                    right: focused ? widthPixel(54) : 3,
+                  }}
+                  size={19}>
+                  {wishlist.length}
+                </Badge>
+              )}
+
               <FontAwesomeIcon
                 title={'heart-o'}
                 size={25}
