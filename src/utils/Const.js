@@ -13,7 +13,6 @@ import Toast from 'react-native-simple-toast';
 import {MMKV} from 'react-native-mmkv';
 import {Dimensions} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 const {height, width} = Dimensions.get('window');
 
 // DESCRIBING SOME STATIC IMAGE
@@ -94,6 +93,7 @@ const EvilIconsIcon = ({title, size, IconColor, IconStyle}) => (
     style={IconStyle || {}}
   />
 );
+
 const FontAwesome5Icon = ({title, size, IconColor, IconStyle}) => (
   <FontAwesome5
     name={title}

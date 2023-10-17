@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
@@ -17,6 +18,10 @@ import Geocoder from 'react-native-geocoding';
 // import Button from '../Components/Button';
 // import {WebView} from 'react-native-webview';
 import Routes from '../Navigation/Routes';
+import {
+  _getAddress,
+  _getCurrentLocations,
+} from '../utils/Handler/EpicControllers';
 
 export default function AddressScreen({navigation}) {
   const [checked, setChecked] = React.useState('');
@@ -25,29 +30,32 @@ export default function AddressScreen({navigation}) {
   const [newAddress, setNewAddress] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
   const [showWebView, setShowWebView] = useState(false);
+  const [isaddress, setIsadress] = useState([]);
 
   const Locations = useSelector(state => state.locationReducer);
   const addressold = useSelector(state => state.AddressLSlice.animalAddress);
 
-  // console.log('addressold------------', addressold);
+  // console.log('addressold------------', addressold.currentaddress);
   // const addressCurrent = useSelector(
   //   state => state.AddressLSlice.currentAddress,
   // );
 
   useEffect(() => {
-    geoCoding();
+    // geoCoding();
+    // currentloactions();
+    _getAddressapidata();
   }, []);
 
-  const handleSetCurrentAddress = () => {
-    dispatch(setCurrentAddress(newAddress));
-    setNewAddress('');
-    geoCoding();
-  };
+  // const handleSetCurrentAddress = () => {
+  //   dispatch(setCurrentAddress(newAddress));
+  //   setNewAddress('');
+  //   geoCoding();
+  // };
 
-  const handleSetAnimalAddress = () => {
-    dispatch(setAnimalAddress(newAddress));
-    setNewAddress('');
-  };
+  // const handleSetAnimalAddress = () => {
+  //   dispatch(setAnimalAddress(newAddress));
+  //   setNewAddress('');
+  // };
 
   const geoCoding = async () => {
     Geocoder.init(MAP_API_KEY);
@@ -59,14 +67,21 @@ export default function AddressScreen({navigation}) {
     });
   };
 
-  const handleRadioChange = value => {
-    setSelectedValue(value);
-  };
+  // const handleRadioChange = value => {
+  //   setSelectedValue(value);
+  // };
+  // const handleButtonPress = () => {
+  //   setShowWebView(true);
+  // };
 
-  // console.log('selectedValue---------', selectedValue);
-
-  const handleButtonPress = () => {
-    setShowWebView(true);
+  const _getAddressapidata = async () => {
+    const result = await _getAddress();
+    if (result?.data) {
+      console.log('response data:', result?.data?.result);
+      setIsadress(result?.data?.result);
+    } else {
+      console.log('catch error:', result?.data);
+    }
   };
 
   return (
@@ -86,7 +101,7 @@ export default function AddressScreen({navigation}) {
         </Text>
       </TouchableOpacity>
       <View style={{}}>
-        {addressold?.compleAddress ? (
+        {/* {addressold?.compleAddress ? (
           <TouchableOpacity
             onPress={() => {
               setChecked('first');
@@ -114,7 +129,45 @@ export default function AddressScreen({navigation}) {
               {addressold?.compleAddress}
             </Text>
           </TouchableOpacity>
-        ) : null}
+        ) : null} */}
+        <FlatList
+          keyExtractor={(item, index) => index.toString()}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{paddingLeft: '35%'}}
+          scrollEnabled={true}
+          data={isaddress}
+          renderItem={({item, index}) => (
+            <View>
+              <TouchableOpacity
+                onPress={() => {
+                  setChecked('first');
+                  navigation.navigate(Routes.TAB_CART);
+                }}
+                activeOpacity={0.6}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginHorizontal: 15,
+                }}>
+                <RadioButton
+                  value="first"
+                  color={COLORS.GREEN}
+                  status={checked === 'first' ? 'checked' : 'unchecked'}
+                  onPress={() => setChecked('first')}
+                />
+                <Text
+                  style={{
+                    color: COLORS.BLACK,
+                    fontSize: fontPixel(18),
+                    paddingHorizontal: 5,
+                    textAlign: 'left',
+                  }}>
+                  {addressold?.compleAddress}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        />
 
         {/* <View
           style={{

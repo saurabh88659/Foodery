@@ -99,7 +99,10 @@ export default function CartScreen() {
   // console.log('addressCurrent--------DG-', addressCurrent);
 
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
+
   const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
+
+  console.log('newAddress', newAddress);
 
   const totalQuantity = useSelector(
     state => state.CartReducerSlice.totalQuantity,
@@ -189,7 +192,6 @@ export default function CartScreen() {
     const objcartdata = {
       orderedProducts: arr,
       totalAmount: totalprice,
-      currentAddress: newAddress?.compleAddress,
       txnId: datapay?.orderKeyId,
       resCode: datapay?.orderStatus,
       txnRef: datapay?.TransactionRefNo,
@@ -202,7 +204,7 @@ export default function CartScreen() {
       },
     };
 
-    // console.log('objcartdata=======>>', objcartdata);
+    console.log('objcartdata=======>>', objcartdata);
 
     const result = await _getaddorder(objcartdata);
     console.log('resul------one', result?.data);

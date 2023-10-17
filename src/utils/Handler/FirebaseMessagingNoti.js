@@ -69,7 +69,7 @@ async function onDisplayNotification(data) {
     title: data?.notification.title,
     body: data?.notification.body,
     android: {
-      channelId,
+      channelId: 'default',
     },
   });
 }

@@ -401,7 +401,7 @@ export default function HomeScreen({navigation}) {
                   )}
                 />
               </Collapsible>
-              <View style={{}}>
+              <View>
                 <FlatList
                   keyExtractor={(item, index) => index.toString()}
                   showsHorizontalScrollIndicator={false}

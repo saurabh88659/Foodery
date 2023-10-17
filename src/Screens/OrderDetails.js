@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import MyHeader from '../Components/MyHeader';
@@ -15,14 +16,13 @@ import {COLORS} from '../utils/Colors';
 import {_getStorage} from '../utils/Storage';
 import Lottie from 'lottie-react-native';
 import {
-  BASE_URL,
   EntypoIcon,
   IonIcon,
   LATITUDE_DELTA,
   LONGITUDE_DELTA,
+  SimpleToast,
 } from '../utils/Const';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
-import axios from 'axios';
 import {BottomSheet} from 'react-native-btr';
 import {useSelector} from 'react-redux';
 import MapView, {Marker} from 'react-native-maps';
@@ -31,13 +31,16 @@ import OrderDetailsShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/Ord
 import {
   _getorderDetails,
   _getorderdetails,
+  _putCancelBooking,
 } from '../utils/Handler/EpicControllers';
+import {useIsFocused} from '@react-navigation/native';
 
 export default function OrderDetails({navigation, route}) {
   const OrderHistoryData = route.params;
   const [orderDetails, setOrderDetails] = useState([]);
   const [isorderdetails, setIsOrderDetails] = useState('');
   const [isloading, setIsloading] = useState(false);
+  const IsFocused = useIsFocused();
 
   const [visible, setVisible] = useState(false);
   const toggleBottomNavigationView = () => {
@@ -46,8 +49,10 @@ export default function OrderDetails({navigation, route}) {
   const Locations = useSelector(state => state.locationReducer);
 
   useEffect(() => {
-    _Order_Details();
-  }, []);
+    if (IsFocused) {
+      _Order_Details();
+    }
+  }, [IsFocused]);
 
   const _Order_Details = async () => {
     setIsloading(true);
@@ -59,6 +64,20 @@ export default function OrderDetails({navigation, route}) {
       setIsloading(false);
     } else {
       console.log('catch error order data Details ------>>>', result?.data);
+      setIsloading(false);
+    }
+  };
+
+  const _CancelBooking = async () => {
+    setIsloading(true);
+    const result = await _putCancelBooking({orderId: isorderdetails?.orderId});
+    if (result?.data) {
+      console.log('result response:', result?.data);
+      SimpleToast({title: result?.data?.message, isLong: true});
+      setIsloading(false);
+    } else {
+      console.log('catch error:', result?.response?.data?.message);
+      SimpleToast({title: result?.response?.data?.message, isLong: true});
       setIsloading(false);
     }
   };
@@ -170,9 +189,14 @@ export default function OrderDetails({navigation, route}) {
                   {isorderdetails?.user?.name}
                 </Text>
                 <Text style={[Styles.textorderid]}>
-                  B-728 iTHUM TOWER, Block A, Industrial Area, Sector 62, Noida,
+                  {/* B-728 iTHUM TOWER, Block A, Industrial Area, Sector 62, Noida,
                   Uttar Pradesh 201309, India B-728 iTHUM TOWER, Block A,
-                  Industrial Area, Sector 62, Noida, Uttar Pradesh 201309, India
+                  Industrial Area, Sector 62, Noida, Uttar Pradesh 201309, India */}
+                  {OrderHistoryData?.delieveryAddress?.completeAddress}, floor:{' '}
+                  {OrderHistoryData?.delieveryAddress?.floor}, landmark:
+                  {OrderHistoryData?.delieveryAddress?.nearby_landmark},
+                  ReceiverName:{' '}
+                  {OrderHistoryData?.delieveryAddress?.receiverName},
                 </Text>
               </View>
             </View>
@@ -332,6 +356,7 @@ export default function OrderDetails({navigation, route}) {
           OrderHistoryData?.orderStatus === 'Delivered' ||
           OrderHistoryData?.orderStatus === 'Cancelled' ? null : (
             <TouchableOpacity
+              onPress={_CancelBooking}
               activeOpacity={0.6}
               style={{
                 marginTop: 20,
@@ -343,14 +368,18 @@ export default function OrderDetails({navigation, route}) {
                 borderRadius: 4,
                 alignSelf: 'center',
               }}>
-              <Text
-                style={{
-                  color: COLORS.WHITE,
-                  fontWeight: '500',
-                  letterSpacing: 0.6,
-                }}>
-                Cancel Booking
-              </Text>
+              {isloading ? (
+                <ActivityIndicator color={COLORS.LIGHTGREEN} />
+              ) : (
+                <Text
+                  style={{
+                    color: COLORS.WHITE,
+                    fontWeight: '500',
+                    letterSpacing: 0.6,
+                  }}>
+                  Cancel Booking
+                </Text>
+              )}
             </TouchableOpacity>
           )}
         </ScrollView>

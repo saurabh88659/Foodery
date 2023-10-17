@@ -26,6 +26,7 @@
     "@twotalltotems/react-native-otp-input": "^1.3.11",
     "axios": "^1.4.0",
     "formik": "^2.2.9",
+    "india-pincode-search": "^1.0.2",
     "lottie-react-native": "^5.1.5",
     "moment": "^2.29.4",
     "react": "18.2.0",

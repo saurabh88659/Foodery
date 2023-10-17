@@ -24,7 +24,12 @@ import {checkInternetConnection} from '../utils/Handler/InternetInfo';
 import Lottie from 'lottie-react-native';
 import RNExitApp from 'react-native-exit-app';
 import {fetchData} from '../Redux/RootsagaEpic';
-import {_getProfile, _postcoordinates} from '../utils/Handler/EpicControllers';
+import {
+  _getCurrentLocations,
+  _getProfile,
+  _postcoordinates,
+} from '../utils/Handler/EpicControllers';
+import {setAnimalAddress} from '../Redux/ReducerSlice/AddressLSlice';
 
 export default function SpalshScreen({navigation}) {
   const IsFocused = useIsFocused();
@@ -86,6 +91,7 @@ export default function SpalshScreen({navigation}) {
   useEffect(() => {
     dispatch(fetchData());
     _Coordinates();
+    currentloactions();
   }, []);
 
   const _Handle_Splash = async () => {
@@ -172,6 +178,16 @@ export default function SpalshScreen({navigation}) {
       console.log('coordinates-----------', result?.data);
     } else {
       console.log('coordinates catch error--->>', result?.data);
+    }
+  };
+
+  const currentloactions = async () => {
+    const results = await _getCurrentLocations(Locations);
+    if (results?.data) {
+      console.log('result---<<>>>>>', results?.data?.display_name);
+      // dispatch(setAnimalAddress({currentaddress: results?.data?.display_name}));
+    } else {
+      console.log('result===>> catch error', results?.data);
     }
   };
 

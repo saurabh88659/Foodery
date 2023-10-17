@@ -339,3 +339,64 @@ export const _postNotifee = async data => {
     return e;
   }
 };
+
+export const _putCancelBooking = async data => {
+  const header = await headerConfig();
+  console.log('header:', header);
+  try {
+    const result = await Instance(
+      'PUT',
+      BASE_URL + '/cancelBooking',
+      header,
+      data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _postaddress = async data => {
+  const header = await headerConfig();
+  console.log('header:', header);
+  try {
+    const result = await Instance(
+      'POST',
+      BASE_URL + '/addAddresssOrder',
+      header,
+      data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _getAddress = async data => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'GET',
+      BASE_URL + '/getAddress',
+      header,
+      data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _getCurrentLocations = async data => {
+  try {
+    const result = await Instance(
+      'GET',
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${data?.latitude}&lon=${data?.longitude}&zoom=18&addressdetails=1`,
+      // header,
+      // data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};

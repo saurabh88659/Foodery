@@ -63,7 +63,7 @@ export default function PaymentSuccessful({navigation, route}) {
         </View>
         <TouchableOpacity
           activeOpacity={0.6}
-          onPress={() => navigation.navigate(Routes.ORDER_HISTORY)}
+          onPress={() => navigation.replace(Routes.ORDER_HISTORY)}
           style={Styles.btnbox}>
           <Text style={{color: COLORS.WHITE, fontSize: 17, fontWeight: '500'}}>
             Continue
@@ -80,7 +80,7 @@ const Styles = StyleSheet.create({
     paddingVertical: 20,
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 38,
+    marginTop: heightPixel(20),
   },
   headtext: {
     color: COLORS.WHITE,

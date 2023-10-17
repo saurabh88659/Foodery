@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import React, {createRef, useEffect} from 'react';
+import React, {createRef, useEffect, useState} from 'react';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
 import {COLORS} from '../utils/Colors';
 import {useDispatch, useSelector} from 'react-redux';
@@ -26,6 +26,8 @@ import {TextInput} from 'react-native-paper';
 import {BottomSheet} from 'react-native-btr';
 import {setAnimalAddress} from '../Redux/ReducerSlice/AddressLSlice';
 import Lottie from 'lottie-react-native';
+import {_postaddress} from '../utils/Handler/EpicControllers';
+var query = require('india-pincode-search');
 
 export default function AddressScreenWithMap({navigation}) {
   const [visible, setVisible] = React.useState(false);
@@ -37,17 +39,21 @@ export default function AddressScreenWithMap({navigation}) {
   const [isNearby, setIsnearby] = React.useState('');
   const [isNearbyError, setIsnearbyError] = React.useState('');
   const [isReceiveName, setIsReceiveName] = React.useState('');
+  const [isPincode, setIsPincode] = useState('');
+  const [isPincodeError, setIsPincodeError] = useState('');
+  const [isCity, setIsCity] = useState('');
+  const [isCityError, setIsCityError] = useState('');
+  const [isState, setIsState] = useState('');
+  const [isStateError, setIsStateError] = useState('');
   const [issaveas, setIssaveas] = React.useState('Home');
-
   const [isLoading, setIsLoading] = React.useState(false);
-
   const mapjosn = require('../Assets/Lottiejson/animation_lnmpy47v.json');
+
+  const dispatch = useDispatch();
 
   // const [state, setState] = React.useState({
   //   isLoading: false,
   // });
-
-  const dispatch = useDispatch();
 
   const _Complete_validateAddress = () => {
     const namePattern = /^[a-zA-Z0-9\s,]+$/;
@@ -65,6 +71,7 @@ export default function AddressScreenWithMap({navigation}) {
 
   useEffect(() => {
     updatedata();
+    // fetchLocationInfo();
   }, [newAddress]);
 
   async function updatedata() {
@@ -83,6 +90,7 @@ export default function AddressScreenWithMap({navigation}) {
       return true;
     }
   };
+
   const validateNearBy = () => {
     const namePattern = /^[a-zA-Z0-9\s,]+$/;
     if (!namePattern.test(isNearby)) {
@@ -94,17 +102,61 @@ export default function AddressScreenWithMap({navigation}) {
     }
   };
 
+  const validatePincode = () => {
+    const namePattern = /^\d{6}$/;
+    if (!namePattern.test(isPincode)) {
+      setIsPincodeError('Please enter your Pincode');
+      return false;
+    } else {
+      setIsPincodeError('');
+      return true;
+    }
+  };
+
+  const validateSate = () => {
+    const namePattern = /^[a-zA-Z0-9\s,]+$/;
+    if (!namePattern.test(isState)) {
+      setIsStateError('Please enter your State');
+      return false;
+    } else {
+      setIsStateError('');
+      return true;
+    }
+  };
+
+  const validateCity = () => {
+    const namePattern = /^[a-zA-Z0-9\s,]+$/;
+    if (!namePattern.test(isState)) {
+      setIsCityError('Please enter your City');
+      return false;
+    } else {
+      setIsCityError('');
+      return true;
+    }
+  };
+
   const _Is_Address_Validation_handle_Submit = () => {
     const _Is_Address_Complete = _Complete_validateAddress(completeAddress);
     const _is_Floor_Name = validateFloorName(isFloor);
     const _is_Near_by = validateNearBy(isNearby);
+    const _is_pincode = validatePincode(isPincode);
+    const _is_State = validateSate(isState);
+    const _is_City = validateCity(isCity);
     setIsLoading(true);
-    if (_Is_Address_Complete && _is_Floor_Name && _is_Near_by) {
+    if (
+      _Is_Address_Complete &&
+      _is_Floor_Name &&
+      _is_Near_by &&
+      _is_pincode &&
+      _is_State &&
+      _is_City
+    ) {
       SimpleToast({title: 'Address update successfully', isLong: true});
       setTimeout(() => {
         setVisible(!visible);
         setIsLoading(false);
       }, 1500);
+      _addaddres();
       dispatch(
         setAnimalAddress({
           compleAddress: completeAddress,
@@ -112,6 +164,7 @@ export default function AddressScreenWithMap({navigation}) {
           nearby: isNearby,
           namer: isReceiveName,
           saveas: issaveas,
+          pincode: isPincode,
         }),
       );
     }
@@ -120,9 +173,7 @@ export default function AddressScreenWithMap({navigation}) {
   const toggleBottomNavigationView = () => {
     setVisible(!visible);
   };
-
   const Locations = useSelector(state => state.locationReducer);
-
   const [adrtext, setAdrtext] = React.useState(1);
 
   const addressCurrent = useSelector(
@@ -159,6 +210,34 @@ export default function AddressScreenWithMap({navigation}) {
 
   const handleTextChange = text => {
     setPlaceholderText(text);
+  };
+
+  const fetchLocationInfo = () => {
+    const CollectData = query.search(`${isPincode}`);
+    if (CollectData[0] == null) {
+      SimpleToast({title: 'Please Enter Correct Pincode', isLong: true});
+    } else {
+      setIsState(CollectData[0]?.state);
+      setIsCity(CollectData[0]?.city);
+    }
+  };
+
+  const _addaddres = async () => {
+    const data = {
+      addressType: 'delieveryAddress',
+      delieveryAddress: {
+        completeAddress: 'Timarpur Delhi',
+        floor: '05',
+        nearby_landmark: 'Timarpur Police Station',
+        receiverName: 'dablu',
+      },
+    };
+    const result = await _postaddress(data);
+    if (result?.data) {
+      console.log('response data:====>>', result?.data);
+    } else {
+      console.log('catch error:');
+    }
   };
 
   return (
@@ -387,8 +466,82 @@ export default function AddressScreenWithMap({navigation}) {
                 {isNearbyError ? (
                   <Text style={Styles.ERRORTEXT}>{isNearbyError}</Text>
                 ) : null}
+
                 <TextInput
-                  label="Receiver's Name* (optional)"
+                  label="Pincode"
+                  value={isPincode}
+                  textColor={COLORS.BLACK}
+                  activeOutlineColor={COLORS.BLACK}
+                  mode="outlined"
+                  onChangeText={text => setIsPincode(text)}
+                  onBlur={fetchLocationInfo}
+                  maxLength={6}
+                  keyboardType="number-pad"
+                  style={{
+                    marginHorizontal: 10,
+                    marginVertical: '2%',
+                    fontSize: 14,
+                    height: heightPixel(50),
+                  }}
+                  outlineStyle={{
+                    borderWidth: 1,
+                    borderColor: isPincodeError ? COLORS.BROWN : COLORS.GREEN,
+                    borderRadius: 10,
+                  }}
+                />
+                {isPincodeError ? (
+                  <Text style={Styles.ERRORTEXT}>{isPincodeError}</Text>
+                ) : null}
+
+                <TextInput
+                  label="Sate"
+                  value={isState}
+                  textColor={COLORS.BLACK}
+                  activeOutlineColor={COLORS.BLACK}
+                  mode="outlined"
+                  onChangeText={text => setIsState(text)}
+                  style={{
+                    marginHorizontal: 10,
+                    marginVertical: '2%',
+                    fontSize: 14,
+                    height: heightPixel(50),
+                  }}
+                  outlineStyle={{
+                    borderWidth: 1,
+                    borderColor: isStateError ? COLORS.BROWN : COLORS.GREEN,
+                    borderRadius: 10,
+                  }}
+                />
+                {isStateError ? (
+                  <Text style={Styles.ERRORTEXT}>{isStateError}</Text>
+                ) : null}
+
+                <TextInput
+                  label="Town/City"
+                  value={isCity}
+                  textColor={COLORS.BLACK}
+                  activeOutlineColor={COLORS.BLACK}
+                  mode="outlined"
+                  onChangeText={text => setIsCity(text)}
+                  style={{
+                    marginHorizontal: 10,
+                    marginVertical: '2%',
+                    fontSize: 14,
+                    height: heightPixel(50),
+                  }}
+                  outlineStyle={{
+                    borderWidth: 1,
+                    borderColor: isCityError ? COLORS.BROWN : COLORS.GREEN,
+                    borderRadius: 10,
+                  }}
+                />
+
+                {isCityError ? (
+                  <Text style={Styles.ERRORTEXT}>{isCityError}</Text>
+                ) : null}
+
+                <TextInput
+                  label="Receiver's Name (optional)"
                   value={isReceiveName}
                   textColor={COLORS.BLACK}
                   activeOutlineColor={COLORS.BLACK}
@@ -448,16 +601,10 @@ const Styles = StyleSheet.create({
   },
   BOXNUMBEROF2: {
     marginHorizontal: 10,
-    // height: heightPixel(200),
-    // borderWidth: 1,
-    // flex: 1,
     elevation: 3,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
-    // marginTop: '1%',
-    // flex: 0.5,
-    // justifyContent: 'flex-end',
-    // backgroundColor: 'red',
+    backgroundColor: COLORS.WHITE,
   },
   TITLEPR: {
     color: COLORS.BLACK,

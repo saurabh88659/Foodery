@@ -127,22 +127,33 @@ export default function OrderHistory({navigation}) {
                     {`Order Id ${item?.orderId}`}
                   </Text>
                   <View style={{flexDirection: 'row'}}>
-                    <Text
+                    <View
                       style={{
-                        color:
-                          item?.orderStatus === 'Order Placed'
-                            ? 'red'
-                            : item?.orderStatus === 'Delivered'
-                            ? '#0EC01d'
-                            : item?.orderStatus === 'Order Packed'
-                            ? '#938'
-                            : '#F1C114',
-                        fontWeight: '500',
-                        backgroundColor: COLORS.LIGHTGREEN,
                         alignSelf: 'center',
+                        alignItems: 'center',
+                        borderRadius: 3,
+                        width: widthPixel(95),
+                        backgroundColor: COLORS.LIGHTGREEN,
+                        paddingVertical: 2,
                       }}>
-                      {item?.orderStatus}
-                    </Text>
+                      <Text
+                        style={{
+                          color:
+                            item?.orderStatus === 'Order Placed'
+                              ? 'red'
+                              : item?.orderStatus === 'Delivered'
+                              ? '#0EC01d'
+                              : item?.orderStatus === 'Order Packed'
+                              ? '#938'
+                              : '#F1C114',
+                          fontWeight: '500',
+
+                          fontSize: 13,
+                        }}>
+                        {item?.orderStatus}
+                      </Text>
+                    </View>
+
                     <TouchableOpacity
                       activeOpacity={0.6}
                       onPress={() => navigation.navigate(Routes.ORDER_DETAILS)}>
