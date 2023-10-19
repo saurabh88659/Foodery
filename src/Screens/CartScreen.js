@@ -100,10 +100,6 @@ export default function CartScreen() {
 
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
 
-  const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
-
-  console.log('newAddress', newAddress);
-
   const totalQuantity = useSelector(
     state => state.CartReducerSlice.totalQuantity,
   );
@@ -111,6 +107,14 @@ export default function CartScreen() {
   const totaldisPrice = useSelector(
     state => state.CartReducerSlice.discountTotalPrice,
   );
+
+  const orderId = useSelector(state => state.AddressLSlice.animalAddress);
+
+  const currentaddress = useSelector(
+    state => state.AddressLSlice.currentAddress,
+  );
+
+  console.log('orderId', currentaddress);
 
   useEffect(() => {
     dispatch(getCartTotal());
@@ -196,12 +200,13 @@ export default function CartScreen() {
       resCode: datapay?.orderStatus,
       txnRef: datapay?.TransactionRefNo,
       status: datapay?.status,
-      delieveryAddress: {
-        completeAddress: newAddress?.compleAddress,
-        floor: newAddress?.floor,
-        nearby_landmark: newAddress?.nearby,
-        receiverName: newAddress?.namer,
-      },
+      orderAddressId: orderId?.orderId,
+      // delieveryAddress: {
+      //   completeAddress: newAddress?.compleAddress,
+      //   floor: newAddress?.floor,
+      //   nearby_landmark: newAddress?.nearby,
+      //   receiverName: newAddress?.namer,
+      // },
     };
 
     console.log('objcartdata=======>>', objcartdata);
@@ -345,6 +350,7 @@ export default function CartScreen() {
     setVisible(!visible);
     setPrductByiDetails(item);
   };
+
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
   };
@@ -390,7 +396,7 @@ export default function CartScreen() {
                   <Text numberOfLines={1} style={Styles.SUBTITLELOCATIONS2}>
                     {/* Current Locations Current
                      */}
-                    {newAddress?.compleAddress}{' '}
+                    {currentaddress}
                   </Text>
                 </View>
                 <TouchableOpacity
@@ -710,9 +716,7 @@ export default function CartScreen() {
               </View>
 
               <View style={{marginVertical: 15}}>
-                {newAddress.compleAddress &&
-                newAddress?.floor &&
-                newAddress?.nearby ? (
+                {orderId ? (
                   <Button
                     title={
                       state.isLoading ? (

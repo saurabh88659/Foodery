@@ -1,5 +1,6 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
 import {COLORS} from '../utils/Colors';
 import HomeStack from './HomeStack';
 import MoreStack from './MoreStack';

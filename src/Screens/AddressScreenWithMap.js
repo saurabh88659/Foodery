@@ -6,6 +6,7 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import React, {createRef, useEffect, useState} from 'react';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
@@ -24,14 +25,18 @@ import {TextInput} from 'react-native-paper';
 // import MapView, {Marker} from 'react-native-maps';
 // import Geocoder from 'react-native-geocoding';
 import {BottomSheet} from 'react-native-btr';
-import {setAnimalAddress} from '../Redux/ReducerSlice/AddressLSlice';
+// import {setAnimalAddress} from '../Redux/ReducerSlice/AddressLSlice';
 import Lottie from 'lottie-react-native';
-import {_postaddress} from '../utils/Handler/EpicControllers';
+import {_getAddress, _postaddress} from '../utils/Handler/EpicControllers';
+import {setCurrentAddress} from '../Redux/ReducerSlice/AddressLSlice';
 var query = require('india-pincode-search');
+import {useIsFocused} from '@react-navigation/native';
 
-export default function AddressScreenWithMap({navigation}) {
+export default function AddressScreenWithMap({navigation, route}) {
   const [visible, setVisible] = React.useState(false);
   const [completeAddress, setCompleteAddress] = React.useState('');
+  const preId = route.params;
+  const isFocused = useIsFocused();
 
   const [completeAddressError, setCompleteAddressError] = React.useState('');
   const [isFloor, setIsFloor] = React.useState('');
@@ -66,20 +71,23 @@ export default function AddressScreenWithMap({navigation}) {
     }
   };
 
-  const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
-  console.log('newAddress-------------------', newAddress?.compleAddress);
+  const currentaddress = useSelector(
+    state => state.AddressLSlice.currentAddress,
+  );
 
   useEffect(() => {
-    updatedata();
-    // fetchLocationInfo();
-  }, [newAddress]);
+    if (isFocused) {
+      _getAddressapidata();
+    }
+  }, [isFocused]);
 
-  async function updatedata() {
-    setCompleteAddress(newAddress?.compleAddress);
-    setIsFloor(newAddress?.floor);
-    setIsnearby(newAddress?.nearby);
-    setIsReceiveName(newAddress?.namer);
-  }
+  // async function updatedata() {
+  //   setCompleteAddress(newAddress?.compleAddress);
+  //   setIsFloor(newAddress?.floor);
+  //   setIsnearby(newAddress?.nearby);
+  //   setIsReceiveName(newAddress?.namer);
+  // }
+
   const validateFloorName = () => {
     const namePattern = /^[a-zA-Z0-9\s,]+$/;
     if (!namePattern.test(isFloor)) {
@@ -151,22 +159,23 @@ export default function AddressScreenWithMap({navigation}) {
       _is_State &&
       _is_City
     ) {
-      SimpleToast({title: 'Address update successfully', isLong: true});
+      // SimpleToast({title: 'Address update successfully', isLong: true});
       setTimeout(() => {
         setVisible(!visible);
         setIsLoading(false);
       }, 1500);
       _addaddres();
-      dispatch(
-        setAnimalAddress({
-          compleAddress: completeAddress,
-          floor: isFloor,
-          nearby: isNearby,
-          namer: isReceiveName,
-          saveas: issaveas,
-          pincode: isPincode,
-        }),
-      );
+
+      // dispatch(
+      //   setAnimalAddress({
+      //     compleAddress: completeAddress,
+      //     floor: isFloor,
+      //     nearby: isNearby,
+      //     namer: isReceiveName,
+      //     saveas: issaveas,
+      //     pincode: isPincode,
+      //   }),
+      // );
     }
   };
 
@@ -224,19 +233,41 @@ export default function AddressScreenWithMap({navigation}) {
 
   const _addaddres = async () => {
     const data = {
-      addressType: 'delieveryAddress',
-      delieveryAddress: {
-        completeAddress: 'Timarpur Delhi',
-        floor: '05',
-        nearby_landmark: 'Timarpur Police Station',
-        receiverName: 'dablu',
-      },
+      completeAddress: completeAddress,
+      floor: isFloor,
+      nearby_landmark: isNearby,
+      receiverName: isReceiveName,
+      pinCode: isPincode,
+      state: isState,
+      city: isCity,
+      saveAs: issaveas,
     };
-    const result = await _postaddress(data);
+    const result = await _postaddress({data: data, id: preId});
     if (result?.data) {
       console.log('response data:====>>', result?.data);
+      SimpleToast({title: result?.data?.message, isLong: true});
+      dispatch(setCurrentAddress(completeAddress));
     } else {
-      console.log('catch error:');
+      console.log('catch error:', result?.response?.data);
+      SimpleToast({title: result?.response?.data?.message, isLong: true});
+    }
+  };
+
+  const _getAddressapidata = async () => {
+    const result = await _getAddress();
+    if (result?.data) {
+      console.log('response data:', result?.data?.result[0].city);
+      dispatch(setCurrentAddress(result?.data?.result[0]?.completeAddress));
+      setIsCity(result?.data?.result[0].city);
+      setIsState(result?.data?.result[0].state);
+      setIsPincode(result?.data?.result[0].pinCode);
+      setCompleteAddress(result?.data?.result[0].completeAddress);
+      setIsFloor(result?.data?.result[0].floor);
+      setIsnearby(result?.data?.result[0].nearby_landmark);
+      setIsReceiveName(result?.data?.result[0].receiverName);
+    } else {
+      console.log('catch error:', result?.response?.data);
+      SimpleToast({title: result?.response?.data?.message, isLong: true});
     }
   };
 
@@ -305,9 +336,7 @@ export default function AddressScreenWithMap({navigation}) {
                 {block}
               </Text> */}
 
-              <Text style={Styles.SUBTITLELOCATIONS}>
-                {newAddress?.compleAddress}
-              </Text>
+              <Text style={Styles.SUBTITLELOCATIONS}>{completeAddress}</Text>
             </View>
           </View>
           <View style={{marginVertical: '2%'}}>
@@ -322,7 +351,7 @@ export default function AddressScreenWithMap({navigation}) {
           visible={visible}
           onBackButtonPress={toggleBottomNavigationView}
           onBackdropPress={toggleBottomNavigationView}>
-          <View style={{}}>
+          <ScrollView style={{}}>
             <TouchableOpacity
               onPress={() => setVisible(!visible)}
               activeOpacity={0.6}
@@ -344,7 +373,7 @@ export default function AddressScreenWithMap({navigation}) {
                   />
                 </View>
                 <Text style={Styles.SUBTITLELOCATIONS}>
-                  {newAddress?.compleAddress}
+                  {/* {newAddress?.compleAddress} */}
                 </Text>
               </View>
               <View style={{marginTop: 20}}>
@@ -494,7 +523,7 @@ export default function AddressScreenWithMap({navigation}) {
                 ) : null}
 
                 <TextInput
-                  label="Sate"
+                  label="State"
                   value={isState}
                   textColor={COLORS.BLACK}
                   activeOutlineColor={COLORS.BLACK}
@@ -578,7 +607,7 @@ export default function AddressScreenWithMap({navigation}) {
                 />
               </View>
             </View>
-          </View>
+          </ScrollView>
         </BottomSheet>
       </SafeAreaView>
     </KeyboardAvoidingView>

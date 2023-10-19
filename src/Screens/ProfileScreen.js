@@ -70,6 +70,8 @@ export default function ProfileScreen({navigation}) {
   const onGallary = () => {
     ImagePicker.openPicker({
       cropping: true,
+      width: 300,
+      height: 400,
       quality: 1,
       mediaType: 'any',
     })

@@ -189,9 +189,6 @@ export default function OrderDetails({navigation, route}) {
                   {isorderdetails?.user?.name}
                 </Text>
                 <Text style={[Styles.textorderid]}>
-                  {/* B-728 iTHUM TOWER, Block A, Industrial Area, Sector 62, Noida,
-                  Uttar Pradesh 201309, India B-728 iTHUM TOWER, Block A,
-                  Industrial Area, Sector 62, Noida, Uttar Pradesh 201309, India */}
                   {OrderHistoryData?.delieveryAddress?.completeAddress}, floor:{' '}
                   {OrderHistoryData?.delieveryAddress?.floor}, landmark:
                   {OrderHistoryData?.delieveryAddress?.nearby_landmark},

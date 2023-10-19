@@ -25,11 +25,15 @@ import Lottie from 'lottie-react-native';
 import RNExitApp from 'react-native-exit-app';
 import {fetchData} from '../Redux/RootsagaEpic';
 import {
+  _getAddress,
   _getCurrentLocations,
   _getProfile,
   _postcoordinates,
 } from '../utils/Handler/EpicControllers';
-import {setAnimalAddress} from '../Redux/ReducerSlice/AddressLSlice';
+import {
+  setAnimalAddress,
+  setCurrentAddress,
+} from '../Redux/ReducerSlice/AddressLSlice';
 
 export default function SpalshScreen({navigation}) {
   const IsFocused = useIsFocused();
@@ -86,6 +90,7 @@ export default function SpalshScreen({navigation}) {
 
   useEffect(() => {
     _Handle_Splash();
+    _getAddressapidata();
   }, []);
 
   useEffect(() => {
@@ -93,6 +98,17 @@ export default function SpalshScreen({navigation}) {
     _Coordinates();
     currentloactions();
   }, []);
+
+  const _getAddressapidata = async () => {
+    const result = await _getAddress();
+    if (result?.data) {
+      console.log('response data:', result?.data?.result[0]?.completeAddress);
+      dispatch(setCurrentAddress(result?.data?.result[0]?.completeAddress));
+    } else {
+      console.log('catch error:', result?.response?.data);
+      SimpleToast({title: result?.response?.data?.message, isLong: true});
+    }
+  };
 
   const _Handle_Splash = async () => {
     const token = await _getStorage('token');
@@ -110,7 +126,7 @@ export default function SpalshScreen({navigation}) {
           })
           .then(resp => {
             if (resp?.data?.result?.name || resp?.data?.result?.address) {
-              navigation.navigate(Routes.BOTTOM_TAB_BAR);
+              navigation.replace(Routes.BOTTOM_TAB_BAR);
               // console.log('Splahs screen =========', resp?.data?.result);
             } else {
               navigation.navigate(Routes.LOG_IN_SCREEN);

@@ -70,8 +70,8 @@ export default function MoreScreen({navigation}) {
         console.log('catch message error----->>>>', error);
       });
   };
-
   const greeting = getGreeting();
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <View style={Styles.MainBOx}>
@@ -85,7 +85,7 @@ export default function MoreScreen({navigation}) {
           </Text>
         </View>
         <ScrollView>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => navigation.navigate(Routes.YOUR_ORDER)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
@@ -93,7 +93,7 @@ export default function MoreScreen({navigation}) {
               <Image source={OrderHistoryicon} style={Styles.iconstyle} />
             </View>
             <Text style={Styles.boxTitle}>Your Order</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             onPress={() => navigation.navigate(Routes.ORDER_HISTORY)}

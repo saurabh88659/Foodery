@@ -12,6 +12,7 @@ import {PersistGate} from 'redux-persist/integration/react';
 import {_getStorage, _setStorage} from './src/utils/Storage';
 // import messaging from '@react-native-firebase/messaging';
 import LocationStatesProvider from './src/utils/Handler/LocationStatesProvider';
+import {MenuProvider} from 'react-native-popup-menu';
 
 let persiststor = persistStore(store);
 
@@ -43,7 +44,9 @@ const NewApp = () => {
     <Provider store={store}>
       <LocationStatesProvider>
         <PersistGate persistor={persiststor}>
-          <App />
+          <MenuProvider>
+            <App />
+          </MenuProvider>
         </PersistGate>
       </LocationStatesProvider>
     </Provider>

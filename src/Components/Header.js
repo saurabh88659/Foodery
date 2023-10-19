@@ -37,6 +37,10 @@ const Header = props => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentText, setCurrentText] = useState('');
 
+  const currentaddress = useSelector(
+    state => state.AddressLSlice.currentAddress,
+  );
+
   useEffect(() => {
     const text = texts[currentIndex];
     let currentIndexCopy = currentIndex;
@@ -102,7 +106,7 @@ const Header = props => {
               }}>
               {/* Home-Kickr Tech Home-Kickr Tech
                */}
-              {newAddress?.compleAddress}
+              {currentaddress}
             </Text>
             <Icon name="arrow-drop-down" color={COLORS.WHITE} size={25} />
           </View>

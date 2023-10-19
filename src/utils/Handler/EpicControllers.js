@@ -358,13 +358,14 @@ export const _putCancelBooking = async data => {
 
 export const _postaddress = async data => {
   const header = await headerConfig();
-  console.log('header:', header);
+
+  console.log('fata=====', data?.data);
   try {
     const result = await Instance(
-      'POST',
-      BASE_URL + '/addAddresssOrder',
+      'PUT',
+      BASE_URL + '/updateOrderAddress/' + data?.id,
       header,
-      data,
+      data?.data,
     );
     return result;
   } catch (e) {
@@ -379,7 +380,7 @@ export const _getAddress = async data => {
       'GET',
       BASE_URL + '/getAddress',
       header,
-      data,
+      // data,
     );
     return result;
   } catch (e) {

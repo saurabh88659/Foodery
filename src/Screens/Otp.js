@@ -75,7 +75,7 @@ export default function Otp({navigation, route}) {
           })
           .then(resp => {
             if (resp?.data?.result?.name && resp?.data?.result?.address) {
-              navigation.navigate(Routes.BOTTOM_TAB_BAR);
+              navigation.replace(Routes.BOTTOM_TAB_BAR);
             } else {
               navigation.navigate(Routes.SIGN_UP_SCREEN, phoneNumber);
             }

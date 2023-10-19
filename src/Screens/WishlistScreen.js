@@ -15,7 +15,7 @@ import MyHeader from '../Components/MyHeader';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Routes from '../Navigation/Routes';
 import {useDispatch, useSelector} from 'react-redux';
-import {MaterialCommunityIconsTwo} from '../utils/Const';
+import {MaterialCommunityIconsTwo, wishlistempty} from '../utils/Const';
 import {removeFromWishlist} from '../Redux/ReducerSlice/WishlistReducerSlice';
 import {BottomSheet} from 'react-native-btr';
 import {
@@ -24,6 +24,7 @@ import {
   incrementQuantity,
   removeFromCart,
 } from '../Redux/ReducerSlice/CartReducerSlice';
+import Lottie from 'lottie-react-native';
 
 export default function WishlistScreen({navigation}) {
   const [visible, setVisible] = useState(false);
@@ -65,114 +66,148 @@ export default function WishlistScreen({navigation}) {
         onPress={() => navigation.goBack()}
         onPressserchbar={() => navigation.navigate(Routes.SEARCH_BAR)}
       />
-      <FlatList
-        keyExtractor={(item, index) => index.toString()}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{paddingBottom: 5}}
-        data={wishlist}
-        renderItem={({item, index}) => (
-          <View key={index}>
-            <View style={Styles.CONTAINERMAINBOX}>
-              <View>
-                <Image
-                  source={{uri: item?.productImage}}
-                  style={Styles.IMAGESTYLES}
-                />
-              </View>
-
-              <View style={{width: widthPixel(170)}}>
-                <Text numberOfLines={1} style={Styles.TITLESTYLES}>
-                  {item?.productName}
-                </Text>
-                <Text numberOfLines={1} style={Styles.SUBTITLESTYLES}>
-                  Pick up from organic farms
-                </Text>
-                <Text style={{fontSize: 16}}>⭐⭐⭐⭐⭐</Text>
-                {cartdata.map((value, index) => (
-                  <View key={index}>
-                    {value?._id == item?._id ? (
-                      <View style={Styles.CONTAINERMAINBOXPLUS}>
-                        <TouchableOpacity
-                          activeOpacity={0.6}
-                          onPress={() => decreaseQuantity(value)}
-                          style={Styles.DCREAMENTBOTTONINCREAMENT}>
-                          <Text style={Styles.TOTALITEMTITLE}>-</Text>
-                        </TouchableOpacity>
-
-                        <Text style={Styles.TOTALITEMTITLE}>
-                          {value.quantity}
-                        </Text>
-                        <TouchableOpacity
-                          onPress={() => increaseQuantity(value)}
-                          activeOpacity={0.6}
-                          style={Styles.DCREAMENTBOTTONINCREAMENT}>
-                          <Text style={Styles.TOTALITEMTITLE}>+</Text>
-                        </TouchableOpacity>
-                      </View>
-                    ) : null}
-                  </View>
-                ))}
-              </View>
-              <View style={{marginTop: 3}}>
-                <Pressable
-                  // onPress={() => removeItemFromWishlist(item)}
-                  onPress={toggleBottomNavigationView}
-                  style={{alignSelf: 'flex-end'}}>
-                  <MaterialCommunityIconsTwo
-                    title={'dots-vertical'}
-                    size={22}
-                    IconColor={COLORS.GRAYDARK}
+      {wishlist?.length ? (
+        <FlatList
+          keyExtractor={(item, index) => index.toString()}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{paddingBottom: 5}}
+          data={wishlist}
+          renderItem={({item, index}) => (
+            <View key={index}>
+              <View style={Styles.CONTAINERMAINBOX}>
+                <View>
+                  <Image
+                    source={{uri: item?.productImage}}
+                    style={Styles.IMAGESTYLES}
                   />
-                </Pressable>
-                <Text style={Styles.STYLESPCS}>6 Pcs</Text>
-                <Text
-                  // numberOfLines={1}
-                  style={Styles.KGSTYLES}>
-                  (Approx. 1.2Kg - 1.4kg)
-                </Text>
+                </View>
 
-                <TouchableOpacity
-                  onPress={() => addItemToCart(item)}
-                  style={Styles.ADDTOCARTBOTTON}>
-                  <Text style={{color: COLORS.WHITE}}>ADD</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <BottomSheet
-              visible={visible}
-              onBackButtonPress={toggleBottomNavigationView}
-              onBackdropPress={toggleBottomNavigationView}>
-              <View
-                style={{
-                  backgroundColor: COLORS.WHITE,
-                  height: heightPixel(80),
-                }}>
-                <TouchableOpacity
-                  activeOpacity={0.6}
-                  onPress={() => removeItemFromWishlist(item)}
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    justifyContent: 'flex-start',
-                    marginHorizontal: 20,
-                    paddingVertical: 20,
-                  }}>
-                  <MaterialCommunityIconsTwo
-                    title="delete"
-                    size={25}
-                    IconColor={COLORS.BLACK}
-                    IconStyle={{right: widthPixel(7)}}
-                  />
-                  <Text style={{color: COLORS.BLACK}}>
-                    Remove From collection
+                <View style={{width: widthPixel(170)}}>
+                  <Text numberOfLines={1} style={Styles.TITLESTYLES}>
+                    {item?.productName}
                   </Text>
-                </TouchableOpacity>
+                  <Text numberOfLines={1} style={Styles.SUBTITLESTYLES}>
+                    Pick up from organic farms
+                  </Text>
+                  <Text style={{fontSize: 16}}>⭐⭐⭐⭐⭐</Text>
+                  {cartdata.map((value, index) => (
+                    <View key={index}>
+                      {value?._id == item?._id ? (
+                        <View style={Styles.CONTAINERMAINBOXPLUS}>
+                          <TouchableOpacity
+                            activeOpacity={0.6}
+                            onPress={() => decreaseQuantity(value)}
+                            style={Styles.DCREAMENTBOTTONINCREAMENT}>
+                            <Text style={Styles.TOTALITEMTITLE}>-</Text>
+                          </TouchableOpacity>
+
+                          <Text style={Styles.TOTALITEMTITLE}>
+                            {value.quantity}
+                          </Text>
+                          <TouchableOpacity
+                            onPress={() => increaseQuantity(value)}
+                            activeOpacity={0.6}
+                            style={Styles.DCREAMENTBOTTONINCREAMENT}>
+                            <Text style={Styles.TOTALITEMTITLE}>+</Text>
+                          </TouchableOpacity>
+                        </View>
+                      ) : null}
+                    </View>
+                  ))}
+                </View>
+                <View style={{marginTop: 3}}>
+                  <Pressable
+                    // onPress={() => removeItemFromWishlist(item)}
+                    onPress={toggleBottomNavigationView}
+                    style={{alignSelf: 'flex-end'}}>
+                    <MaterialCommunityIconsTwo
+                      title={'dots-vertical'}
+                      size={22}
+                      IconColor={COLORS.GRAYDARK}
+                    />
+                  </Pressable>
+                  <Text style={Styles.STYLESPCS}>6 Pcs</Text>
+                  <Text
+                    // numberOfLines={1}
+                    style={Styles.KGSTYLES}>
+                    (Approx. 1.2Kg - 1.4kg)
+                  </Text>
+
+                  <TouchableOpacity
+                    onPress={() => addItemToCart(item)}
+                    style={Styles.ADDTOCARTBOTTON}>
+                    <Text style={{color: COLORS.WHITE}}>ADD</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </BottomSheet>
-          </View>
-        )}
-      />
+              <BottomSheet
+                visible={visible}
+                onBackButtonPress={toggleBottomNavigationView}
+                onBackdropPress={toggleBottomNavigationView}>
+                <View
+                  style={{
+                    backgroundColor: COLORS.WHITE,
+                    height: heightPixel(80),
+                  }}>
+                  <TouchableOpacity
+                    activeOpacity={0.6}
+                    onPress={() => removeItemFromWishlist(item)}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      justifyContent: 'flex-start',
+                      marginHorizontal: 20,
+                      paddingVertical: 20,
+                    }}>
+                    <MaterialCommunityIconsTwo
+                      title="delete"
+                      size={25}
+                      IconColor={COLORS.BLACK}
+                      IconStyle={{right: widthPixel(7)}}
+                    />
+                    <Text style={{color: COLORS.BLACK}}>
+                      Remove From collection
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </BottomSheet>
+            </View>
+          )}
+        />
+      ) : (
+        <View style={{alignItems: 'center', justifyContent: 'center', flex: 1}}>
+          <Lottie
+            source={wishlistempty}
+            autoPlay
+            loop={true}
+            style={{height: heightPixel(200)}}
+          />
+          <Text
+            style={{
+              color: COLORS.GRAY,
+              fontSize: fontPixel(20),
+              fontWeight: '500',
+              letterSpacing: 0.5,
+            }}>
+            Your wishlist is <Text style={{color: COLORS.GREEN}}>Empty</Text>
+          </Text>
+          <Text
+            style={{
+              color: COLORS.GRAY,
+              fontSize: fontPixel(14),
+              fontWeight: '500',
+              letterSpacing: 0.5,
+            }}>
+            Explore more and shortlist some items
+          </Text>
+          <TouchableOpacity
+            onPress={() => navigation.navigate(Routes.TAB_HOME)}
+            style={Styles.shopbutton}>
+            <Text style={Styles.ShopText}>Start Shopping</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -248,5 +283,19 @@ const Styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 25,
+  },
+  shopbutton: {
+    backgroundColor: COLORS.DarkGreen2,
+    marginVertical: 20,
+    paddingVertical: 12,
+    width: widthPixel(150),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 7,
+  },
+  ShopText: {
+    color: COLORS.WHITE,
+    fontWeight: '500',
+    fontSize: fontPixel(16),
   },
 });

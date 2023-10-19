@@ -43,6 +43,7 @@ const yourirdercallsicon = require('../Assets/Logo/callsicon.png');
 const Down_Arrow = require('../Assets/Logo/3d02.png');
 const Up_Arrow = require('../Assets/Logo/UpDown.png');
 const deliveryBoyjson = require('../Assets/Lottiejson/90553-delivery-boy.json');
+const wishlistempty = require('../Assets/Lottiejson/animation_lnvkuto4.json');
 
 // const BASE_URL = 'http:/192.168.68.112:8000/api'; //  Server URL  Localhost
 
@@ -203,4 +204,5 @@ export {
   Up_Arrow,
   deliveryBoyjson,
   headerConfig,
+  wishlistempty,
 };

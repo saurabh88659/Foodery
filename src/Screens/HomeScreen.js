@@ -20,6 +20,7 @@ import {
   Platform,
   Alert,
   PermissionsAndroid,
+  RefreshControl,
 } from 'react-native';
 import Header from '../Components/Header';
 // import {getCloser} from '../Components/utils';
@@ -53,7 +54,7 @@ import Collapsible from 'react-native-collapsible';
 import MyModalinfo from '../Components/MyModalinfo';
 import HomeShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/HomeShimmerPlaceHolder';
 import Routes from '../Navigation/Routes';
-import {useDoubleBackPressExit} from '../utils/Handler/BackHandler';
+// import {useDoubleBackPressExit} from '../utils/Handler/BackHandler';
 import Swiper from 'react-native-swiper';
 import {_getStorage} from '../utils/Storage';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
@@ -104,6 +105,8 @@ export default function HomeScreen({navigation}) {
   const [PrductByiDetails, setPrductByiDetails] = useState('');
   // const [collapsed, setCollapsed] = useState(true);
   const [visible, setVisible] = useState(false);
+  const [refresh, setRfresh] = useState(false);
+
   const wishlist = useSelector(state => state.WishlistReducerSlice.wishlist);
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
@@ -170,7 +173,6 @@ export default function HomeScreen({navigation}) {
     _FreshnessCategory();
     _Nuts_and_Dry_sCategory();
     _Order_Again();
-    // checkLocationEnabled();
   }, []);
 
   const _FirstBanner = async () => {
@@ -324,6 +326,10 @@ export default function HomeScreen({navigation}) {
     }, 3000);
   };
 
+  setTimeout(() => {
+    setRfresh(false);
+  }, 3000);
+
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       {isLoading ? (
@@ -336,6 +342,16 @@ export default function HomeScreen({navigation}) {
             backgroundColor={COLORS.GREEN}
             translucent={true}
           />
+          {/* <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refresh}
+                onRefresh={_all_Category}
+                tintColor={COLORS.GREEN}
+                colors={[COLORS.GREEN]}
+              />
+            }
+            contentContainerStyle={{}}> */}
           <Animated.View style={[Styles.header, {transform: [{translateY}]}]}>
             <Header
               onPressserch={() => navigation.navigate(Routes.SEARCH_BAR)}
@@ -344,6 +360,7 @@ export default function HomeScreen({navigation}) {
               {...{headerHeight}}
             />
           </Animated.View>
+
           <Animated.ScrollView
             showsVerticalScrollIndicator={false}
             scrollEventThrottle={16}
@@ -405,7 +422,6 @@ export default function HomeScreen({navigation}) {
                 <FlatList
                   keyExtractor={(item, index) => index.toString()}
                   showsHorizontalScrollIndicator={false}
-                  // contentContainerStyle={{paddingBottom: 5}}
                   numColumns={4}
                   scrollEnabled={false}
                   // data={showModal?all_Category:}
@@ -431,8 +447,36 @@ export default function HomeScreen({navigation}) {
                   )}
                 />
               </View>
+              <Collapsible collapsed={collapsed}>
+                <FlatList
+                  keyExtractor={(item, index) => index.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  numColumns={4}
+                  scrollEnabled={false}
+                  // data={showModal?all_Category:}
+                  data={all_Category.slice(6, all_Category.length)}
+                  renderItem={({item, index}) => (
+                    <View key={index} style={Styles.EXPLOREBOX}>
+                      <TouchableOpacity
+                        activeOpacity={0.6}
+                        onPress={() =>
+                          navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)
+                        }
+                        style={Styles.EXPLOREICON}>
+                        <Image
+                          source={{uri: item.categoryIcon}}
+                          style={Styles.IMAGEALLCATLOGO}
+                        />
+                      </TouchableOpacity>
+                      <Text numberOfLines={2} style={Styles.CATTITLESTYLS}>
+                        {item.categoryName}
+                      </Text>
+                    </View>
+                  )}
+                />
+              </Collapsible>
 
-              <View style={Styles.EXPLOREMAINCONTAINER}>
+              {/* <View style={Styles.EXPLOREMAINCONTAINER}>
                 {all_Category
                   .slice(6, all_Category.length)
                   .map((item, index) => (
@@ -458,7 +502,7 @@ export default function HomeScreen({navigation}) {
                       </View>
                     </Collapsible>
                   ))}
-              </View>
+              </View> */}
             </View>
             <TouchableOpacity
               onPress={toggleExpanded}
@@ -873,6 +917,8 @@ export default function HomeScreen({navigation}) {
               </Text>
             </View>
           </Animated.ScrollView>
+          {/* </ScrollView> */}
+
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={clickHandler}
@@ -925,7 +971,7 @@ export default function HomeScreen({navigation}) {
                   data={all_Category.slice(0, 2)}
                   renderItem={({item, index}) => (
                     // <Collapsible collapsed={collapsed} key={index}>
-                    <View>
+                    <View key={index}>
                       <TouchableOpacity
                         activeOpacity={0.6}
                         onPress={() =>
@@ -973,6 +1019,33 @@ export default function HomeScreen({navigation}) {
             }
             _Ui={
               <View style={Styles.MODALPRODUCTBOXMAIN}>
+                {/* <FlatList
+                  keyExtractor={(item, index) => index.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  numColumns={4}
+                  scrollEnabled={true}
+                  data={all_Category.slice(4, all_Category.length)}
+                  renderItem={({item, index}) => (
+                    <TouchableOpacity
+                      key={index}
+                      activeOpacity={0.6}
+                      onPress={() =>
+                        navigation.navigate(Routes.SUB_CATEGRIES_MODAL, item)
+                      }
+                      style={Styles.GREENMAINBOXMODAL}>
+                      <View style={Styles.MODALBOX}>
+                        <Image
+                          source={{uri: item.categoryIcon}}
+                          style={Styles.IMAGEALLCATLOGO}
+                        />
+                      </View>
+                      <Text numberOfLines={2} style={Styles.MODALTEXT}>
+                        {item.categoryName}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                /> */}
+
                 {all_Category
                   .slice(2, all_Category.length)
                   .map((item, index) => (
@@ -1322,7 +1395,6 @@ const Styles = StyleSheet.create({
     width: widthPixel(95),
     alignItems: 'center',
     marginTop: 7,
-    alignItems: 'center',
   },
   CATBOXMAINSTYLS: {
     height: heightPixel(60),
@@ -1367,7 +1439,7 @@ const Styles = StyleSheet.create({
     marginHorizontal: 5,
     alignItems: 'center',
     marginTop: 7,
-    alignItems: 'center',
+    marginHorizontal: 10,
   },
   EXPLOREICON: {
     height: heightPixel(60),
@@ -1515,9 +1587,6 @@ const Styles = StyleSheet.create({
   },
   MODALPRODUCTBOXMAIN: {
     flexDirection: 'row',
-    // justifyContent: 'flex-start',
-    // justifyContent: 'space-between',
-    // justifyContent: 'space-around',
     justifyContent: 'space-evenly',
     flexWrap: 'wrap',
     alignItems: 'center',
