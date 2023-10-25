@@ -61,8 +61,10 @@ export default function AddressScreen({navigation}) {
   // );
 
   useEffect(() => {
-    _getAddressapidata();
-  }, []);
+    if (isFocused) {
+      _getAddressapidata();
+    }
+  }, [isFocused]);
 
   // const handleSetCurrentAddress = () => {
   //   dispatch(setCurrentAddress(newAddress));
@@ -218,6 +220,7 @@ export default function AddressScreen({navigation}) {
                 <View>
                   <Menu>
                     <MenuTrigger
+                      style={{top: 10}}
                       text={
                         <MaterialCommunityIconsTwo
                           title={'dots-vertical'}
@@ -239,9 +242,13 @@ export default function AddressScreen({navigation}) {
                             item?._id,
                           )
                         }
-                        text="Edit Address"
-                        style={{paddingHorizontal: 10}}
-                      />
+                        //customStyles={'red'}
+                      >
+                        <Text
+                          style={{paddingHorizontal: 10, color: COLORS.BLACK}}>
+                          Edit address
+                        </Text>
+                      </MenuOption>
                     </MenuOptions>
                   </Menu>
                 </View>

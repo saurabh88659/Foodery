@@ -351,7 +351,7 @@ export default function AddressScreenWithMap({navigation, route}) {
           visible={visible}
           onBackButtonPress={toggleBottomNavigationView}
           onBackdropPress={toggleBottomNavigationView}>
-          <ScrollView style={{}}>
+          <View style={{}}>
             <TouchableOpacity
               onPress={() => setVisible(!visible)}
               activeOpacity={0.6}
@@ -607,7 +607,7 @@ export default function AddressScreenWithMap({navigation, route}) {
                 />
               </View>
             </View>
-          </ScrollView>
+          </View>
         </BottomSheet>
       </SafeAreaView>
     </KeyboardAvoidingView>
