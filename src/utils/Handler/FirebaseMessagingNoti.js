@@ -17,8 +17,6 @@ export async function requestUserPermission() {
 
 const getFcmToken = async () => {
   let fcmToken = await AsyncStorage.getItem('fcmToken');
-  console.log(fcmToken, 'the old token');
-
   if (!fcmToken) {
     try {
       const fcmToken = await messaging().getToken();
@@ -60,7 +58,7 @@ async function onDisplayNotification(data) {
     await notifee.requestPermission();
   }
   const channelId = await notifee.createChannel({
-    id: 'Noti',
+    id: 'Noti 8',
     name: 'Noti 8',
     importance: AndroidImportance.HIGH,
   });
@@ -69,7 +67,7 @@ async function onDisplayNotification(data) {
     title: data?.notification.title,
     body: data?.notification.body,
     android: {
-      channelId: 'default',
+      channelId: channelId,
     },
   });
 }

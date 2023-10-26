@@ -180,7 +180,7 @@ export default function CartScreen() {
     if (result?.data) {
       setIsProfile(result?.data?.result);
     } else {
-      console.log('Profile Catch Error', error);
+      console.log('Profile Catch Error', result?.response?.data);
     }
   };
 
@@ -241,8 +241,6 @@ export default function CartScreen() {
     };
 
     const result = await _getcreatpayment(dataPayment);
-    console.log('ddddddddddddd', result?.data);
-
     if (result?.data) {
       if (result?.data?.message === 'Payment Url Generated') {
         setOrderKey(result?.data?.orderKeyId);
@@ -273,15 +271,15 @@ export default function CartScreen() {
   const _Payment_Check_Handle = async () => {
     const result = await _getorderDetailorderkey(orderKey);
     if (result?.data) {
-      console.log('check data -----------new---------->>>', result?.data);
+      // console.log('check data -----------new---------->>>', result?.data);
       if (result?.data?.OrderPaymentStatusText !== 'Pending') {
         SimpleToast({
           title: `Order Status: ${result?.data?.OrderPaymentStatusText}`,
           isLong: true,
         });
         _Handle_Cart_Data(result?.data);
+        navigation.navigate(Routes.PAYMENTSUCCESSFUL, result?.data);
         setShowWebView(false);
-        navigation.navigate('PaymentSuccessful', result?.data);
       }
     } else {
       console.log('Payment check', result?.data);
@@ -355,7 +353,7 @@ export default function CartScreen() {
     setCollapsed(!collapsed);
   };
 
-  console.log('statusId-------------', statusId);
+  // console.log('statusId-------------', statusId);
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -684,9 +682,14 @@ export default function CartScreen() {
                       justifyContent: 'space-between',
                     }}>
                     <Text style={Styles.DELTITLE}>Order For Someone else</Text>
-                    <Text style={[Styles.DELTITLE, {color: COLORS.GREEN}]}>
-                      ADD
-                    </Text>
+                    <TouchableOpacity
+                      // onPress={navigation.navigate(Routes.ADDRESS_SCREEN)}
+                      activeOpacity={0.6}
+                      style={{}}>
+                      <Text style={[Styles.DELTITLE, {color: COLORS.GREEN}]}>
+                        ADD
+                      </Text>
+                    </TouchableOpacity>
                   </View>
                   <Text numberOfLines={3} style={Styles.FOOTERTITLE2}>
                     Add a message to be sent as an SMS with your Gift

@@ -1,6 +1,21 @@
 import {BASE_URL, headerConfig} from '../Const';
 import {Instance} from './InternetInfo';
 
+export const _postuserphone = async data => {
+  try {
+    const result = await Instance(
+      'POST',
+      BASE_URL + '/User/userLoginPhone',
+      // header
+      null,
+      data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
 export const _getProfile = async () => {
   const header = await headerConfig();
   console.log('header--DG->>', header);
@@ -394,6 +409,21 @@ export const _getCurrentLocations = async data => {
       'GET',
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${data?.latitude}&lon=${data?.longitude}&zoom=18&addressdetails=1`,
       // header,
+      // data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _getNotifications = async data => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'GET',
+      BASE_URL + '/notificationModel/getAllNotification',
+      header,
       // data,
     );
     return result;

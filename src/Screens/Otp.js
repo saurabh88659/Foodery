@@ -21,6 +21,7 @@ import {_setStorage} from '../utils/Storage';
 import Routes from '../Navigation/Routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {requestUserPermission} from '../utils/Handler/FirebaseMessagingNoti';
+import {_postuserphone} from '../utils/Handler/EpicControllers';
 
 export default function Otp({navigation, route}) {
   const [isOTP, setIsOTP] = useState('');
@@ -37,7 +38,6 @@ export default function Otp({navigation, route}) {
 
   const _HandleOTP = async () => {
     const fcmToken = await AsyncStorage.getItem('fcmToken');
-    console.log('FCM TOKEN--------->>>>>', fcmToken);
     setState({
       ...state,
       isLoading: true,
@@ -103,24 +103,23 @@ export default function Otp({navigation, route}) {
     return () => clearInterval(timer);
   }, [counter]);
 
-  const resendsend = () => {
+  const resendsend = async () => {
     const dataPhone = {
       phone: phoneNumber,
     };
-    axios
-      .post(BASE_URL + `/User/userLoginPhone`, dataPhone)
-      .then(response => {
-        if (response?.data?.message == 'OTP sent successfully') {
-          SimpleToast({title: ' resend OTP sent successfully', isLong: true});
-          setCounter(60);
-        } else {
-          console.log('else condtion');
-        }
-        console.log('Login response', response?.data);
-      })
-      .catch(error => {
-        console.log('Login Catch error', error?.response?.data);
-      });
+
+    const result = await _postuserphone(dataPhone);
+    if (result?.data) {
+      if (result?.data?.message == 'OTP sent successfully') {
+        SimpleToast({title: ' resend OTP sent successfully', isLong: true});
+        setCounter(60);
+      } else {
+        console.log('else condtion');
+      }
+      console.log('Login response', result?.data);
+    } else {
+      console.log('Login Catch error', result?.response?.data);
+    }
   };
 
   return (
@@ -153,7 +152,7 @@ export default function Otp({navigation, route}) {
                 autoFocusOnLoad={false}
                 codeInputFieldStyle={Styles.underlineStyleBase}
                 codeInputHighlightStyle={Styles.underlineStyleHighLighted}
-                onCodeFilled={tex => {
+                onCodeChanged={tex => {
                   setIsOTP(tex);
                 }}
               />

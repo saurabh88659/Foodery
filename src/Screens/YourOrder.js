@@ -29,6 +29,7 @@ import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
 import OrderhistoryShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/OrderhistoryShimmerPlaceHolder';
+import moment from 'moment';
 
 export default function YourOrder({navigation}) {
   const [visible, setVisible] = useState(false);
@@ -37,6 +38,8 @@ export default function YourOrder({navigation}) {
   const [catcherror, setcatcherror] = useState('');
   const IsFocused = useIsFocused();
   const [isloading, setIsloading] = useState(false);
+
+  const [counter, setCounter] = useState('05: 00');
 
   const [state, setState] = useState({
     isLoading: false,
@@ -118,6 +121,27 @@ export default function YourOrder({navigation}) {
     Linking.openURL(`tel:${phoneNumber}`);
   };
 
+  let seconds = 59;
+  let minutes = 4;
+
+  function updateTimer() {
+    seconds--;
+    if (seconds === 0) {
+      seconds = 59;
+      minutes--;
+    }
+
+    const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
+    setCounter(formattedTime);
+  }
+
+  useEffect(() => {
+    const timer = setInterval(() => updateTimer(), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <MyHeaderNo2
@@ -193,6 +217,17 @@ export default function YourOrder({navigation}) {
                   Your Order has been Delivered
                 </Text>
               )}
+              <View style={{marginTop: 10}}>
+                <Text
+                  style={{
+                    fontSize: fontPixel(18),
+                    color: COLORS.WHITE,
+                    fontWeight: '500',
+                  }}>
+                  {/* {moment(orderdataOne?.delieveredAt).format('h:mm:ss a')} */}
+                  {counter}
+                </Text>
+              </View>
             </View>
 
             {orderdataOne?.orderStatus === 'Delivered' ? (
@@ -205,7 +240,7 @@ export default function YourOrder({navigation}) {
                 />
               </View>
             ) : (
-              <View activeOpacity={0.4} style={Styles.QBOXBOT}>
+              <View style={Styles.QBOXBOT}>
                 <Lottie
                   source={require('../Assets/Lottiejson/58352-delivery-boy.json')}
                   autoPlay
@@ -239,7 +274,6 @@ export default function YourOrder({navigation}) {
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 paddingHorizontal: 10,
-                // paddingVertical: 10,
               }}>
               <View
                 style={{

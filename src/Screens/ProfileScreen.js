@@ -72,8 +72,6 @@ export default function ProfileScreen({navigation}) {
       cropping: true,
       width: 300,
       height: 400,
-      quality: 1,
-      mediaType: 'any',
     })
       .then(image => {
         if (image) {

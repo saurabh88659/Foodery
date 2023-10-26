@@ -29,7 +29,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector} from 'react-redux';
 import {Badge} from 'react-native-paper';
 import {_getStorage} from '../utils/Storage';
-import axios from 'axios';
+import {_getNotifications} from '../utils/Handler/EpicControllers';
 
 export default function MoreScreen({navigation}) {
   const [modalVisible, setModalVisible] = useState(false);
@@ -58,18 +58,14 @@ export default function MoreScreen({navigation}) {
   });
 
   const _Notification = async () => {
-    const token = await _getStorage('token');
-    axios
-      .get(BASE_URL + `/notificationModel/getAllNotification`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        console.log('message response------>>>', response.data);
-      })
-      .catch(error => {
-        console.log('catch message error----->>>>', error);
-      });
+    const result = await _getNotifications();
+    if (result?.data) {
+      console.log('message response------>>>', result?.data);
+    } else {
+      console.log('catch message error----->>>>', result?.data);
+    }
   };
+
   const greeting = getGreeting();
 
   return (
@@ -85,7 +81,7 @@ export default function MoreScreen({navigation}) {
           </Text>
         </View>
         <ScrollView>
-          {/* <TouchableOpacity
+          <TouchableOpacity
             onPress={() => navigation.navigate(Routes.YOUR_ORDER)}
             activeOpacity={0.6}
             style={Styles.GreenBoxMain}>
@@ -93,7 +89,7 @@ export default function MoreScreen({navigation}) {
               <Image source={OrderHistoryicon} style={Styles.iconstyle} />
             </View>
             <Text style={Styles.boxTitle}>Your Order</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() => navigation.navigate(Routes.ORDER_HISTORY)}

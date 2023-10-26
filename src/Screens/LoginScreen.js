@@ -21,8 +21,8 @@ import {
   widthPixel,
 } from '../Components/Dimensions';
 import Button from '../Components/Button';
-import axios from 'axios';
 import Routes from '../Navigation/Routes';
+import {_postuserphone} from '../utils/Handler/EpicControllers';
 
 export default function LoginScreen({navigation}) {
   const [phoneNo, setPhoneNo] = useState('');
@@ -42,7 +42,7 @@ export default function LoginScreen({navigation}) {
     }
   };
 
-  const _HandleSend = () => {
+  const _HandleSend = async () => {
     setState({
       ...state,
       isLoading: true,
@@ -50,30 +50,27 @@ export default function LoginScreen({navigation}) {
     const dataPhone = {
       phone: phoneNo,
     };
-
-    axios
-      .post(BASE_URL + `/User/userLoginPhone`, dataPhone, {})
-      .then(response => {
-        if (response?.data?.message == 'OTP sent successfully') {
-          SimpleToast({title: response?.data?.message, isLong: true});
-          navigation.navigate(Routes.OTP_SCREEN, phoneNo);
-          setState({
-            ...state,
-            isLoading: false,
-          });
-        } else {
-          console.log('else condtion');
-        }
-        console.log('Login response', response?.data);
-      })
-      .catch(error => {
-        console.log('Login Catch error', error);
-        SimpleToast({title: error?.response?.data?.message, isLong: true});
+    const result = await _postuserphone(dataPhone);
+    if (result?.data) {
+      if (result?.data?.message == 'OTP sent successfully') {
+        SimpleToast({title: result?.data?.message, isLong: true});
+        navigation.navigate(Routes.OTP_SCREEN, phoneNo);
         setState({
           ...state,
           isLoading: false,
         });
+      } else {
+        console.log('else condtion');
+      }
+      console.log('Login response', result?.data);
+    } else {
+      console.log('Login Catch error', result?.response?.data);
+      SimpleToast({title: result?.response?.data?.message, isLong: true});
+      setState({
+        ...state,
+        isLoading: false,
       });
+    }
   };
 
   return (

@@ -343,6 +343,7 @@ export default function HomeScreen({navigation}) {
             translucent={true}
           />
           {/* <ScrollView
+            scrollEnabled={false}
             refreshControl={
               <RefreshControl
                 refreshing={refresh}
@@ -550,7 +551,7 @@ export default function HomeScreen({navigation}) {
                 </TouchableOpacity>
               )}
             />
-            <View style={Styles.SWIPERCONTANINER}>
+            <View style={[Styles.SWIPERCONTANINER]}>
               <Swiper
                 showsButtons={false}
                 autoplay={true}

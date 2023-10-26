@@ -63,7 +63,10 @@ export default function OrderDetails({navigation, route}) {
       setIsOrderDetails(result?.data?.result);
       setIsloading(false);
     } else {
-      console.log('catch error order data Details ------>>>', result?.data);
+      console.log(
+        'catch error order data Details ------>>>',
+        result?.response?.data,
+      );
       setIsloading(false);
     }
   };

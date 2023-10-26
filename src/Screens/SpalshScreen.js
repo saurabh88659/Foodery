@@ -13,7 +13,7 @@ import {fontPixel, heightPixel} from '../Components/Dimensions';
 import Geolocation from 'react-native-geolocation-service';
 import {updateGeolocation} from '../Redux/Action/locationAction';
 import {useDispatch, useSelector} from 'react-redux';
-import {BASE_URL, MAP_API_KEY} from '../utils/Const';
+import {BASE_URL, MAP_API_KEY, SimpleToast} from '../utils/Const';
 // import Geocoder from 'react-native-geocoding';
 import {useIsFocused} from '@react-navigation/native';
 import Routes from '../Navigation/Routes';
@@ -193,7 +193,7 @@ export default function SpalshScreen({navigation}) {
     if (result?.data) {
       console.log('coordinates-----------', result?.data);
     } else {
-      console.log('coordinates catch error--->>', result?.data);
+      console.log('coordinates catch error--->>', result?.response?.data);
     }
   };
 
@@ -203,7 +203,7 @@ export default function SpalshScreen({navigation}) {
       console.log('result---<<>>>>>', results?.data?.display_name);
       // dispatch(setAnimalAddress({currentaddress: results?.data?.display_name}));
     } else {
-      console.log('result===>> catch error', results?.data);
+      console.log('result===>> catch error', results?.response?.data?.message);
     }
   };
 

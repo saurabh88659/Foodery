@@ -10,6 +10,10 @@ export const CartReducerSlice = createSlice({
   },
 
   reducers: {
+    // resetUserState: (state) => {
+    //   return { /* your initial state here */ };
+    // },
+
     addToCart: (state, action) => {
       const itemInCart = state.cart.find(
         item => item._id == action.payload._id,
@@ -20,6 +24,7 @@ export const CartReducerSlice = createSlice({
         state.cart.push({...action.payload, quantity: 1});
       }
     },
+
     removeFromCart: (state, action) => {
       const removeFromCart = state.cart.filter(
         item => item._id !== action.payload._id,
