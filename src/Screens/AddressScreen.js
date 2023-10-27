@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  RefreshControl,
 } from 'react-native';
 import React, {useState, useEffect, useRef} from 'react';
 import MyHeaderNo2 from '../Components/MyHeaderNo2';
@@ -14,6 +15,7 @@ import {
   MAP_API_KEY,
   MaterialCommunityIconsTwo,
   OcticonsIcon,
+  SimpleToast,
   wishlistempty,
 } from '../utils/Const';
 import {RadioButton} from 'react-native-paper';
@@ -24,13 +26,13 @@ import Geocoder from 'react-native-geocoding';
 // import {WebView} from 'react-native-webview';
 import Routes from '../Navigation/Routes';
 import {
+  _deleteaddresss,
   _getAddress,
   _getCurrentLocations,
 } from '../utils/Handler/EpicControllers';
 
 // import {MenuProvider} from 'react-native-popup-menu';
 
-// import {Button, Menu, Divider, PaperProvider} from 'react-native-paper';
 import {
   Menu,
   MenuOptions,
@@ -54,6 +56,7 @@ export default function AddressScreen({navigation}) {
   const addressold = useSelector(state => state.AddressLSlice.animalAddress);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const isFocused = useIsFocused();
+  const [refresh, setRfresh] = useState(false);
 
   // console.log('addressold------------', addressold.currentaddress);
   // const addressCurrent = useSelector(
@@ -98,7 +101,7 @@ export default function AddressScreen({navigation}) {
     const result = await _getAddress();
     setIsLoading(true);
     if (result?.data) {
-      console.log('response data:', result?.data?.result[0]._id);
+      console.log('response data:', result?.data?.result?.length);
       setIsadress(result?.data?.result);
       setIsLoading(false);
       dispatch(
@@ -112,14 +115,33 @@ export default function AddressScreen({navigation}) {
     }
   };
 
+  const _removeaddress = async id => {
+    const result = await _deleteaddresss(id);
+    setIsLoading(true);
+    if (result?.data) {
+      console.log('response data:', result?.data);
+      SimpleToast({title: result?.data?.message, isLong: true});
+      setIsLoading(false);
+    } else {
+      console.log('catch remove error:', result?.response?.data?.message);
+      SimpleToast({title: 'Server Error:', isLong: true});
+      setIsLoading(false);
+    }
+  };
+
+  setTimeout(() => {
+    setRfresh(false);
+  }, 3000);
+
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
       <MyHeaderNo2
         title={'Choose Your Address'}
         onPress={() => navigation.goBack()}
       />
-      {/* <TouchableOpacity
-        onPress={() => navigation.navigate('AddressScreenWithMap')}
+
+      <TouchableOpacity
+        onPress={() => navigation.navigate(Routes.MANUAL_ADDRESS)}
         // onPress={handleSetCurrentAddress}
         activeOpacity={0.6}
         style={Styles.BOX}>
@@ -127,7 +149,7 @@ export default function AddressScreen({navigation}) {
         <Text style={{color: COLORS.BLUE, paddingLeft: 10, fontWeight: '800'}}>
           Add new address
         </Text>
-      </TouchableOpacity> */}
+      </TouchableOpacity>
 
       {/* <View style={{}}> */}
       {/* {addressold?.compleAddress ? (
@@ -159,6 +181,7 @@ export default function AddressScreen({navigation}) {
             </Text>
           </TouchableOpacity>
         ) : null} */}
+
       {isLoading ? (
         <View
           style={{
@@ -177,6 +200,14 @@ export default function AddressScreen({navigation}) {
       ) : (
         <FlatList
           keyExtractor={(item, index) => index.toString()}
+          refreshControl={
+            <RefreshControl
+              refreshing={refresh}
+              onRefresh={_getAddressapidata}
+              tintColor={COLORS.GREEN}
+              colors={[COLORS.GREEN]}
+            />
+          }
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{}}
           scrollEnabled={true}
@@ -247,6 +278,17 @@ export default function AddressScreen({navigation}) {
                         <Text
                           style={{paddingHorizontal: 10, color: COLORS.BLACK}}>
                           Edit address
+                        </Text>
+                      </MenuOption>
+                      <MenuOption
+                        onSelect={() => {
+                          _removeaddress(item?._id);
+                        }}
+                        //customStyles={'red'}
+                      >
+                        <Text
+                          style={{paddingHorizontal: 10, color: COLORS.BLACK}}>
+                          Remove
                         </Text>
                       </MenuOption>
                     </MenuOptions>

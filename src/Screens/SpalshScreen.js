@@ -42,7 +42,7 @@ export default function SpalshScreen({navigation}) {
   const [isLoading, setIsLoading] = useState(true);
 
   const Locations = useSelector(state => state.locationReducer);
-  console.log('Locations------------', Locations);
+  // console.log('Locations------------', Locations);
 
   // const {loading, data, error} = useSelector(state => state.Profilereducer);
   // console.log(

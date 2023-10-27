@@ -5,6 +5,8 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
+import Feather from 'react-native-vector-icons/Feather';
+
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
@@ -141,6 +143,9 @@ const OcticonsIcon = ({title, size, IconColor, IconStyle}) => (
     style={IconStyle || {}}
   />
 );
+const FeatherIcon = ({title, size, IconColor, IconStyle}) => (
+  <Feather name={title} size={size} color={IconColor} style={IconStyle || {}} />
+);
 
 //👇👇👇 DESCRIBING TOAST COMPONENT 👇👇👇
 
@@ -205,4 +210,5 @@ export {
   deliveryBoyjson,
   headerConfig,
   wishlistempty,
+  FeatherIcon,
 };

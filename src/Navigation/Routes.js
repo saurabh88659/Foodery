@@ -16,6 +16,7 @@ export default {
   BOTTOM_TAB_BAR: 'BottomTabBar',
   SEARCH_BAR: 'SearchBar',
   PAYMENTSUCCESSFUL: 'PaymentSuccessful',
+  MANUAL_ADDRESS: 'Manualaddress',
 
   /*
       BOTTOM TAB BAR

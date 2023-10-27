@@ -431,3 +431,47 @@ export const _getNotifications = async data => {
     return e;
   }
 };
+
+export const _putcurrentaddress = async data => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'POST',
+      BASE_URL + '/User/updateCurrentAddress',
+      header,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _manualAddress = async data => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'POST',
+      BASE_URL + '/User/addCustumAddress',
+      header,
+      data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _deleteaddresss = async id => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'DELETE',
+      BASE_URL + '/deleteAddress/' + id,
+      header,
+      // data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};

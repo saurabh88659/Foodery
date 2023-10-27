@@ -6,12 +6,13 @@ import AboutUs from '../Screens/AboutUs';
 import TermsCondition from '../Screens/TermsCondition';
 import PrivacyPolicy from '../Screens/PrivacyPolicy';
 import OrderHistoryMain from '../Screens/OrderHistory/OrderHistoryMain';
-import OrderHistory from '../Screens/OrderHistory';
+// import OrderHistory from '../Screens/OrderHistory';
 import OrderDetails from '../Screens/OrderDetails';
 import Routes from './Routes';
 import OrderHistoryLive from '../Screens/OrderHistory/OrderHistoryLive';
 import YourOrder from '../Screens/YourOrder';
 import PaymentSuccessful from '../Screens/PaymentSuccessful';
+// import Payment from '../Screens/Payment';
 
 const Stack = createNativeStackNavigator();
 function MoreStack() {
@@ -47,11 +48,11 @@ function MoreStack() {
         component={PrivacyPolicy}
         options={{headerShown: false}}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name={Routes.ORDER_HISTORY}
         component={OrderHistory}
         options={{headerShown: false}}
-      />
+      /> */}
       <Stack.Screen
         name={Routes.ORDER_DETAILS}
         component={OrderDetails}
@@ -72,6 +73,11 @@ function MoreStack() {
         component={PaymentSuccessful}
         options={{headerShown: false}}
       />
+      {/* <Stack.Screen
+        name="Payment"
+        component={Payment}
+        options={{headerShown: false}}
+      /> */}
     </Stack.Navigator>
   );
 }

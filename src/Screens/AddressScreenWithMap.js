@@ -203,7 +203,7 @@ export default function AddressScreenWithMap({navigation, route}) {
     {
       Name: 'Office',
       _id: 2,
-      lablename: 'Office/Building Name',
+      lablename: 'Office',
     },
     {
       Name: 'Other',
@@ -358,255 +358,263 @@ export default function AddressScreenWithMap({navigation, route}) {
               style={Styles.CLOSEBTN}>
               <EntypoIcon title="cross" size={25} IconColor={COLORS.WHITE} />
             </TouchableOpacity>
-            <View
-              style={{
-                backgroundColor: COLORS.WHITE,
-                borderTopLeftRadius: 13,
-                borderTopRightRadius: 13,
-              }}>
-              <View style={Styles.BOXLOACTIONS}>
-                <View style={Styles.ICONEBOXLOACTIONS}>
-                  <IonIcon
-                    title="ios-location-sharp"
-                    size={40}
-                    IconColor={COLORS.GREEN}
+            <ScrollView
+              contentContainerStyle={{}}
+              scrollEnabled={true}
+              showsVerticalScrollIndicator={false}>
+              <View
+                style={{
+                  backgroundColor: COLORS.WHITE,
+                  borderTopLeftRadius: 13,
+                  borderTopRightRadius: 13,
+                }}>
+                <View style={Styles.BOXLOACTIONS}>
+                  <View style={Styles.ICONEBOXLOACTIONS}>
+                    <IonIcon
+                      title="ios-location-sharp"
+                      size={40}
+                      IconColor={COLORS.GREEN}
+                    />
+                  </View>
+                  <Text style={Styles.SUBTITLELOCATIONS}>
+                    {completeAddress}
+                  </Text>
+                </View>
+                <View style={{marginTop: 20}}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                      marginHorizontal: 10,
+                      marginVertical: 10,
+                    }}>
+                    {adrSRT.map((value, index) => (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setAdrtext(value?._id),
+                            handleTextChange(value?.lablename);
+                          setIssaveas(value?.lablename);
+                        }}
+                        key={index}
+                        style={[
+                          Styles.addressbox,
+                          {
+                            backgroundColor:
+                              adrtext === value?._id
+                                ? COLORS.GREEN
+                                : COLORS.WHITE,
+                          },
+                        ]}>
+                        <Text
+                          style={{
+                            color:
+                              adrtext === value?._id
+                                ? COLORS.WHITE
+                                : COLORS.GREEN,
+                            letterSpacing: 0.6,
+                            fontSize: 13,
+                          }}>
+                          {value?.Name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                  <Text
+                    style={{
+                      color: COLORS.GRAYDARK,
+                      paddingHorizontal: 15,
+                      fontSize: 13,
+                      paddingVertical: 10,
+                    }}>
+                    Enter complete address
+                  </Text>
+                  <TextInput
+                    // label="Flat /Building /Street"
+                    label={placeholderText}
+                    value={completeAddress}
+                    textColor={COLORS.BLACK}
+                    activeOutlineColor={COLORS.BLACK}
+                    mode="outlined"
+                    onChangeText={text => setCompleteAddress(text)}
+                    style={{
+                      marginHorizontal: 10,
+                      fontSize: 14,
+                      color: COLORS.GRAYDARK,
+                      height: heightPixel(50),
+                    }}
+                    outlineStyle={{
+                      borderWidth: 1,
+                      borderColor: completeAddressError
+                        ? COLORS.BROWN
+                        : COLORS.GREEN,
+                      borderRadius: 10,
+                    }}
+                  />
+
+                  {completeAddressError ? (
+                    <Text style={Styles.ERRORTEXT}>{completeAddressError}</Text>
+                  ) : null}
+                  <TextInput
+                    label="Floor"
+                    value={isFloor}
+                    textColor={COLORS.BLACK}
+                    activeOutlineColor={COLORS.BLACK}
+                    mode="outlined"
+                    onChangeText={text => setIsFloor(text)}
+                    style={{
+                      marginHorizontal: 10,
+                      marginVertical: '2%',
+                      fontSize: 14,
+                      height: heightPixel(50),
+                    }}
+                    outlineStyle={{
+                      borderWidth: 1,
+                      borderColor: isFloorError ? COLORS.BROWN : COLORS.GREEN,
+                      borderRadius: 10,
+                    }}
+                  />
+
+                  {isFloorError ? (
+                    <Text style={Styles.ERRORTEXT}>{isFloorError}</Text>
+                  ) : null}
+                  <TextInput
+                    label="Nearby landmark"
+                    value={isNearby}
+                    textColor={COLORS.BLACK}
+                    activeOutlineColor={COLORS.BLACK}
+                    mode="outlined"
+                    onChangeText={text => setIsnearby(text)}
+                    style={{
+                      marginHorizontal: 10,
+                      marginVertical: '2%',
+                      fontSize: 14,
+                      height: heightPixel(50),
+                    }}
+                    outlineStyle={{
+                      borderWidth: 1,
+                      borderColor: isNearbyError ? COLORS.BROWN : COLORS.GREEN,
+                      borderRadius: 10,
+                    }}
+                  />
+                  {isNearbyError ? (
+                    <Text style={Styles.ERRORTEXT}>{isNearbyError}</Text>
+                  ) : null}
+
+                  <TextInput
+                    label="Pincode"
+                    value={isPincode}
+                    textColor={COLORS.BLACK}
+                    activeOutlineColor={COLORS.BLACK}
+                    mode="outlined"
+                    onChangeText={text => setIsPincode(text)}
+                    onBlur={fetchLocationInfo}
+                    maxLength={6}
+                    keyboardType="number-pad"
+                    style={{
+                      marginHorizontal: 10,
+                      marginVertical: '2%',
+                      fontSize: 14,
+                      height: heightPixel(50),
+                    }}
+                    outlineStyle={{
+                      borderWidth: 1,
+                      borderColor: isPincodeError ? COLORS.BROWN : COLORS.GREEN,
+                      borderRadius: 10,
+                    }}
+                  />
+                  {isPincodeError ? (
+                    <Text style={Styles.ERRORTEXT}>{isPincodeError}</Text>
+                  ) : null}
+
+                  <TextInput
+                    label="State"
+                    value={isState}
+                    textColor={COLORS.BLACK}
+                    activeOutlineColor={COLORS.BLACK}
+                    mode="outlined"
+                    onChangeText={text => setIsState(text)}
+                    style={{
+                      marginHorizontal: 10,
+                      marginVertical: '2%',
+                      fontSize: 14,
+                      height: heightPixel(50),
+                    }}
+                    outlineStyle={{
+                      borderWidth: 1,
+                      borderColor: isStateError ? COLORS.BROWN : COLORS.GREEN,
+                      borderRadius: 10,
+                    }}
+                  />
+                  {isStateError ? (
+                    <Text style={Styles.ERRORTEXT}>{isStateError}</Text>
+                  ) : null}
+
+                  <TextInput
+                    label="Town/City"
+                    value={isCity}
+                    textColor={COLORS.BLACK}
+                    activeOutlineColor={COLORS.BLACK}
+                    mode="outlined"
+                    onChangeText={text => setIsCity(text)}
+                    style={{
+                      marginHorizontal: 10,
+                      marginVertical: '2%',
+                      fontSize: 14,
+                      height: heightPixel(50),
+                    }}
+                    outlineStyle={{
+                      borderWidth: 1,
+                      borderColor: isCityError ? COLORS.BROWN : COLORS.GREEN,
+                      borderRadius: 10,
+                    }}
+                  />
+
+                  {isCityError ? (
+                    <Text style={Styles.ERRORTEXT}>{isCityError}</Text>
+                  ) : null}
+
+                  <TextInput
+                    label="Receiver's Name (optional)"
+                    value={isReceiveName}
+                    textColor={COLORS.BLACK}
+                    activeOutlineColor={COLORS.BLACK}
+                    mode="outlined"
+                    onChangeText={text => setIsReceiveName(text)}
+                    style={{
+                      marginHorizontal: 10,
+                      fontSize: 14,
+                      height: heightPixel(50),
+                    }}
+                    outlineStyle={{
+                      borderWidth: 1,
+                      borderColor: COLORS.GREEN,
+                      borderRadius: 10,
+                    }}
                   />
                 </View>
-                <Text style={Styles.SUBTITLELOCATIONS}>
-                  {/* {newAddress?.compleAddress} */}
-                </Text>
-              </View>
-              <View style={{marginTop: 20}}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'flex-start',
-                    marginHorizontal: 10,
-                    marginVertical: 10,
-                  }}>
-                  {adrSRT.map((value, index) => (
-                    <TouchableOpacity
-                      onPress={() => {
-                        setAdrtext(value?._id),
-                          handleTextChange(value?.lablename);
-                        setIssaveas(value?.lablename);
-                      }}
-                      key={index}
-                      style={[
-                        Styles.addressbox,
-                        {
-                          backgroundColor:
-                            adrtext === value?._id
-                              ? COLORS.GREEN
-                              : COLORS.WHITE,
-                        },
-                      ]}>
-                      <Text
-                        style={{
-                          color:
-                            adrtext === value?._id
-                              ? COLORS.WHITE
-                              : COLORS.GREEN,
-                          letterSpacing: 0.6,
-                          fontSize: 13,
-                        }}>
-                        {value?.Name}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
+
+                <View style={{marginTop: 20, top: -10}}>
+                  <Button
+                    title={
+                      isLoading ? (
+                        <View style={Styles.activStylesIndicator}>
+                          <ActivityIndicator
+                            size="small"
+                            color={COLORS.WHITE}
+                          />
+                          <Text style={Styles.activeStylesTitleIndicator}>
+                            Please wait...
+                          </Text>
+                        </View>
+                      ) : (
+                        'Save address'
+                      )
+                    }
+                    onPress={_Is_Address_Validation_handle_Submit}
+                  />
                 </View>
-                <Text
-                  style={{
-                    color: COLORS.GRAYDARK,
-                    paddingHorizontal: 15,
-                    fontSize: 13,
-                    paddingVertical: 10,
-                  }}>
-                  Enter complete address
-                </Text>
-                <TextInput
-                  // label="Flat /Building /Street"
-                  label={placeholderText}
-                  value={completeAddress}
-                  textColor={COLORS.BLACK}
-                  activeOutlineColor={COLORS.BLACK}
-                  mode="outlined"
-                  onChangeText={text => setCompleteAddress(text)}
-                  style={{
-                    marginHorizontal: 10,
-                    fontSize: 14,
-                    color: COLORS.GRAYDARK,
-                    height: heightPixel(50),
-                  }}
-                  outlineStyle={{
-                    borderWidth: 1,
-                    borderColor: completeAddressError
-                      ? COLORS.BROWN
-                      : COLORS.GREEN,
-                    borderRadius: 10,
-                  }}
-                />
-
-                {completeAddressError ? (
-                  <Text style={Styles.ERRORTEXT}>{completeAddressError}</Text>
-                ) : null}
-                <TextInput
-                  label="Floor"
-                  value={isFloor}
-                  textColor={COLORS.BLACK}
-                  activeOutlineColor={COLORS.BLACK}
-                  mode="outlined"
-                  onChangeText={text => setIsFloor(text)}
-                  style={{
-                    marginHorizontal: 10,
-                    marginVertical: '2%',
-                    fontSize: 14,
-                    height: heightPixel(50),
-                  }}
-                  outlineStyle={{
-                    borderWidth: 1,
-                    borderColor: isFloorError ? COLORS.BROWN : COLORS.GREEN,
-                    borderRadius: 10,
-                  }}
-                />
-
-                {isFloorError ? (
-                  <Text style={Styles.ERRORTEXT}>{isFloorError}</Text>
-                ) : null}
-                <TextInput
-                  label="Nearby landmark"
-                  value={isNearby}
-                  textColor={COLORS.BLACK}
-                  activeOutlineColor={COLORS.BLACK}
-                  mode="outlined"
-                  onChangeText={text => setIsnearby(text)}
-                  style={{
-                    marginHorizontal: 10,
-                    marginVertical: '2%',
-                    fontSize: 14,
-                    height: heightPixel(50),
-                  }}
-                  outlineStyle={{
-                    borderWidth: 1,
-                    borderColor: isNearbyError ? COLORS.BROWN : COLORS.GREEN,
-                    borderRadius: 10,
-                  }}
-                />
-                {isNearbyError ? (
-                  <Text style={Styles.ERRORTEXT}>{isNearbyError}</Text>
-                ) : null}
-
-                <TextInput
-                  label="Pincode"
-                  value={isPincode}
-                  textColor={COLORS.BLACK}
-                  activeOutlineColor={COLORS.BLACK}
-                  mode="outlined"
-                  onChangeText={text => setIsPincode(text)}
-                  onBlur={fetchLocationInfo}
-                  maxLength={6}
-                  keyboardType="number-pad"
-                  style={{
-                    marginHorizontal: 10,
-                    marginVertical: '2%',
-                    fontSize: 14,
-                    height: heightPixel(50),
-                  }}
-                  outlineStyle={{
-                    borderWidth: 1,
-                    borderColor: isPincodeError ? COLORS.BROWN : COLORS.GREEN,
-                    borderRadius: 10,
-                  }}
-                />
-                {isPincodeError ? (
-                  <Text style={Styles.ERRORTEXT}>{isPincodeError}</Text>
-                ) : null}
-
-                <TextInput
-                  label="State"
-                  value={isState}
-                  textColor={COLORS.BLACK}
-                  activeOutlineColor={COLORS.BLACK}
-                  mode="outlined"
-                  onChangeText={text => setIsState(text)}
-                  style={{
-                    marginHorizontal: 10,
-                    marginVertical: '2%',
-                    fontSize: 14,
-                    height: heightPixel(50),
-                  }}
-                  outlineStyle={{
-                    borderWidth: 1,
-                    borderColor: isStateError ? COLORS.BROWN : COLORS.GREEN,
-                    borderRadius: 10,
-                  }}
-                />
-                {isStateError ? (
-                  <Text style={Styles.ERRORTEXT}>{isStateError}</Text>
-                ) : null}
-
-                <TextInput
-                  label="Town/City"
-                  value={isCity}
-                  textColor={COLORS.BLACK}
-                  activeOutlineColor={COLORS.BLACK}
-                  mode="outlined"
-                  onChangeText={text => setIsCity(text)}
-                  style={{
-                    marginHorizontal: 10,
-                    marginVertical: '2%',
-                    fontSize: 14,
-                    height: heightPixel(50),
-                  }}
-                  outlineStyle={{
-                    borderWidth: 1,
-                    borderColor: isCityError ? COLORS.BROWN : COLORS.GREEN,
-                    borderRadius: 10,
-                  }}
-                />
-
-                {isCityError ? (
-                  <Text style={Styles.ERRORTEXT}>{isCityError}</Text>
-                ) : null}
-
-                <TextInput
-                  label="Receiver's Name (optional)"
-                  value={isReceiveName}
-                  textColor={COLORS.BLACK}
-                  activeOutlineColor={COLORS.BLACK}
-                  mode="outlined"
-                  onChangeText={text => setIsReceiveName(text)}
-                  style={{
-                    marginHorizontal: 10,
-                    fontSize: 14,
-                    height: heightPixel(50),
-                  }}
-                  outlineStyle={{
-                    borderWidth: 1,
-                    borderColor: COLORS.GREEN,
-                    borderRadius: 10,
-                  }}
-                />
               </View>
-
-              <View style={{marginTop: 20, top: -10}}>
-                <Button
-                  title={
-                    isLoading ? (
-                      <View style={Styles.activStylesIndicator}>
-                        <ActivityIndicator size="small" color={COLORS.WHITE} />
-                        <Text style={Styles.activeStylesTitleIndicator}>
-                          Please wait...
-                        </Text>
-                      </View>
-                    ) : (
-                      'Save address'
-                    )
-                  }
-                  onPress={_Is_Address_Validation_handle_Submit}
-                />
-              </View>
-            </View>
+            </ScrollView>
           </View>
         </BottomSheet>
       </SafeAreaView>

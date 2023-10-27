@@ -11,6 +11,10 @@ import Routes from './Routes';
 import LoginScreen from '../Screens/LoginScreen';
 import Otp from '../Screens/Otp';
 import SearchBar from '../Screens/SearchBar';
+import Payment from '../Screens/Payment';
+import OrderHistory from '../Screens/OrderHistory';
+import Manualaddress from '../Screens/Manualaddress';
+// import Payment from '../Screens/Payment';
 
 const Stack = createNativeStackNavigator();
 function AuthStack() {
@@ -65,6 +69,21 @@ function AuthStack() {
       <Stack.Screen
         name={Routes.SEARCH_BAR}
         component={SearchBar}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Payment"
+        component={Payment}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name={Routes.ORDER_HISTORY}
+        component={OrderHistory}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name={Routes.MANUAL_ADDRESS}
+        component={Manualaddress}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

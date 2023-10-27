@@ -22,6 +22,7 @@ import Routes from '../Navigation/Routes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {requestUserPermission} from '../utils/Handler/FirebaseMessagingNoti';
 import {_postuserphone} from '../utils/Handler/EpicControllers';
+import {StackActions} from '@react-navigation/native';
 
 export default function Otp({navigation, route}) {
   const [isOTP, setIsOTP] = useState('');
@@ -75,7 +76,8 @@ export default function Otp({navigation, route}) {
           })
           .then(resp => {
             if (resp?.data?.result?.name && resp?.data?.result?.address) {
-              navigation.replace(Routes.BOTTOM_TAB_BAR);
+              // navigation.replace(Routes.BOTTOM_TAB_BAR);
+              navigation.dispatch(StackActions.replace(Routes.BOTTOM_TAB_BAR));
             } else {
               navigation.navigate(Routes.SIGN_UP_SCREEN, phoneNumber);
             }

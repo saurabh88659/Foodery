@@ -32,6 +32,8 @@ export default function WishlistScreen({navigation}) {
   const wishlist = useSelector(state => state.WishlistReducerSlice?.wishlist);
   const cartdata = useSelector(state => state.CartReducerSlice.cart);
 
+  console.log('wishlist=======', wishlist);
+
   const addItemToCart = item => {
     dispatch(addToCart(item));
   };
@@ -87,9 +89,9 @@ export default function WishlistScreen({navigation}) {
                     {item?.productName}
                   </Text>
                   <Text numberOfLines={1} style={Styles.SUBTITLESTYLES}>
-                    Pick up from organic farms
+                    {item?.productDescription}
                   </Text>
-                  <Text style={{fontSize: 16}}>⭐⭐⭐⭐⭐</Text>
+                  {/* <Text style={{fontSize: 16}}>⭐⭐⭐⭐⭐</Text> */}
                   {cartdata.map((value, index) => (
                     <View key={index}>
                       {value?._id == item?._id ? (
@@ -126,11 +128,11 @@ export default function WishlistScreen({navigation}) {
                       IconColor={COLORS.GRAYDARK}
                     />
                   </Pressable>
-                  <Text style={Styles.STYLESPCS}>6 Pcs</Text>
+                  <Text style={Styles.STYLESPCS}>₹ {item?.discountPrice}</Text>
                   <Text
                     // numberOfLines={1}
                     style={Styles.KGSTYLES}>
-                    (Approx. 1.2Kg - 1.4kg)
+                    {item?.productUnit}
                   </Text>
 
                   <TouchableOpacity

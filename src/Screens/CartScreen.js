@@ -278,7 +278,7 @@ export default function CartScreen() {
           isLong: true,
         });
         _Handle_Cart_Data(result?.data);
-        navigation.navigate(Routes.PAYMENTSUCCESSFUL, result?.data);
+        navigation.navigate('Payment', result?.data);
         setShowWebView(false);
       }
     } else {
