@@ -5,6 +5,7 @@ const AddressLSlice = createSlice({
   initialState: {
     currentAddress: '',
     animalAddress: '',
+    newAddress: '',
   },
   reducers: {
     setCurrentAddress: (state, action) => {
@@ -14,9 +15,14 @@ const AddressLSlice = createSlice({
     setAnimalAddress: (state, action) => {
       state.animalAddress = action.payload;
     },
+
+    newAddressbyid: (state, action) => {
+      state.newAddress = action.payload;
+    },
   },
 });
 
-export const {setCurrentAddress, setAnimalAddress} = AddressLSlice.actions;
+export const {setCurrentAddress, setAnimalAddress, newAddressbyid} =
+  AddressLSlice.actions;
 
 export default AddressLSlice.reducer;

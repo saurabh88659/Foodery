@@ -33,7 +33,6 @@ export default function CreateAccount({navigation}) {
           <View style={{marginVertical: '5%'}}>
             <TouchableOpacity
               onPress={() => {
-                // navigation.navigate(Routes.SIGN_UP_SCREEN);
                 navigation.navigate('BottomTabBar');
               }}
               activeOpacity={0.6}

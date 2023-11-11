@@ -27,6 +27,8 @@ export default function Manualaddress({navigation}) {
   const [isNearby, setIsnearby] = React.useState('');
   const [isNearbyError, setIsnearbyError] = React.useState('');
   const [isReceiveName, setIsReceiveName] = React.useState('');
+  const [isReceiveNameError, setIsReceiveNameError] = React.useState('');
+
   const [isPincode, setIsPincode] = useState('');
   const [isPincodeError, setIsPincodeError] = useState('');
   const [isCity, setIsCity] = useState('');
@@ -55,6 +57,17 @@ export default function Manualaddress({navigation}) {
       return false;
     } else {
       setIsFloorError('');
+      return true;
+    }
+  };
+
+  const validateReceiverName = () => {
+    const namePattern = /^[a-zA-Z0-9\s,]+$/;
+    if (!namePattern.test(isReceiveName)) {
+      setIsReceiveNameError('Please enter your Receive Name');
+      return false;
+    } else {
+      setIsReceiveNameError('');
       return true;
     }
   };
@@ -110,6 +123,7 @@ export default function Manualaddress({navigation}) {
     const _is_pincode = validatePincode(isPincode);
     const _is_State = validateSate(isState);
     const _is_City = validateCity(isCity);
+    const _validateReceiver = validateReceiverName(isReceiveName);
 
     if (
       _Is_Address_Complete &&
@@ -117,7 +131,8 @@ export default function Manualaddress({navigation}) {
       _is_Near_by &&
       _is_pincode &&
       _is_State &&
-      _is_City
+      _is_City &&
+      _validateReceiver
     ) {
       // SimpleToast({title: 'Address update successfully', isLong: true});
       console.log('heeeeh');
@@ -139,7 +154,10 @@ export default function Manualaddress({navigation}) {
       setIsState(result?.data?.result?.state);
       setIsCity(result?.data?.result?.city);
     } else {
-      console.log('catch error current address:', result?.response?.data);
+      console.log(
+        'catch error current address:',
+        result?.response?.data?.mesage,
+      );
       SimpleToast({title: 'Server Error:', isLong: true});
     }
   };
@@ -436,7 +454,7 @@ export default function Manualaddress({navigation}) {
             <Text style={Styles.ERRORTEXT}>{isCityError}</Text>
           ) : null}
           <TextInput
-            label="Receiver's Name (optional)"
+            label="Receiver's Name"
             value={isReceiveName}
             textColor={COLORS.BLACK}
             activeOutlineColor={COLORS.BLACK}
@@ -449,10 +467,13 @@ export default function Manualaddress({navigation}) {
             }}
             outlineStyle={{
               borderWidth: 1,
-              borderColor: COLORS.GREEN,
+              borderColor: isReceiveNameError ? COLORS.BROWN : COLORS.GREEN,
               borderRadius: 4,
             }}
           />
+          {isReceiveNameError ? (
+            <Text style={Styles.ERRORTEXT}>{isReceiveNameError}</Text>
+          ) : null}
         </View>
         <View style={{marginTop: 20}}>
           <Button

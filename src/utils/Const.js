@@ -11,7 +11,6 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Octicons from 'react-native-vector-icons/Octicons';
 import Toast from 'react-native-simple-toast';
-// import Toast from 'react-native-toast-message';
 import {MMKV} from 'react-native-mmkv';
 import {Dimensions} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -152,10 +151,6 @@ const FeatherIcon = ({title, size, IconColor, IconStyle}) => (
 const SimpleToast = ({title, isLong}) => {
   isLong ? Toast.show(title, Toast.LONG) : Toast.show(title, Toast.SHORT);
 };
-
-// const ShowToastMeassge =({title, isLong})=>{
-
-// }
 
 const headerConfig = async () => {
   const token = await AsyncStorage.getItem('token');

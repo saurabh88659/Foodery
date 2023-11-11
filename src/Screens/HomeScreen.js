@@ -3,7 +3,6 @@ import {
   Animated,
   SafeAreaView,
   StatusBar,
-  Stylesheet,
   View,
   Text,
   Image,
@@ -15,15 +14,9 @@ import {
   Keyboard,
   BackHandler,
   Pressable,
-  Dimensions,
-  Linking,
   Platform,
-  Alert,
-  PermissionsAndroid,
-  RefreshControl,
 } from 'react-native';
 import Header from '../Components/Header';
-// import {getCloser} from '../Components/utils';
 import {COLORS} from '../utils/Colors';
 import {
   fontPixel,
@@ -54,10 +47,8 @@ import Collapsible from 'react-native-collapsible';
 import MyModalinfo from '../Components/MyModalinfo';
 import HomeShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/HomeShimmerPlaceHolder';
 import Routes from '../Navigation/Routes';
-// import {useDoubleBackPressExit} from '../utils/Handler/BackHandler';
 import Swiper from 'react-native-swiper';
 import {_getStorage} from '../utils/Storage';
-import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import Lottie from 'lottie-react-native';
 import {useDispatch, useSelector} from 'react-redux';
 import {
@@ -70,7 +61,6 @@ import {
   addToWishlist,
   removeFromWishlist,
 } from '../Redux/ReducerSlice/WishlistReducerSlice';
-// import {checkLocationEnabled} from '../utils/Handler/Locationhandles';
 import {BottomSheet} from 'react-native-btr';
 import GlobelStyles from '../utils/GlobelStyles';
 import {
@@ -81,10 +71,8 @@ import {
   _getcategorylistone,
   _nutdryProduct,
 } from '../utils/Handler/EpicControllers';
-
 const {diffClamp} = Animated;
 const headerHeight = 58 * 2;
-
 export default function HomeScreen({navigation}) {
   const ref = useRef(null);
   const translateYNumber = useRef();
@@ -93,7 +81,6 @@ export default function HomeScreen({navigation}) {
   const [collapsed, setCollapsed] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const IsFocused = useIsFocused();
   const [firstBanner, setFirstBanner] = useState([]);
   const [second_Banner, setSecond_Banner] = useState([]);
   const [all_Category, setAll_Category] = useState([]);
@@ -103,7 +90,6 @@ export default function HomeScreen({navigation}) {
   const [order_Again, setOrder_Again] = useState([]);
   const dispatch = useDispatch();
   const [PrductByiDetails, setPrductByiDetails] = useState('');
-  // const [collapsed, setCollapsed] = useState(true);
   const [visible, setVisible] = useState(false);
   const [refresh, setRfresh] = useState(false);
 
@@ -386,7 +372,6 @@ export default function HomeScreen({navigation}) {
                   />
                 </TouchableOpacity>
               </View>
-
               <Collapsible collapsed={collapsed}>
                 <FlatList
                   keyExtractor={(item, index) => index.toString()}
@@ -395,7 +380,7 @@ export default function HomeScreen({navigation}) {
                   scrollEnabled={false}
                   data={all_Category.slice(0, 2)}
                   renderItem={({item, index}) => (
-                    <View>
+                    <View key={index}>
                       <TouchableOpacity
                         activeOpacity={0.6}
                         onPress={() =>
@@ -425,7 +410,6 @@ export default function HomeScreen({navigation}) {
                   showsHorizontalScrollIndicator={false}
                   numColumns={4}
                   scrollEnabled={false}
-                  // data={showModal?all_Category:}
                   data={all_Category.slice(2, 6)}
                   renderItem={({item, index}) => (
                     <TouchableOpacity
@@ -476,45 +460,11 @@ export default function HomeScreen({navigation}) {
                   )}
                 />
               </Collapsible>
-
-              {/* <View style={Styles.EXPLOREMAINCONTAINER}>
-                {all_Category
-                  .slice(6, all_Category.length)
-                  .map((item, index) => (
-                    <Collapsible collapsed={collapsed} key={index}>
-                      <View style={Styles.EXPLOREBOX}>
-                        <TouchableOpacity
-                          activeOpacity={0.6}
-                          onPress={() =>
-                            navigation.navigate(
-                              Routes.SUB_CATEGRIES_MODAL,
-                              item,
-                            )
-                          }
-                          style={Styles.EXPLOREICON}>
-                          <Image
-                            source={{uri: item.categoryIcon}}
-                            style={Styles.IMAGEALLCATLOGO}
-                          />
-                        </TouchableOpacity>
-                        <Text numberOfLines={2} style={Styles.CATTITLESTYLS}>
-                          {item.categoryName}
-                        </Text>
-                      </View>
-                    </Collapsible>
-                  ))}
-              </View> */}
             </View>
             <TouchableOpacity
               onPress={toggleExpanded}
               activeOpacity={0.6}
               style={[Styles.TOGGLEEXPOSTYLS]}>
-              {/* <SimpleLineIconsIcon
-                title={collapsed ? 'arrow-down' : 'arrow-up'}
-                size={26}
-                IconColor={COLORS.GRAYDARK}
-              /> */}
-
               <Image
                 source={collapsed ? Down_Arrow : Up_Arrow}
                 style={{height: 30, width: 30}}
@@ -724,8 +674,6 @@ export default function HomeScreen({navigation}) {
                     style={[
                       Styles.buttonText,
                       {
-                        // top: 0,
-                        // left: 0,
                         opacity: imageOpacity,
                       },
                     ]}>

@@ -352,7 +352,7 @@ export default function OrderDetails({navigation, route}) {
               </View>
             </View>
           </View>
-          {OrderHistoryData?.orderStatus === 'Order Packed' ||
+          {/* {OrderHistoryData?.orderStatus === 'Order Packed' ||
           OrderHistoryData?.orderStatus === 'Delivered' ||
           OrderHistoryData?.orderStatus === 'Cancelled' ? null : (
             <TouchableOpacity
@@ -381,7 +381,7 @@ export default function OrderDetails({navigation, route}) {
                 </Text>
               )}
             </TouchableOpacity>
-          )}
+          )} */}
         </ScrollView>
       )}
 

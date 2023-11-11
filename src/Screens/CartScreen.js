@@ -25,7 +25,6 @@ import {
 import {COLORS} from '../utils/Colors';
 import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
 import Productinfo from '../Components/Productinfo';
-// import GlobelStyles from '../utils/GlobelStyles';a
 import Button from '../Components/Button';
 import Routes from '../Navigation/Routes';
 import {useSelector} from 'react-redux';
@@ -73,7 +72,6 @@ export default function CartScreen() {
   const dispatch = useDispatch();
   const [orderKey, setOrderKey] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
-  // const [payLoading, setPayLoading] = useState(true);
   const [visible, setVisible] = useState(false);
   const navigation = useNavigation();
 
@@ -82,7 +80,6 @@ export default function CartScreen() {
   });
 
   const [linkpay, setLinkpay] = useState('');
-  const [paidmess, setPaidmess] = useState('');
   const [statusId, setStatusId] = useState('');
   const [isProfile, setIsProfile] = useState('');
   const webviewRef = useRef(null);
@@ -90,20 +87,12 @@ export default function CartScreen() {
   const [PrductByiDetails, setPrductByiDetails] = useState('');
   const [collapsed, setCollapsed] = useState(true);
 
-  // console.log('orderKey------>>', orderKey);
-
-  // const addressCurrent = useSelector(
-  //   state => state.AddressLSlice.currentAddress,
-  // );
-
-  // console.log('addressCurrent--------DG-', addressCurrent);
-
   const totalprice = useSelector(state => state.CartReducerSlice.totalPrice);
+  const Addressbyid = useSelector(state => state.AddressLSlice.newAddress);
 
   const totalQuantity = useSelector(
     state => state.CartReducerSlice.totalQuantity,
   );
-
   const totaldisPrice = useSelector(
     state => state.CartReducerSlice.discountTotalPrice,
   );
@@ -114,13 +103,9 @@ export default function CartScreen() {
     state => state.AddressLSlice.currentAddress,
   );
 
-  console.log('orderId', currentaddress);
-
   useEffect(() => {
     dispatch(getCartTotal());
   }, [productDataByRe]);
-
-  // const apiData = useSelector(state => state.apiSlice);
 
   useEffect(() => {
     apidataNew();
@@ -185,8 +170,6 @@ export default function CartScreen() {
   };
 
   const _Handle_Cart_Data = async datapay => {
-    console.log('datapay---------------new', datapay);
-
     let arr = [];
     {
       productDataByRe.map(item => {
@@ -271,7 +254,6 @@ export default function CartScreen() {
   const _Payment_Check_Handle = async () => {
     const result = await _getorderDetailorderkey(orderKey);
     if (result?.data) {
-      // console.log('check data -----------new---------->>>', result?.data);
       if (result?.data?.OrderPaymentStatusText !== 'Pending') {
         SimpleToast({
           title: `Order Status: ${result?.data?.OrderPaymentStatusText}`,
@@ -328,13 +310,13 @@ export default function CartScreen() {
       navigation.navigate(Routes.YOUR_ORDER);
     }
   };
-  const showToast = () => {
-    Toast.show({
-      type: 'success',
-      text1: 'Payment Successful!✅',
-      // text2: 'This is some something 👋',
-    });
-  };
+  // const showToast = () => {
+  //   Toast.show({
+  //     type: 'success',
+  //     text1: 'Payment Successful!✅',
+  //     // text2: 'This is some something 👋',
+  //   });
+  // };
   function LoadingIndicatorView() {
     return (
       <ActivityIndicator
@@ -352,8 +334,6 @@ export default function CartScreen() {
   const toggleExpanded = () => {
     setCollapsed(!collapsed);
   };
-
-  // console.log('statusId-------------', statusId);
 
   return (
     <SafeAreaView style={Styles.CONTAINERMAIN}>
@@ -394,7 +374,8 @@ export default function CartScreen() {
                   <Text numberOfLines={1} style={Styles.SUBTITLELOCATIONS2}>
                     {/* Current Locations Current
                      */}
-                    {currentaddress}
+                    {/* {currentaddress} */}
+                    {Addressbyid?.newByid?.completeAddress}
                   </Text>
                 </View>
                 <TouchableOpacity

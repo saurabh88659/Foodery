@@ -7,15 +7,11 @@ import {
   TouchableOpacity,
   Image,
   Linking,
-  ActivityIndicator,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {
   BASE_URL,
-  EntypoIcon,
   IonIcon,
-  LATITUDE_DELTA,
-  LONGITUDE_DELTA,
   Yourordericonebox,
   yourirdercallsicon,
 } from '../utils/Const';
@@ -29,10 +25,8 @@ import {_getStorage} from '../utils/Storage';
 import axios from 'axios';
 import {useIsFocused} from '@react-navigation/native';
 import OrderhistoryShimmerPlaceHolder from '../Components/ShimmerPlaceHolder/OrderhistoryShimmerPlaceHolder';
-import moment from 'moment';
 
 export default function YourOrder({navigation}) {
-  const [visible, setVisible] = useState(false);
   const [orderDetails, setOrderDetails] = useState([]);
   const [orderdataOne, setOrderdataOne] = useState({});
   const [catcherror, setcatcherror] = useState('');
@@ -441,7 +435,8 @@ export default function YourOrder({navigation}) {
               </View>
             </View>
           </View>
-          {orderdataOne?.orderStatus === 'Order Placed' ? (
+
+          {/* {orderdataOne?.orderStatus === 'Order Placed' ? (
             <TouchableOpacity
               onPress={Cancelled_Booking}
               activeOpacity={0.6}
@@ -473,7 +468,7 @@ export default function YourOrder({navigation}) {
                 </Text>
               )}
             </TouchableOpacity>
-          ) : null}
+          ) : null} */}
         </ScrollView>
       )}
     </SafeAreaView>

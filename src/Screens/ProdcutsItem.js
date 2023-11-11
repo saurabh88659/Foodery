@@ -156,7 +156,7 @@ export default function ProdcutsItem({navigation, route}) {
     dispatch(getCartTotal());
   }, [cartdata]);
 
-  console.log('cartdata---------------', cartdata);
+  // console.log('cartdata---------------', cartdata);
 
   let arr = [];
 

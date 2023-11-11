@@ -19,6 +19,7 @@ const Header = props => {
   const {headerHeight} = props;
   const profiledata = useSelector(state => state.ProfileSlice.profiledata);
   const newAddress = useSelector(state => state.AddressLSlice.animalAddress);
+  const Addressbyid = useSelector(state => state.AddressLSlice.newAddress);
 
   const texts = [
     'Search "rice"',
@@ -106,7 +107,7 @@ const Header = props => {
               }}>
               {/* Home-Kickr Tech Home-Kickr Tech
                */}
-              {currentaddress}
+              {Addressbyid?.newByid?.completeAddress}
             </Text>
             <Icon name="arrow-drop-down" color={COLORS.WHITE} size={25} />
           </View>

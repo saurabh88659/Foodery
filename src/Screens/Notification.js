@@ -9,89 +9,25 @@ import {
 import React, {useEffect, useState} from 'react';
 import MyHeader from '../Components/MyHeader';
 import {COLORS} from '../utils/Colors';
-import {
-  fontPixel,
-  heightPixel,
-  screenHeight,
-  widthPixel,
-} from '../Components/Dimensions';
-import {BASE_URL, EntypoIcon, IonIcon} from '../utils/Const';
+import {fontPixel, heightPixel, widthPixel} from '../Components/Dimensions';
+import {EntypoIcon, IonIcon} from '../utils/Const';
 import {_getStorage} from '../utils/Storage';
-import axios from 'axios';
+import {_getNotification} from '../utils/Handler/EpicControllers';
 
 export default function Notification({navigation}) {
   const [isNotifications, setIsNotifications] = useState([]);
-  const SRTNOW = [
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-      itecolor: '#38EF7D',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-      itecolor: '#38EF',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-    {
-      title: 'Your order has been delivered',
-      time: 'Now',
-    },
-  ];
 
   useEffect(() => {
     _Notification();
   });
 
   const _Notification = async () => {
-    const token = await _getStorage('token');
-    axios
-      .get(BASE_URL + `/notificationModel/getAllNotification`, {
-        headers: {Authorization: `Bearer ${token}`},
-      })
-      .then(response => {
-        console.log('message response------>>>', response.data);
-        setIsNotifications(response?.data?.result);
-      })
-      .catch(error => {
-        console.log('catch message error----->>>>', error);
-      });
+    const result = await _getNotification();
+    if (result?.data) {
+      setIsNotifications(result?.data?.result);
+    } else {
+      console.log('catch message error-->>>>', result?.response?.data?.message);
+    }
   };
 
   return (
@@ -107,7 +43,6 @@ export default function Notification({navigation}) {
           />
         }
       />
-
       <FlatList
         keyExtractor={(item, index) => index.toString()}
         showsVerticalScrollIndicator={false}
@@ -115,6 +50,7 @@ export default function Notification({navigation}) {
         data={isNotifications}
         renderItem={({item, index}) => (
           <TouchableOpacity
+            key={index}
             activeOpacity={0.7}
             style={[Styles.MAINBOX, {backgroundColor: item.itecolor}]}>
             <EntypoIcon

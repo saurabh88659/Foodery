@@ -30,10 +30,7 @@ import {
   _getProfile,
   _postcoordinates,
 } from '../utils/Handler/EpicControllers';
-import {
-  setAnimalAddress,
-  setCurrentAddress,
-} from '../Redux/ReducerSlice/AddressLSlice';
+import {setCurrentAddress} from '../Redux/ReducerSlice/AddressLSlice';
 
 export default function SpalshScreen({navigation}) {
   const IsFocused = useIsFocused();
@@ -42,15 +39,6 @@ export default function SpalshScreen({navigation}) {
   const [isLoading, setIsLoading] = useState(true);
 
   const Locations = useSelector(state => state.locationReducer);
-  // console.log('Locations------------', Locations);
-
-  // const {loading, data, error} = useSelector(state => state.Profilereducer);
-  // console.log(
-  //   'data-------------------------------->>>>>>>',
-  //   data,
-  //   loading,
-  //   error,
-  // );
 
   const getCurrentPosition = () => {
     Geolocation.getCurrentPosition(
@@ -69,24 +57,6 @@ export default function SpalshScreen({navigation}) {
       // geoCoding();
     }
   }, [IsFocused]);
-
-  // const geoCoding = async () => {
-  //   Geocoder.init(MAP_API_KEY);
-
-  //   Geocoder.from(Locations.latitude, Locations.longitude).then(json => {
-  //     json.results[0].address_components.forEach((value, index) => {
-  //       console.log(
-  //         'hey++++++++++++++++++++++++++DG',
-  //         json.results[0].formatted_address,
-  //       );
-
-  //       // setAddress(
-  //       //   json.results[0].formatted_address,
-  //       //   // tempAddress: json.results[0].formatted_address,
-  //       // );
-  //     });
-  //   });
-  // };
 
   useEffect(() => {
     _Handle_Splash();
@@ -186,8 +156,8 @@ export default function SpalshScreen({navigation}) {
 
   const _Coordinates = async () => {
     const logtat = {
-      latitude: Locations.longitude,
-      longitude: Locations.latitude,
+      latitude: Locations.latitude,
+      longitude: Locations.longitude,
     };
     const result = await _postcoordinates(logtat);
     if (result?.data) {

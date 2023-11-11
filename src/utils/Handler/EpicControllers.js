@@ -73,7 +73,6 @@ export const _getcategorylistone = async () => {
 
 export const _freshProductlist = async () => {
   const header = await headerConfig();
-  console.log('header--DG->>', header);
   try {
     const result = await Instance(
       'GET',
@@ -88,7 +87,6 @@ export const _freshProductlist = async () => {
 
 export const _nutdryProduct = async () => {
   const header = await headerConfig();
-  console.log('header--DG->>', header);
   try {
     const result = await Instance(
       'GET',
@@ -103,7 +101,6 @@ export const _nutdryProduct = async () => {
 
 export const _getTranding = async () => {
   const header = await headerConfig();
-  console.log('header--DG->>', header);
   try {
     const result = await Instance(
       'GET',
@@ -118,7 +115,6 @@ export const _getTranding = async () => {
 
 export const _getmightmissed = async () => {
   const header = await headerConfig();
-  console.log('header--DG->>', header);
   try {
     const result = await Instance('GET', BASE_URL + '/getAllshowCarts', header);
     return result;
@@ -129,8 +125,6 @@ export const _getmightmissed = async () => {
 
 export const _getcreatpayment = async data => {
   const header = await headerConfig();
-  console.log('header--DG->>', header);
-  console.log('epic data----->>>', data);
 
   try {
     const result = await Instance(
@@ -147,8 +141,6 @@ export const _getcreatpayment = async data => {
 
 export const _getorderDetailorderkey = async id => {
   const header = await headerConfig();
-  console.log('header--DG->>', header);
-  console.log('epic data----->>>', id);
 
   try {
     const result = await Instance(
@@ -434,6 +426,7 @@ export const _getNotifications = async data => {
 
 export const _putcurrentaddress = async data => {
   const header = await headerConfig();
+  console.log('header:', header);
   try {
     const result = await Instance(
       'POST',
@@ -461,12 +454,42 @@ export const _manualAddress = async data => {
   }
 };
 
+export const newAddressbyId = async _id => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'GET',
+      BASE_URL + '/User/getAllAddressOne/' + _id,
+      header,
+      // data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
 export const _deleteaddresss = async id => {
   const header = await headerConfig();
   try {
     const result = await Instance(
       'DELETE',
       BASE_URL + '/deleteAddress/' + id,
+      header,
+      // data,
+    );
+    return result;
+  } catch (e) {
+    return e;
+  }
+};
+
+export const _getNotification = async id => {
+  const header = await headerConfig();
+  try {
+    const result = await Instance(
+      'GET',
+      BASE_URL + '/notificationModel/getAllNotification',
       header,
       // data,
     );

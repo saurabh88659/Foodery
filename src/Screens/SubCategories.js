@@ -50,13 +50,10 @@ import GlobelStyles from '../utils/GlobelStyles';
 export default function SubCategories({navigation, route}) {
   const CatItem = route.params;
   const [isloading, setIsloading] = useState(false);
-  // const [cartitem, setCartitem] = useState(0);
   const [subCatProduct, setSubCatProduct] = useState([]);
   const [productById, setProductById] = useState([]);
   const [status, setStatus] = useState('tab1');
   const [detalist, setDetalist] = useState(productById);
-  // const [totl_Price, setTotal_Price] = useState('');
-  // const [total_quantity, seTtotal_quantity] = useState('');
   const [collapsed, setCollapsed] = useState(true);
   const actionSheetRef = createRef(false);
   const [PrductByiDetails, setPrductByiDetails] = useState('');

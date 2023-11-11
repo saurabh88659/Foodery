@@ -29,6 +29,7 @@ import {
   _deleteaddresss,
   _getAddress,
   _getCurrentLocations,
+  newAddressbyId,
 } from '../utils/Handler/EpicControllers';
 
 // import {MenuProvider} from 'react-native-popup-menu';
@@ -40,7 +41,10 @@ import {
   MenuTrigger,
 } from 'react-native-popup-menu';
 import {useIsFocused} from '@react-navigation/native';
-import {setAnimalAddress} from '../Redux/ReducerSlice/AddressLSlice';
+import {
+  newAddressbyid,
+  setAnimalAddress,
+} from '../Redux/ReducerSlice/AddressLSlice';
 import Lottie from 'lottie-react-native';
 
 export default function AddressScreen({navigation}) {
@@ -48,37 +52,21 @@ export default function AddressScreen({navigation}) {
 
   const dispatch = useDispatch();
   const [newAddress, setNewAddress] = useState('');
-  const [selectedValue, setSelectedValue] = useState('');
-  const [showWebView, setShowWebView] = useState(false);
   const [isaddress, setIsadress] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const Locations = useSelector(state => state.locationReducer);
   const addressold = useSelector(state => state.AddressLSlice.animalAddress);
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
   const isFocused = useIsFocused();
   const [refresh, setRfresh] = useState(false);
 
-  // console.log('addressold------------', addressold.currentaddress);
-  // const addressCurrent = useSelector(
-  //   state => state.AddressLSlice.currentAddress,
-  // );
+  const newAddressb = useSelector(state => state.AddressLSlice.newAddress);
+  console.log('newAddressb', newAddressb?.newByid?.completeAddress);
 
   useEffect(() => {
     if (isFocused) {
       _getAddressapidata();
     }
   }, [isFocused]);
-
-  // const handleSetCurrentAddress = () => {
-  //   dispatch(setCurrentAddress(newAddress));
-  //   setNewAddress('');
-  //   geoCoding();
-  // };
-
-  // const handleSetAnimalAddress = () => {
-  //   dispatch(setAnimalAddress(newAddress));
-  //   setNewAddress('');
-  // };
 
   const geoCoding = async () => {
     Geocoder.init(MAP_API_KEY);
@@ -90,25 +78,13 @@ export default function AddressScreen({navigation}) {
     });
   };
 
-  // const handleRadioChange = value => {
-  //   setSelectedValue(value);
-  // };
-  // const handleButtonPress = () => {
-  //   setShowWebView(true);
-  // };
-
   const _getAddressapidata = async () => {
     const result = await _getAddress();
     setIsLoading(true);
     if (result?.data) {
-      console.log('response data:', result?.data?.result?.length);
+      console.log('response data:', result?.data?.result._id);
       setIsadress(result?.data?.result);
       setIsLoading(false);
-      dispatch(
-        setAnimalAddress({
-          orderId: result?.data?.result[0]?._id,
-        }),
-      );
     } else {
       console.log('catch error:', result?.response?.data);
       setIsLoading(false);
@@ -124,8 +100,21 @@ export default function AddressScreen({navigation}) {
       setIsLoading(false);
     } else {
       console.log('catch remove error:', result?.response?.data?.message);
-      SimpleToast({title: 'Server Error:', isLong: true});
+      SimpleToast({
+        title: 'Server Error:',
+        isLong: true,
+      });
       setIsLoading(false);
+    }
+  };
+
+  const newAddressShow = async id => {
+    const result = await newAddressbyId(id);
+    if (result?.data) {
+      // console.log('result===dddddddd', result?.data?.result);
+      dispatch(newAddressbyid({newByid: result?.data?.result}));
+    } else {
+      console.log('catch error data', result?.response?.data?.message);
     }
   };
 
@@ -139,7 +128,6 @@ export default function AddressScreen({navigation}) {
         title={'Choose Your Address'}
         onPress={() => navigation.goBack()}
       />
-
       <TouchableOpacity
         onPress={() => navigation.navigate(Routes.MANUAL_ADDRESS)}
         // onPress={handleSetCurrentAddress}
@@ -150,37 +138,6 @@ export default function AddressScreen({navigation}) {
           Add new address
         </Text>
       </TouchableOpacity>
-
-      {/* <View style={{}}> */}
-      {/* {addressold?.compleAddress ? (
-          <TouchableOpacity
-            onPress={() => {
-              setChecked('first');
-              navigation.navigate(Routes.TAB_CART);
-            }}
-            activeOpacity={0.6}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginHorizontal: 15,
-            }}>
-            <RadioButton
-              value="first"
-              color={COLORS.GREEN}
-              status={checked === 'first' ? 'checked' : 'unchecked'}
-              onPress={() => setChecked('first')}
-            />
-            <Text
-              style={{
-                color: COLORS.BLACK,
-                fontSize: fontPixel(18),
-                paddingHorizontal: 5,
-                textAlign: 'left',
-              }}>
-              {addressold?.compleAddress}
-            </Text>
-          </TouchableOpacity>
-        ) : null} */}
 
       {isLoading ? (
         <View
@@ -250,17 +207,12 @@ export default function AddressScreen({navigation}) {
 
                 <View>
                   <Menu>
-                    <MenuTrigger
-                      style={{top: 10}}
-                      text={
-                        <MaterialCommunityIconsTwo
-                          title={'dots-vertical'}
-                          size={25}
-                          IconColor={COLORS.GRAYDARK}
-                          style={{}}
-                        />
-                      }
-                    />
+                    <MenuTrigger style={{top: 10}} />
+                    <MaterialCommunityIconsTwo
+                      title={'dots-vertical'}
+                      size={25}
+                      IconColor={COLORS.GRAYDARK}
+                      style={{}}></MaterialCommunityIconsTwo>
                     <MenuOptions
                       style={{
                         paddingVertical: 15,
@@ -272,9 +224,7 @@ export default function AddressScreen({navigation}) {
                             Routes.ADDRESS_SCREEN_WITH_MAP,
                             item?._id,
                           )
-                        }
-                        //customStyles={'red'}
-                      >
+                        }>
                         <Text
                           style={{paddingHorizontal: 10, color: COLORS.BLACK}}>
                           Edit address
@@ -283,9 +233,7 @@ export default function AddressScreen({navigation}) {
                       <MenuOption
                         onSelect={() => {
                           _removeaddress(item?._id);
-                        }}
-                        //customStyles={'red'}
-                      >
+                        }}>
                         <Text
                           style={{paddingHorizontal: 10, color: COLORS.BLACK}}>
                           Remove
@@ -300,6 +248,12 @@ export default function AddressScreen({navigation}) {
                 onPress={() => {
                   setChecked(item?._id);
                   navigation.navigate(Routes.TAB_CART);
+                  newAddressShow(item._id);
+                  dispatch(
+                    setAnimalAddress({
+                      orderId: item._id,
+                    }),
+                  );
                 }}
                 activeOpacity={0.6}
                 style={{
@@ -377,21 +331,6 @@ export default function AddressScreen({navigation}) {
                   </Text>
                 </View>
               </TouchableOpacity>
-
-              {/* <Menu>
-                <MenuTrigger text="Select action" />
-                <MenuOptions>
-                  <MenuOption onSelect={() => alert(`Save`)} text="Save" />
-                  <MenuOption onSelect={() => alert(`Delete`)}>
-                    <Text style={{color: 'red'}}>Delete</Text>
-                  </MenuOption>
-                  <MenuOption
-                    onSelect={() => alert(`Not called`)}
-                    disabled={true}
-                    text="Disabled"
-                  />
-                </MenuOptions>
-              </Menu> */}
             </View>
           )}
         />

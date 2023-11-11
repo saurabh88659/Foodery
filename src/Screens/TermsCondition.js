@@ -19,7 +19,9 @@ export default function TermsCondition({navigation}) {
         title={'Terms & Condition'}
         onPress={() => navigation.goBack()}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{paddingBottom: 30}}
+        showsVerticalScrollIndicator={false}>
         <View style={Styles.MAINBOX}>
           <View style={{top: heightPixel(-8)}}>
             <EntypoIcon

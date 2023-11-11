@@ -19,7 +19,9 @@ export default function PrivacyPolicy({navigation}) {
         title={'Privacy Policy'}
         onPress={() => navigation.goBack()}
       />
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={{paddingBottom: 30}}
+        showsVerticalScrollIndicator={false}>
         <View style={Styles.MAINBOX}>
           <View style={{top: heightPixel(-8)}}>
             <EntypoIcon
