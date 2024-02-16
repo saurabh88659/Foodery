@@ -15,7 +15,7 @@ function App() {
   }, []);
   console.log("hello")
   return (
-    <NavigationContainer>
+    <NavigationContainer>``
       <AuthStack />
     </NavigationContainer>
   );
