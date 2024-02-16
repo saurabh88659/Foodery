@@ -11,7 +11,9 @@ function App() {
   useEffect(() => {
     requestUserPermission();
     notificationListeners();
+
   }, []);
+  console.log("hello")
   return (
     <NavigationContainer>
       <AuthStack />
